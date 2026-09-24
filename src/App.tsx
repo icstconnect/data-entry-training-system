@@ -14,6 +14,7 @@ import { KeyboardShortcutsModal } from './components/common/KeyboardShortcutsMod
 import { TeacherPasswordModal } from './components/common/TeacherPasswordModal';
 import { ClearDataConfirmModal } from './components/common/ClearDataConfirmModal';
 import { StudentSetupModal } from './components/student/StudentSetupModal';
+import { OfflineNotice } from './components/common/OfflineNotice';
 
 import { LandingPage } from './components/landing/LandingPage';
 import { PracticeWorkbench } from './components/practice/PracticeWorkbench';
@@ -302,6 +303,9 @@ export function App() {
       {isShortcutsOpen && (
         <KeyboardShortcutsModal onClose={() => setIsShortcutsOpen(false)} />
       )}
+
+      {/* Offline Status Popup (unobtrusive pill) */}
+      <OfflineNotice />
     </div>
   );
 }
