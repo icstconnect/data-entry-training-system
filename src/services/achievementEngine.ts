@@ -133,3 +133,80 @@ export function checkUnlockedAchievements(
 
   return { newAchievements, newBatchTitle };
 }
+
+/**
+ * Synchronizes and unlocks any earned achievements based on total progress and attempt history.
+ * Ensures achievements persist accurately in localStorage.
+ */
+export function syncProgressAchievements(progress: StudentProgress): StudentProgress {
+  const alreadyUnlocked = new Set(progress.unlockedAchievements || []);
+  let changed = false;
+
+  // 1. First stage completed
+  if (!alreadyUnlocked.has('first_stage')) {
+    if (progress.recentAttempts.some(a => a.passed) || Object.keys(progress.completedStages).length > 0 || progress.totalExp > 0) {
+      alreadyUnlocked.add('first_stage');
+      changed = true;
+    }
+  }
+
+  // 2. Perfect 100%
+  if (!alreadyUnlocked.has('perfect_100')) {
+    if (
+      progress.recentAttempts.some(a => a.accuracyPercentage === 100) ||
+      Object.values(progress.completedStages).some(s => s.highestAccuracy === 100)
+    ) {
+      alreadyUnlocked.add('perfect_100');
+      changed = true;
+    }
+  }
+
+  // 3. Precision Operator (95%+ in level 3+)
+  if (!alreadyUnlocked.has('precision_operator')) {
+    if (progress.recentAttempts.some(a => a.passed && a.levelNumber >= 3 && a.accuracyPercentage >= 95)) {
+      alreadyUnlocked.add('precision_operator');
+      changed = true;
+    }
+  }
+
+  // 4. Form Specialist (Level 3 Stage 2)
+  if (!alreadyUnlocked.has('form_specialist')) {
+    if (progress.completedStages['L3-S2'] || progress.recentAttempts.some(a => a.passed && a.levelNumber === 3 && a.stageNumber === 2)) {
+      alreadyUnlocked.add('form_specialist');
+      changed = true;
+    }
+  }
+
+  // 5. Marksheet Operator (Level 4 Stage 3)
+  if (!alreadyUnlocked.has('marksheet_operator')) {
+    if (progress.completedStages['L4-S3'] || progress.recentAttempts.some(a => a.passed && a.levelNumber === 4 && a.stageNumber >= 3)) {
+      alreadyUnlocked.add('marksheet_operator');
+      changed = true;
+    }
+  }
+
+  // 6. Level 1 Complete
+  if (!alreadyUnlocked.has('level_1_complete')) {
+    if (progress.completedStages['L1-S1'] && progress.completedStages['L1-S2']) {
+      alreadyUnlocked.add('level_1_complete');
+      changed = true;
+    }
+  }
+
+  // 7. Master Operator
+  if (!alreadyUnlocked.has('master_operator')) {
+    if (progress.completedStages['L5-S6']?.highestAccuracy === 100) {
+      alreadyUnlocked.add('master_operator');
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    return {
+      ...progress,
+      unlockedAchievements: Array.from(alreadyUnlocked)
+    };
+  }
+
+  return progress;
+}

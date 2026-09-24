@@ -1,7 +1,8 @@
-import React from 'react';
-import { StudentProgress, LevelInfo } from '../../types';
+import React, { useState } from 'react';
+import { StudentProgress, LevelInfo, Achievement, StageValidationSummary } from '../../types';
 import { LEVELS_INFO, STAGES } from '../../data/stagesConfig';
 import { ALL_ACHIEVEMENTS } from '../../services/achievementEngine';
+import { AchievementShareModal } from '../common/AchievementShareModal';
 import { 
   Trophy, 
   Award, 
@@ -11,7 +12,8 @@ import {
   Play, 
   Sparkles,
   Lock,
-  Target
+  Target,
+  Share2
 } from 'lucide-react';
 
 interface StudentDashboardProps {
@@ -23,9 +25,37 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   progress,
   onSelectStage
 }) => {
+  const [selectedAchievementForShare, setSelectedAchievementForShare] = useState<Achievement | null>(null);
+
   const totalStagesCount = STAGES.length; // 18 stages
   const completedStagesCount = Object.keys(progress.completedStages).length;
   const overallProgressPercent = Math.round((completedStagesCount / totalStagesCount) * 100);
+
+  const createShareSummary = (ach: Achievement): StageValidationSummary => {
+    const bestPassed = progress.recentAttempts.find(a => a.passed);
+    const fallbackAttempt = progress.recentAttempts[0];
+
+    return {
+      uid: bestPassed?.uid || fallbackAttempt?.uid || 'ICST-2026-0001',
+      studentIdentity: progress.studentIdentity,
+      levelNumber: ach.badgeLevel || 1,
+      stageNumber: 1,
+      totalEvaluatedUnits: 12,
+      correctUnits: 12,
+      incorrectUnits: 0,
+      missingUnits: 0,
+      accuracyPercentage: ach.id === 'perfect_100' ? 100 : (bestPassed?.accuracyPercentage || 100),
+      requiredAccuracy: 80,
+      passed: true,
+      timeTakenSeconds: bestPassed?.timeTakenSeconds || fallbackAttempt?.timeTakenSeconds || 85,
+      expEarned: ach.badgeLevel * 50,
+      isGuidedMode: false,
+      fieldResults: [],
+      cellResults: [],
+      unlockedAchievements: [ach],
+      submittedAt: new Date().toISOString()
+    };
+  };
 
   return (
     <div className="workbench-container" style={{ maxWidth: '1200px' }}>
@@ -265,42 +295,78 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
               <div
                 key={ach.id}
                 style={{
-                  background: isUnlocked ? '#ffffff' : '#f8fafc',
-                  border: `1px solid ${isUnlocked ? '#fde68a' : '#e2e8f0'}`,
+                  background: isUnlocked ? 'var(--bg-surface)' : 'var(--bg-card)',
+                  border: `1px solid ${isUnlocked ? '#f59e0b' : 'var(--border-light)'}`,
                   borderRadius: 'var(--radius-md)',
                   padding: '12px 14px',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '12px',
-                  opacity: isUnlocked ? 1 : 0.6
+                  boxShadow: isUnlocked ? '0 2px 8px rgba(245, 158, 11, 0.12)' : 'none',
+                  opacity: isUnlocked ? 1 : 0.75,
+                  transition: 'all 0.15s ease'
                 }}
               >
                 <div style={{
-                  width: '38px',
-                  height: '38px',
+                  width: '40px',
+                  height: '40px',
                   borderRadius: '50%',
-                  background: isUnlocked ? '#fef3c7' : '#e2e8f0',
+                  background: isUnlocked ? '#fef3c7' : 'var(--bg-subtle)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: isUnlocked ? '#b45309' : '#94a3b8',
+                  color: isUnlocked ? '#b45309' : 'var(--text-muted)',
                   flexShrink: 0
                 }}>
-                  {isUnlocked ? <Trophy size={18} /> : <Lock size={16} />}
+                  {isUnlocked ? <Trophy size={19} /> : <Lock size={16} />}
                 </div>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-primary)' }}>
-                    {ach.title}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>{ach.title}</span>
+                    {isUnlocked && (
+                      <span style={{ fontSize: '10px', background: '#fef3c7', color: '#b45309', padding: '1px 6px', borderRadius: '10px', fontWeight: 800 }}>
+                        UNLOCKED
+                      </span>
+                    )}
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', lineHeight: 1.3 }}>
                     {ach.description}
                   </div>
                 </div>
+
+                {/* Share Button for Achievement */}
+                <button
+                  type="button"
+                  className={`btn btn-sm ${isUnlocked ? 'btn-primary' : 'btn-secondary'}`}
+                  onClick={() => setSelectedAchievementForShare(ach)}
+                  style={{
+                    marginLeft: 'auto',
+                    fontSize: '11px',
+                    padding: '6px 12px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    flexShrink: 0
+                  }}
+                  title={`Share ${ach.title} certificate`}
+                >
+                  <Share2 size={13} />
+                  <span>Share</span>
+                </button>
               </div>
             );
           })}
         </div>
       </div>
+
+      {/* Achievement Share Modal */}
+      {selectedAchievementForShare && (
+        <AchievementShareModal
+          achievement={selectedAchievementForShare}
+          summary={createShareSummary(selectedAchievementForShare)}
+          onClose={() => setSelectedAchievementForShare(null)}
+        />
+      )}
 
       {/* Recent Attempts Log */}
       {progress.recentAttempts.length > 0 && (
@@ -308,7 +374,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
           <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '14px', color: 'var(--icst-charcoal)' }}>
             Recent Evaluations History
           </h3>
-          <div style={{ background: '#ffffff', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
             <table style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', color: 'var(--text-secondary)', textAlign: 'left', borderBottom: '1px solid var(--border-light)' }}>

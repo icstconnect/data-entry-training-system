@@ -35,8 +35,10 @@ export const AchievementShareModal: React.FC<AchievementShareModalProps> = ({
   const rollId = summary.studentIdentity?.generatedRollId || 'NYSDB0140-0001';
   const achievementTitle = achievement?.title || 'Data Entry Certified Operator';
   const accuracyText = `${summary.accuracyPercentage}% ACCURACY`;
-  const expText = summary.expEarned > 0 ? `+${summary.expEarned} EXP` : '0 EXP (Guided)';
-  const levelText = `LEVEL ${summary.levelNumber} • STAGE ${summary.stageNumber}`;
+  const expText = summary.expEarned > 0 ? `+${summary.expEarned} EXP` : '+100 EXP';
+  const levelText = achievement?.description 
+    ? (achievement.description.length > 55 ? achievement.description.slice(0, 52) + '...' : achievement.description)
+    : `LEVEL ${summary.levelNumber} • STAGE ${summary.stageNumber}`;
 
   // Render High-Quality Card onto Canvas
   useEffect(() => {

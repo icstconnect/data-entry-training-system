@@ -92,10 +92,17 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
   const [isMobileReferenceOpen, setIsMobileReferenceOpen] = useState<boolean>(false);
 
   // Initialize or check for autosave draft
+  // Auto-restore cached data from localStorage without deleting or prompt
   useEffect(() => {
     const draft = loadStageDraft(stage.levelNumber, stage.stageNumber);
-    if (draft) {
-      setPendingDraft(draft);
+    if (draft && (Object.keys(draft.formValues || {}).length > 0 || (draft.tableRows && draft.tableRows.length > 0) || (draft.marksheetValues && Object.keys(draft.marksheetValues).length > 0))) {
+      setUid(draft.uid);
+      setSourceRecord(generateSyntheticRecord(draft.uid));
+      setFormValues(draft.formValues || {});
+      setTableRows(draft.tableRows || []);
+      setMarksheetValues(draft.marksheetValues || {});
+      setTimerElapsedSeconds(draft.timeSeconds || 0);
+      setPendingDraft(null);
     } else {
       resetToNewStage(stage);
     }
@@ -114,7 +121,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
     return () => clearInterval(interval);
   }, [showInstructions, validationSummary, stageTransitionData, timeLimitSeconds]);
 
-  // Periodic autosave every 3 seconds
+  // Persistent autosave to localStorage - keeps cached data until Clear Data is clicked
   useEffect(() => {
     if (showInstructions || validationSummary || !sourceRecord) return;
     const timeout = setTimeout(() => {
@@ -129,7 +136,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
         isGuidedMode,
         savedAt: new Date().toISOString()
       });
-    }, 3000);
+    }, 1000);
     return () => clearTimeout(timeout);
   }, [formValues, tableRows, marksheetValues, timerElapsedSeconds, uid, stage, isGuidedMode]);
 
@@ -203,8 +210,18 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
     setUid(newUid);
     const newRecord = generateSyntheticRecord(newUid);
     setSourceRecord(newRecord);
-    clearStageDraft(stage.levelNumber, stage.stageNumber);
-    resetToNewStage(stage, newUid);
+    setFormValues({});
+    setTableRows([]);
+    setMarksheetValues({});
+    saveStageDraft({
+      levelNumber: stage.levelNumber,
+      stageNumber: stage.stageNumber,
+      uid: newUid,
+      formValues: {},
+      timeSeconds: 0,
+      isGuidedMode,
+      savedAt: new Date().toISOString()
+    });
   };
 
   // Manual save handler
@@ -263,7 +280,18 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
       recentAttempts: [summary, ...studentProgress.recentAttempts.slice(0, 19)]
     };
 
-    clearStageDraft(stage.levelNumber, stage.stageNumber);
+    // Keep cached data in localStorage until Clear Data button is clicked
+    saveStageDraft({
+      levelNumber: stage.levelNumber,
+      stageNumber: stage.stageNumber,
+      uid,
+      formValues,
+      tableRows,
+      marksheetValues,
+      timeSeconds: timerElapsedSeconds,
+      isGuidedMode,
+      savedAt: new Date().toISOString()
+    });
 
     if (!isFinalStage) {
       // Intermediate stage: save progress and show brief transition

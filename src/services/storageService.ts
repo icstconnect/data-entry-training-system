@@ -1,4 +1,5 @@
 import { StudentProgress, StageValidationSummary, TeacherTestConfig, StudentIdentity } from '../types';
+import { syncProgressAchievements } from './achievementEngine';
 
 const PROGRESS_KEY = 'icst_data_entry_progress_v1';
 const STUDENT_IDENTITY_KEY = 'icst_student_identity_v1';
@@ -53,7 +54,16 @@ export function loadStudentProgress(): StudentProgress {
       return { ...DEFAULT_PROGRESS, studentIdentity: identity || undefined };
     }
     const parsed = JSON.parse(raw);
-    return { ...DEFAULT_PROGRESS, ...parsed, studentIdentity: identity || parsed.studentIdentity };
+    const baseProgress: StudentProgress = { 
+      ...DEFAULT_PROGRESS, 
+      ...parsed, 
+      studentIdentity: identity || parsed.studentIdentity 
+    };
+    const syncedProgress = syncProgressAchievements(baseProgress);
+    if (syncedProgress !== baseProgress) {
+      localStorage.setItem(PROGRESS_KEY, JSON.stringify(syncedProgress));
+    }
+    return syncedProgress;
   } catch (e) {
     console.error('Failed to load progress from localStorage', e);
     return DEFAULT_PROGRESS;
