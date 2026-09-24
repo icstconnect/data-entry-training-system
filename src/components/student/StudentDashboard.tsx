@@ -53,7 +53,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
               Institute of Computer Science and Technology Chowberia
             </div>
             <h2 style={{ fontSize: '22px', fontWeight: 800 }}>
-              Student Training Profile
+              {progress.studentIdentity ? `${progress.studentIdentity.name} (${progress.studentIdentity.generatedRollId})` : 'Student Training Profile'}
             </h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
               <span style={{

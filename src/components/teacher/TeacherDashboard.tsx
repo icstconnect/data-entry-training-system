@@ -327,6 +327,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
             <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', color: 'var(--text-secondary)', textAlign: 'left', borderBottom: '1px solid var(--border-light)' }}>
+                  <th style={{ padding: '10px 14px' }}>Trainee Operator</th>
                   <th style={{ padding: '10px 14px' }}>Level / Stage</th>
                   <th style={{ padding: '10px 14px' }}>UID</th>
                   <th style={{ padding: '10px 14px' }}>Accuracy</th>
@@ -339,6 +340,12 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
               <tbody>
                 {studentProgress.recentAttempts.map((attempt, idx) => (
                   <tr key={idx} style={{ borderBottom: '1px solid var(--border-light)' }}>
+                    <td style={{ padding: '10px 14px', fontWeight: 600 }}>
+                      <div>{attempt.studentIdentity?.name || 'Trainee Operator'}</div>
+                      <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                        {attempt.studentIdentity?.generatedRollId || 'NYSDB0140-0001'}
+                      </div>
+                    </td>
                     <td style={{ padding: '10px 14px', fontWeight: 600 }}>L{attempt.levelNumber} - Stage {attempt.stageNumber}</td>
                     <td style={{ padding: '10px 14px', fontFamily: 'var(--font-mono)' }}>{attempt.uid}</td>
                     <td style={{ padding: '10px 14px', fontWeight: 800, color: attempt.passed ? 'var(--success-green)' : 'var(--error-red)' }}>

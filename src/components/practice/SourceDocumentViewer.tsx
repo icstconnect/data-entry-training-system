@@ -1,41 +1,127 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { SourceRecord } from '../../types';
-import { FileText, ChevronDown, ChevronUp, ShieldCheck, Hash, User, Building, Award } from 'lucide-react';
+import { 
+  FileText, 
+  ChevronDown, 
+  ChevronUp, 
+  ShieldCheck, 
+  Hash, 
+  User, 
+  Building, 
+  Award,
+  X,
+  Lock
+} from 'lucide-react';
 
 interface SourceDocumentViewerProps {
   sourceRecord: SourceRecord;
+  isMobileDrawer?: boolean;
+  onClose?: () => void;
 }
 
-export const SourceDocumentViewer: React.FC<SourceDocumentViewerProps> = ({ sourceRecord }) => {
+export const SourceDocumentViewer: React.FC<SourceDocumentViewerProps> = ({ 
+  sourceRecord,
+  isMobileDrawer = false,
+  onClose
+}) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  // Scoped anti-copy, anti-selection handlers
+  const handlePreventAction = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const prevent = (e: Event) => e.preventDefault();
+    el.addEventListener('selectstart', prevent);
+    return () => el.removeEventListener('selectstart', prevent);
+  }, []);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Block Ctrl+C, Ctrl+X, Ctrl+A, Shift+Arrows inside the source document
+    if ((e.ctrlKey || e.metaKey) && ['c', 'x', 'a'].includes(e.key.toLowerCase())) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
   return (
-    <div className="source-card">
+    <div 
+      ref={containerRef}
+      className={`source-card ${isMobileDrawer ? 'source-card-drawer' : ''}`}
+      onContextMenu={handlePreventAction}
+      onCopy={handlePreventAction}
+      onCut={handlePreventAction}
+      onDragStart={handlePreventAction}
+      onMouseDown={e => {
+        // Prevent double click and triple click text selection
+        if (e.detail > 1) {
+          e.preventDefault();
+        }
+      }}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      style={{
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        MozUserSelect: 'none',
+        msUserSelect: 'none'
+      }}
+    >
       <div className="source-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <FileText size={16} />
           <span style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.3px' }}>
-            SOURCE RECORD CARD
+            REFERENCE SOURCE DOSSIER
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span className="source-badge">{sourceRecord.uid}</span>
-          <button
-            type="button"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            style={{ color: '#94a3b8', display: 'flex', alignItems: 'center' }}
-            title={isCollapsed ? 'Expand Reference Document' : 'Collapse Reference Document'}
-          >
-            {isCollapsed ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
-          </button>
+          
+          {isMobileDrawer && onClose ? (
+            <button
+              type="button"
+              onClick={onClose}
+              style={{ color: '#ffffff', display: 'flex', alignItems: 'center', padding: '4px' }}
+              title="Close Reference Drawer"
+            >
+              <X size={20} />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              style={{ color: '#94a3b8', display: 'flex', alignItems: 'center' }}
+              title={isCollapsed ? 'Expand Reference Document' : 'Collapse Reference Document'}
+            >
+              {isCollapsed ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+            </button>
+          )}
         </div>
       </div>
 
-      {!isCollapsed && (
+      {(!isCollapsed || isMobileDrawer) && (
         <div className="source-body">
-          <div className="source-watermark">
-            <ShieldCheck size={14} color="#0f766e" />
-            <span>REFERENCE RECORD • TYPE VALUE INTO CORRESPONDING DESTINATION FIELD</span>
+          <div className="source-watermark" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Lock size={13} color="#0f766e" />
+              <span>MANUAL DATA FEEDING • SELECTION & COPY RESTRICTED</span>
+            </div>
+            {isMobileDrawer && onClose && (
+              <button 
+                type="button" 
+                className="btn btn-secondary btn-sm"
+                onClick={onClose}
+                style={{ padding: '2px 8px', fontSize: '11px' }}
+              >
+                Done
+              </button>
+            )}
           </div>
 
           {/* Section 1: Candidate Identity */}

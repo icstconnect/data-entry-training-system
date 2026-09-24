@@ -1,5 +1,5 @@
 /* ICST Data Entry Lab - Professional Design System */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
   /* Brand Colors inspired by original ICST Chowberia logo */
@@ -76,12 +76,14 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 a {
@@ -131,6 +133,7 @@ input, select, textarea {
   background: #ffffff;
   border-bottom: 1px solid var(--border-light);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  width: 100%;
 }
 
 .header-container {
@@ -140,21 +143,21 @@ input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
 }
 
 .brand-section {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   text-decoration: none;
   color: inherit;
   flex-shrink: 0;
 }
 
 .brand-logo-img {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   object-fit: contain;
   display: block;
 }
@@ -165,7 +168,7 @@ input, select, textarea {
 }
 
 .brand-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--icst-charcoal);
   letter-spacing: -0.2px;
@@ -173,22 +176,71 @@ input, select, textarea {
 }
 
 .brand-sub {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--icst-slate);
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* Student Identity Chip in Header */
+.student-identity-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid var(--border-medium);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.student-identity-chip:hover {
+  background: var(--icst-blue-soft);
+  border-color: var(--icst-blue-border);
+}
+
+.student-name-text {
+  font-weight: 700;
+  color: var(--text-primary);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.student-roll-text {
+  font-family: var(--font-mono);
+  color: var(--icst-blue-dark);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.student-identity-chip-setup {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fffbeb;
+  border: 1px dashed #d97706;
+  color: #b45309;
+  padding: 3px 8px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 /* Practice Bar in Header */
 .practice-header-status {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   background: var(--bg-subtle);
-  padding: 6px 14px;
+  padding: 4px 10px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-light);
+  flex-wrap: wrap;
 }
 
 .status-badge {
@@ -203,14 +255,67 @@ input, select, textarea {
 .status-badge-level {
   background: var(--icst-blue-soft);
   color: var(--icst-blue-dark);
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--icst-blue-border);
+  font-weight: 700;
 }
 
 .status-badge-stage {
   font-size: 12px;
   font-weight: 600;
+}
+
+/* Time Display Box (Time Limit & Time Elapsed) */
+.time-display-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.time-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.time-item-over .time-val {
+  color: #dc2626;
+  font-weight: 800;
+}
+
+.time-lbl {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.time-val {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.time-separator {
+  color: #cbd5e1;
+}
+
+.time-over-tag {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  border-radius: 4px;
+  padding: 1px 4px;
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 /* EXP Counter */
@@ -225,8 +330,9 @@ input, select, textarea {
   border-radius: 20px;
   color: #92400e;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 12px;
   font-family: var(--font-mono);
+  white-space: nowrap;
 }
 
 .exp-float-anim {
@@ -254,14 +360,15 @@ input, select, textarea {
 .guided-toggle {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: var(--radius-md);
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.15s ease;
   user-select: none;
+  white-space: nowrap;
 }
 
 .guided-toggle.active {
@@ -293,20 +400,21 @@ input, select, textarea {
 .header-nav {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .nav-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 5px 10px;
   border-radius: var(--radius-md);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-secondary);
   border: 1px solid transparent;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .nav-btn:hover {
@@ -322,6 +430,19 @@ input, select, textarea {
   border-color: var(--icst-blue-border);
 }
 
+/* Clear Data Action */
+.clear-data-btn {
+  border-color: #fecaca;
+  color: var(--error-red);
+  background: #ffffff;
+  padding: 4px 8px;
+  font-size: 11px;
+}
+.clear-data-btn:hover {
+  background: #fef2f2;
+  border-color: #f87171;
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;
@@ -334,6 +455,7 @@ input, select, textarea {
   font-weight: 600;
   transition: all 0.15s ease;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .btn-primary {
@@ -381,7 +503,7 @@ input, select, textarea {
 }
 
 /* ========================================================
-   WORKBENCH LAYOUT (SPLIT SCREEN DATA ENTRY)
+   WORKBENCH LAYOUT (DESKTOP TWO-PANE & MOBILE DRAWER)
    ======================================================== */
 .workbench-container {
   max-width: 1440px;
@@ -391,20 +513,54 @@ input, select, textarea {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
+/* Desktop 2-pane layout */
 .workbench-split {
   display: grid;
-  grid-template-columns: 460px 1fr;
-  gap: 20px;
+  grid-template-columns: 440px 1fr;
+  gap: 18px;
   align-items: start;
 }
 
-@media (max-width: 1080px) {
-  .workbench-split {
-    grid-template-columns: 1fr;
-  }
+.desktop-source-pane {
+  display: block;
+}
+
+/* Mobile Reference Floating / Top Access Banner */
+.mobile-reference-banner {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--icst-blue-soft);
+  border: 1px solid var(--icst-blue-border);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+}
+
+.mobile-ref-btn {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mobile-ref-hint {
+  font-size: 11px;
+  color: var(--icst-blue-dark);
+  font-weight: 600;
+}
+
+/* Mobile Drawer Modal */
+.mobile-drawer-card {
+  width: 95%;
+  max-width: 540px;
+  max-height: 85vh;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
 }
 
 /* Reference Source Record Card */
@@ -416,12 +572,23 @@ input, select, textarea {
   overflow: hidden;
   position: sticky;
   top: 76px;
+  /* Anti-copy / Anti-selection */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.source-card-drawer {
+  position: static;
+  box-shadow: none;
+  border: none;
 }
 
 .source-header {
   background: linear-gradient(135deg, #1e293b, #0f172a);
   color: #ffffff;
-  padding: 12px 16px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -437,8 +604,8 @@ input, select, textarea {
 }
 
 .source-body {
-  padding: 16px;
-  max-height: calc(100vh - 140px);
+  padding: 14px;
+  max-height: calc(100vh - 160px);
   overflow-y: auto;
   background: #fbfcfe;
 }
@@ -511,15 +678,18 @@ input, select, textarea {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   padding: 20px;
+  width: 100%;
 }
 
 .form-header-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-light);
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .form-title {
@@ -536,8 +706,8 @@ input, select, textarea {
 /* Form Fields */
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
 }
 
 .field-group {
@@ -572,6 +742,7 @@ input, select, textarea {
   background: #ffffff;
   color: var(--text-primary);
   transition: all 0.15s ease;
+  font-size: 14px;
 }
 
 .field-input:focus {
@@ -666,13 +837,24 @@ input, select, textarea {
 }
 
 /* ========================================================
-   TABULAR & MARKSHEET SPREADSHEET ENGINE
+   RESPONSIVE TABLE & SPREADSHEET WRAPPER
    ======================================================== */
-.table-wrapper {
+.table-responsive-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   margin-top: 16px;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
+  background: #ffffff;
+}
+
+.table-wrapper {
+  margin-top: 10px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   background: #ffffff;
 }
 
@@ -680,6 +862,7 @@ input, select, textarea {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+  min-width: 520px; /* Ensures table remains readable in scroll container */
 }
 
 .data-entry-table th {
@@ -727,21 +910,23 @@ input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 14px 18px;
   background: #ffffff;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  margin-top: 16px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 /* ========================================================
-   MODALS (Review, Instructions, Results)
+   MODALS (Review, Instructions, Results, Password)
    ======================================================== */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(2px);
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(3px);
   z-index: 100;
   display: flex;
   align-items: center;
@@ -802,6 +987,7 @@ input, select, textarea {
   border-radius: 12px;
   font-size: 11px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .pill-complete {
@@ -829,7 +1015,7 @@ input, select, textarea {
   margin-top: auto;
   background: #ffffff;
   border-top: 1px solid var(--border-light);
-  padding: 24px 16px;
+  padding: 20px 16px;
   color: var(--text-secondary);
 }
 
@@ -850,35 +1036,110 @@ input, select, textarea {
 }
 
 .footer-logo {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
 }
 
 .footer-disclaimer {
   font-size: 11px;
   color: var(--text-muted);
-  max-width: 420px;
+  max-width: 480px;
   line-height: 1.4;
 }
 
-/* Responsiveness */
+/* ========================================================
+   MOBILE & SMALL DEVICE RESPONSIVENESS (Pixel 9 Pro, 320px+)
+   ======================================================== */
+@media (max-width: 1024px) {
+  .workbench-split {
+    grid-template-columns: 1fr;
+  }
+  
+  .desktop-source-pane {
+    display: none;
+  }
+  
+  .mobile-reference-banner {
+    display: flex;
+  }
+}
+
 @media (max-width: 768px) {
   .header-container {
-    flex-wrap: wrap;
-    gap: 8px;
+    padding: 6px 12px;
   }
+  
   .brand-sub {
     display: none;
   }
+  
+  .student-identity-chip {
+    padding: 2px 8px;
+    font-size: 11px;
+  }
+  
+  .student-roll-text {
+    display: none;
+  }
+  
+  .nav-btn-text {
+    display: none;
+  }
+  
+  .clear-data-text {
+    display: none;
+  }
+  
+  .time-display-box {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  
+  .form-panel {
+    padding: 14px;
+  }
+  
   .form-grid {
     grid-template-columns: 1fr;
   }
+  
   .bottom-action-bar {
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 10px;
   }
+  
   .bottom-action-bar .btn {
     width: 100%;
+  }
+  
+  .bottom-action-bar > div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .practice-header-status {
+    width: 100%;
+    justify-content: space-between;
+    padding: 4px 6px;
+    gap: 6px;
+  }
+  
+  .time-display-box {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .keyboard-shortcuts-btn {
+    display: none;
   }
 }

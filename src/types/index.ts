@@ -101,6 +101,13 @@ export interface StageConfig {
   marksheetSchema?: MarksheetSchema;
   baseExp: number;
   sampleUid: string;
+  timeLimitSeconds?: number; // Configurable time limit (default 600s = 10:00)
+}
+
+export interface StudentIdentity {
+  name: string;
+  rawRoll: string; // 3 digits, e.g. "042" or "125"
+  generatedRollId: string; // e.g. "NYSDB0140-0042" or "NYSDB0140-0125"
 }
 
 export interface LevelInfo {
@@ -195,6 +202,7 @@ export interface CellValidationResult {
 
 export interface StageValidationSummary {
   uid: string;
+  studentIdentity?: StudentIdentity;
   levelNumber: number;
   stageNumber: number;
   totalEvaluatedUnits: number;
@@ -205,6 +213,7 @@ export interface StageValidationSummary {
   requiredAccuracy: number;
   passed: boolean;
   timeTakenSeconds: number;
+  timeLimitSeconds?: number;
   expEarned: number;
   isGuidedMode: boolean;
   fieldResults: FieldValidationResult[];
@@ -231,6 +240,7 @@ export interface BatchTitle {
 }
 
 export interface StudentProgress {
+  studentIdentity?: StudentIdentity;
   currentLevel: number;
   currentStage: number;
   totalExp: number;

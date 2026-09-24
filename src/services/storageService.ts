@@ -1,6 +1,7 @@
-import { StudentProgress, StageValidationSummary, TeacherTestConfig } from '../types';
+import { StudentProgress, StageValidationSummary, TeacherTestConfig, StudentIdentity } from '../types';
 
 const PROGRESS_KEY = 'icst_data_entry_progress_v1';
+const STUDENT_IDENTITY_KEY = 'icst_student_identity_v1';
 const DRAFT_KEY_PREFIX = 'icst_data_entry_draft_';
 const TEACHER_TESTS_KEY = 'icst_teacher_tests_v1';
 
@@ -26,11 +27,33 @@ const DEFAULT_PROGRESS: StudentProgress = {
   recentAttempts: []
 };
 
+export function loadStudentIdentity(): StudentIdentity | null {
+  try {
+    const raw = localStorage.getItem(STUDENT_IDENTITY_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as StudentIdentity;
+  } catch (e) {
+    return null;
+  }
+}
+
+export function saveStudentIdentity(identity: StudentIdentity): void {
+  try {
+    localStorage.setItem(STUDENT_IDENTITY_KEY, JSON.stringify(identity));
+  } catch (e) {
+    console.error('Failed to save student identity', e);
+  }
+}
+
 export function loadStudentProgress(): StudentProgress {
   try {
     const raw = localStorage.getItem(PROGRESS_KEY);
-    if (!raw) return DEFAULT_PROGRESS;
-    return { ...DEFAULT_PROGRESS, ...JSON.parse(raw) };
+    const identity = loadStudentIdentity();
+    if (!raw) {
+      return { ...DEFAULT_PROGRESS, studentIdentity: identity || undefined };
+    }
+    const parsed = JSON.parse(raw);
+    return { ...DEFAULT_PROGRESS, ...parsed, studentIdentity: identity || parsed.studentIdentity };
   } catch (e) {
     console.error('Failed to load progress from localStorage', e);
     return DEFAULT_PROGRESS;
@@ -40,8 +63,33 @@ export function loadStudentProgress(): StudentProgress {
 export function saveStudentProgress(progress: StudentProgress): void {
   try {
     localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+    if (progress.studentIdentity) {
+      saveStudentIdentity(progress.studentIdentity);
+    }
   } catch (e) {
     console.error('Failed to save progress to localStorage', e);
+  }
+}
+
+/**
+ * Completely resets local student practice state:
+ * Removes student identity, drafts, progress, cached attempts, session data
+ */
+export function clearAllPracticeData(): void {
+  try {
+    localStorage.removeItem(PROGRESS_KEY);
+    localStorage.removeItem(STUDENT_IDENTITY_KEY);
+    // Remove all draft keys
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(DRAFT_KEY_PREFIX)) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+  } catch (e) {
+    console.error('Failed to clear practice data', e);
   }
 }
 

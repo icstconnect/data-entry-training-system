@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { UserRole, StudentProgress } from './types';
-import { loadStudentProgress, saveStudentProgress } from './services/storageService';
+import { UserRole, StudentProgress, StudentIdentity } from './types';
+import { 
+  loadStudentProgress, 
+  saveStudentProgress, 
+  saveStudentIdentity,
+  clearAllPracticeData 
+} from './services/storageService';
+import { APP_CONFIG } from './config/appConfig';
+
 import { Header } from './components/common/Header';
 import { Footer } from './components/common/Footer';
 import { KeyboardShortcutsModal } from './components/common/KeyboardShortcutsModal';
+import { TeacherPasswordModal } from './components/common/TeacherPasswordModal';
+import { ClearDataConfirmModal } from './components/common/ClearDataConfirmModal';
+import { StudentSetupModal } from './components/student/StudentSetupModal';
 
 import { LandingPage } from './components/landing/LandingPage';
 import { PracticeWorkbench } from './components/practice/PracticeWorkbench';
@@ -28,11 +38,16 @@ export function App() {
   // EXP Floating Micro-animation state
   const [floatingExp, setFloatingExp] = useState<number | null>(null);
 
-  // Practice Timer
-  const [timerSeconds, setTimerSeconds] = useState<number>(0);
+  // Timer states (Time Limit & Time Elapsed)
+  const [timerElapsedSeconds, setTimerElapsedSeconds] = useState<number>(0);
+  const [timerLimitSeconds, setTimerLimitSeconds] = useState<number>(APP_CONFIG.DEFAULT_TIME_LIMIT_SECONDS);
 
-  // Keyboard Shortcuts Modal
+  // Modals state
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
+  const [isTeacherPasswordOpen, setIsTeacherPasswordOpen] = useState<boolean>(false);
+  const [isClearDataOpen, setIsClearDataOpen] = useState<boolean>(false);
+  const [isStudentSetupOpen, setIsStudentSetupOpen] = useState<boolean>(false);
+  const [pendingPracticeStart, setPendingPracticeStart] = useState<boolean>(false);
 
   // Route syncing: support /showcase, #showcase, #practice, etc.
   useEffect(() => {
@@ -63,6 +78,13 @@ export function App() {
 
   // Sync active view to window hash
   const handleViewChange = (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase') => {
+    // If entering practice but no student identity is registered yet, gate with StudentSetupModal
+    if (view === 'practice' && !studentProgress.studentIdentity) {
+      setPendingPracticeStart(true);
+      setIsStudentSetupOpen(true);
+      return;
+    }
+
     setActiveView(view);
     if (view === 'showcase') {
       window.location.hash = 'showcase';
@@ -82,9 +104,10 @@ export function App() {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
         e.preventDefault();
-        // Handled within PracticeWorkbench
       } else if (e.key === 'Escape') {
         setIsShortcutsOpen(false);
+        setIsTeacherPasswordOpen(false);
+        setIsClearDataOpen(false);
       }
     };
 
@@ -107,12 +130,42 @@ export function App() {
     handleViewChange('practice');
   };
 
+  // Save student identity from modal
+  const handleSaveStudentIdentity = (identity: StudentIdentity) => {
+    const updated = {
+      ...studentProgress,
+      studentIdentity: identity
+    };
+    setStudentProgress(updated);
+    saveStudentProgress(updated);
+    saveStudentIdentity(identity);
+    setIsStudentSetupOpen(false);
+
+    if (pendingPracticeStart) {
+      setPendingPracticeStart(false);
+      setActiveView('practice');
+      window.location.hash = 'practice';
+    }
+  };
+
+  // Confirm Clear All Practice Data
+  const handleConfirmClearData = () => {
+    clearAllPracticeData();
+    const fresh = loadStudentProgress();
+    setStudentProgress(fresh);
+    setCurrentLevel(1);
+    setCurrentStage(1);
+    setTimerElapsedSeconds(0);
+    setIsClearDataOpen(false);
+    setActiveView('landing');
+    window.location.hash = 'home';
+  };
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Top Persistent Header */}
       <Header
         currentRole={currentRole}
-        setCurrentRole={setCurrentRole}
         activeView={activeView}
         setActiveView={handleViewChange}
         currentLevel={currentLevel}
@@ -122,8 +175,13 @@ export function App() {
         isGuidedMode={isGuidedMode}
         setIsGuidedMode={setIsGuidedMode}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
+        onClearDataClick={() => setIsClearDataOpen(true)}
+        onOpenTeacherPassword={() => setIsTeacherPasswordOpen(true)}
+        onOpenStudentSetup={() => setIsStudentSetupOpen(true)}
+        studentIdentity={studentProgress.studentIdentity}
         stageProgressPercent={Math.round((Object.keys(studentProgress.completedStages).length / 18) * 100)}
-        timerSeconds={timerSeconds}
+        timerElapsedSeconds={timerElapsedSeconds}
+        timerLimitSeconds={timerLimitSeconds}
       />
 
       {/* Main Views */}
@@ -131,10 +189,7 @@ export function App() {
         {activeView === 'landing' && (
           <LandingPage
             onStartPractice={() => handleViewChange('practice')}
-            onOpenTeacherMode={() => {
-              setCurrentRole('teacher');
-              handleViewChange('teacher-dashboard');
-            }}
+            onOpenTeacherMode={() => setIsTeacherPasswordOpen(true)}
             onOpenDashboard={() => handleViewChange('student-dashboard')}
             onOpenShowcase={() => handleViewChange('showcase')}
           />
@@ -152,7 +207,10 @@ export function App() {
             setStudentProgress={setStudentProgress}
             isGuidedMode={isGuidedMode}
             onExpAwarded={handleExpAwarded}
-            onTimerTick={setTimerSeconds}
+            onTimerTick={(elapsed, limit) => {
+              setTimerElapsedSeconds(elapsed);
+              setTimerLimitSeconds(limit);
+            }}
           />
         )}
 
@@ -179,6 +237,40 @@ export function App() {
 
       {/* Brand Footer */}
       <Footer />
+
+      {/* Student Setup Gate Modal */}
+      {isStudentSetupOpen && (
+        <StudentSetupModal
+          initialIdentity={studentProgress.studentIdentity}
+          onSave={handleSaveStudentIdentity}
+          onCancel={() => {
+            setIsStudentSetupOpen(false);
+            setPendingPracticeStart(false);
+          }}
+          canCancel={!pendingPracticeStart && !!studentProgress.studentIdentity}
+        />
+      )}
+
+      {/* Teacher Password Gate Modal */}
+      {isTeacherPasswordOpen && (
+        <TeacherPasswordModal
+          onSuccess={() => {
+            setIsTeacherPasswordOpen(false);
+            setCurrentRole('teacher');
+            setActiveView('teacher-dashboard');
+            window.location.hash = 'teacher';
+          }}
+          onCancel={() => setIsTeacherPasswordOpen(false)}
+        />
+      )}
+
+      {/* Clear All Data Confirmation Modal */}
+      {isClearDataOpen && (
+        <ClearDataConfirmModal
+          onConfirm={handleConfirmClearData}
+          onCancel={() => setIsClearDataOpen(false)}
+        />
+      )}
 
       {/* Keyboard Shortcuts Modal */}
       {isShortcutsOpen && (

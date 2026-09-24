@@ -13,9 +13,12 @@ import {
   ChevronDown,
   ChevronUp,
   Award,
-  ShieldCheck
+  ShieldCheck,
+  Share2,
+  User
 } from 'lucide-react';
 import { playFeedbackSound } from '../../services/storageService';
+import { AchievementShareModal } from '../common/AchievementShareModal';
 
 interface ResultScreenProps {
   summary: StageValidationSummary;
@@ -33,6 +36,11 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   hasNextStage
 }) => {
   const [showDetailedReport, setShowDetailedReport] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
+  const timeLimit = summary.timeLimitSeconds || stage.timeLimitSeconds || 600;
+  const isOvertime = summary.timeTakenSeconds > timeLimit;
+  const overtimeSeconds = isOvertime ? summary.timeTakenSeconds - timeLimit : 0;
 
   useEffect(() => {
     if (summary.passed) {
@@ -57,9 +65,12 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
+  const studentName = summary.studentIdentity?.name || 'Trainee Operator';
+  const rollId = summary.studentIdentity?.generatedRollId || 'NYSDB0140-0001';
+
   return (
     <div style={{
-      maxWidth: '720px',
+      maxWidth: '740px',
       margin: '24px auto',
       background: '#ffffff',
       borderRadius: 'var(--radius-xl)',
@@ -67,6 +78,15 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
       boxShadow: 'var(--shadow-lg)',
       overflow: 'hidden'
     }}>
+      {/* Share Modal */}
+      {isShareModalOpen && (
+        <AchievementShareModal
+          summary={summary}
+          achievement={summary.unlockedAchievements[0]}
+          onClose={() => setIsShareModalOpen(false)}
+        />
+      )}
+
       {/* Result Hero Header */}
       <div style={{
         background: summary.passed 
@@ -90,10 +110,28 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
           marginBottom: '10px'
         }}>
           {summary.passed ? <CheckCircle size={14} /> : <XCircle size={14} />}
-          <span>{summary.passed ? 'STAGE COMPLETE' : 'ACCURACY REQUIREMENT NOT MET'}</span>
+          <span>{summary.passed ? 'LEVEL ASSESSMENT PASSED' : 'ACCURACY REQUIREMENT NOT MET'}</span>
         </div>
 
-        <h2 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '6px' }}>
+        {/* Student Identity Display */}
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          background: 'rgba(0, 0, 0, 0.25)',
+          padding: '4px 14px',
+          borderRadius: '16px',
+          fontSize: '13px',
+          fontWeight: 600,
+          marginBottom: '8px'
+        }}>
+          <User size={14} />
+          <span>{studentName}</span>
+          <span style={{ opacity: 0.7 }}>•</span>
+          <span style={{ fontFamily: 'var(--font-mono)' }}>{rollId}</span>
+        </div>
+
+        <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '4px' }}>
           Level {summary.levelNumber} • Stage {summary.stageNumber}
         </h2>
         <p style={{ fontSize: '14px', opacity: 0.9 }}>
@@ -102,7 +140,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
 
         {/* Big Accuracy Metric */}
         <div style={{
-          marginTop: '20px',
+          marginTop: '16px',
           display: 'inline-block',
           background: 'rgba(255, 255, 255, 0.15)',
           backdropFilter: 'blur(4px)',
@@ -110,10 +148,10 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
           padding: '12px 28px',
           border: '1px solid rgba(255, 255, 255, 0.3)'
         }}>
-          <div style={{ fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', opacity: 0.85 }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', opacity: 0.85 }}>
             Verified Accuracy
           </div>
-          <div style={{ fontSize: '44px', fontWeight: 800, fontFamily: 'var(--font-mono)', lineHeight: 1.1 }}>
+          <div style={{ fontSize: '42px', fontWeight: 800, fontFamily: 'var(--font-mono)', lineHeight: 1.1 }}>
             {summary.accuracyPercentage}%
           </div>
           <div style={{ fontSize: '12px', opacity: 0.85, marginTop: '2px' }}>
@@ -123,7 +161,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
       </div>
 
       <div style={{ padding: '24px' }}>
-        {/* Metric Grid */}
+        {/* Metric Grid with Time Limit + Time Elapsed */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
@@ -151,11 +189,23 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
             </div>
           </div>
 
-          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: '8px', textAlign: 'center' }}>
-            <div style={{ fontSize: '11px', color: '#475569', fontWeight: 600 }}>Time Elapsed</div>
-            <div style={{ fontSize: '20px', fontWeight: 800, color: '#1e293b', fontFamily: 'var(--font-mono)' }}>
+          {/* Time Elapsed & Time Limit */}
+          <div style={{ background: isOvertime ? '#fff7ed' : '#f8fafc', border: `1px solid ${isOvertime ? '#fed7aa' : '#e2e8f0'}`, padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600 }}>
+              LIMIT: {formatTime(timeLimit)}
+            </div>
+            <div style={{ fontSize: '18px', fontWeight: 800, color: isOvertime ? '#c2410c' : '#1e293b', fontFamily: 'var(--font-mono)' }}>
               {formatTime(summary.timeTakenSeconds)}
             </div>
+            {isOvertime ? (
+              <div style={{ fontSize: '10px', color: '#ea580c', fontWeight: 700 }}>
+                OVER +{formatTime(overtimeSeconds)}
+              </div>
+            ) : (
+              <div style={{ fontSize: '10px', color: '#15803d', fontWeight: 600 }}>
+                Within Limit
+              </div>
+            )}
           </div>
         </div>
 
@@ -174,10 +224,10 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
             <Sparkles size={20} color={summary.isGuidedMode ? '#64748b' : '#b45309'} />
             <div>
               <div style={{ fontWeight: 700, fontSize: '14px', color: summary.isGuidedMode ? '#475569' : '#92400e' }}>
-                {summary.isGuidedMode ? 'Guided Practice Mode Active' : 'EXP Earned'}
+                {summary.isGuidedMode ? 'Guided Practice Session' : 'Experience Points (EXP)'}
               </div>
               <div style={{ fontSize: '11px', color: summary.isGuidedMode ? '#64748b' : '#b45309' }}>
-                {summary.isGuidedMode ? 'No EXP is awarded during Guided Mode sessions.' : 'Added to your permanent student record.'}
+                {summary.isGuidedMode ? 'Guided Mode awards 0 EXP. Turn Guided OFF for certification.' : `Accredited to trainee: ${studentName} (${rollId})`}
               </div>
             </div>
           </div>
@@ -200,9 +250,20 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
             padding: '14px',
             marginBottom: '20px'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#15803d', fontWeight: 700, marginBottom: '6px' }}>
-              <Trophy size={18} />
-              <span>NEW ACHIEVEMENT UNLOCKED!</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#15803d', fontWeight: 800 }}>
+                <Trophy size={18} />
+                <span>NEW ACHIEVEMENT UNLOCKED!</span>
+              </div>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => setIsShareModalOpen(true)}
+                style={{ background: '#ffffff', borderColor: '#86efac' }}
+              >
+                <Share2 size={13} />
+                <span>Share Card</span>
+              </button>
             </div>
             {summary.unlockedAchievements.map(ach => (
               <div key={ach.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#166534', marginTop: '4px' }}>
@@ -223,7 +284,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <AlertTriangle size={15} color="var(--warning-amber)" />
-              <span>Detailed Inspection & Error Report</span>
+              <span>Field-by-Field Inspection & Discrepancies</span>
             </div>
             {showDetailedReport ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
@@ -291,7 +352,17 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
         </div>
 
         {/* Action Controls */}
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => setIsShareModalOpen(true)}
+            title="Create branded achievement image for WhatsApp & Instagram"
+          >
+            <Share2 size={15} />
+            <span>SHARE ACHIEVEMENT</span>
+          </button>
+
           <button
             type="button"
             className="btn btn-secondary"
@@ -304,11 +375,11 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
           {summary.passed && hasNextStage && (
             <button
               type="button"
-              className="btn btn-primary btn-lg"
+              className="btn btn-primary"
               onClick={onNextStage}
               autoFocus
             >
-              <span>NEXT STAGE</span>
+              <span>NEXT LEVEL / STAGE</span>
               <ArrowRight size={16} />
             </button>
           )}

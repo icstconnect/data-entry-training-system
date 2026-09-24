@@ -463,7 +463,9 @@ export function evaluateStageSubmission(
   userMarksheet?: Record<string, any>,
   timeTakenSeconds: number = 0,
   isGuidedMode: boolean = false,
-  mode: ValidationMode = 'NORMAL'
+  mode: ValidationMode = 'NORMAL',
+  studentIdentity?: import('../types').StudentIdentity,
+  timeLimitSeconds?: number
 ): StageValidationSummary {
   // 1. Evaluate fields
   const fieldResults: FieldValidationResult[] = stage.fields.map(f =>
@@ -545,6 +547,7 @@ export function evaluateStageSubmission(
 
   return {
     uid: sourceRecord.uid,
+    studentIdentity,
     levelNumber: stage.levelNumber,
     stageNumber: stage.stageNumber,
     totalEvaluatedUnits: fieldResults.length + cellResults.length,
@@ -555,6 +558,7 @@ export function evaluateStageSubmission(
     requiredAccuracy: stage.requiredAccuracy,
     passed,
     timeTakenSeconds,
+    timeLimitSeconds: timeLimitSeconds || stage.timeLimitSeconds || 600,
     expEarned,
     isGuidedMode,
     fieldResults,

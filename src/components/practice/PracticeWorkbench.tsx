@@ -4,7 +4,8 @@ import {
   SourceRecord, 
   StageValidationSummary, 
   StudentProgress,
-  ValidationMode
+  ValidationMode,
+  StudentIdentity
 } from '../../types';
 import { generateSyntheticRecord } from '../../services/syntheticDataGenerator';
 import { evaluateStageSubmission } from '../../services/validationEngine';
@@ -18,6 +19,7 @@ import {
   playFeedbackSound
 } from '../../services/storageService';
 import { STAGES, getStage } from '../../data/stagesConfig';
+import { APP_CONFIG } from '../../config/appConfig';
 
 import { UidSearchSection } from './UidSearchSection';
 import { SourceDocumentViewer } from './SourceDocumentViewer';
@@ -27,6 +29,7 @@ import { MarksheetGrid } from '../table/MarksheetGrid';
 import { StageInstructionsModal } from './StageInstructionsModal';
 import { ReviewModal } from './ReviewModal';
 import { ResultScreen } from './ResultScreen';
+import { StageTransitionModal } from './StageTransitionModal';
 import { AutosavePromptModal } from '../common/AutosavePromptModal';
 
 import { 
@@ -36,7 +39,11 @@ import {
   Save, 
   Sparkles,
   Info,
-  Check
+  Check,
+  ArrowRight,
+  FileText,
+  Clock,
+  ChevronRight
 } from 'lucide-react';
 
 interface PracticeWorkbenchProps {
@@ -47,7 +54,7 @@ interface PracticeWorkbenchProps {
   setStudentProgress: React.Dispatch<React.SetStateAction<StudentProgress>>;
   isGuidedMode: boolean;
   onExpAwarded: (amount: number) => void;
-  onTimerTick?: (seconds: number) => void;
+  onTimerTick?: (elapsed: number, limit: number) => void;
 }
 
 export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
@@ -61,6 +68,9 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
   onTimerTick
 }) => {
   const stage = getStage(currentLevel, currentStage) || STAGES[0];
+  const stagesForThisLevel = STAGES.filter(s => s.levelNumber === stage.levelNumber);
+  const isFinalStage = stage.stageNumber === stagesForThisLevel.length;
+  const timeLimitSeconds = stage.timeLimitSeconds || APP_CONFIG.DEFAULT_TIME_LIMIT_SECONDS;
 
   const [uid, setUid] = useState<string>(stage.sampleUid);
   const [sourceRecord, setSourceRecord] = useState<SourceRecord>(() => generateSyntheticRecord(stage.sampleUid));
@@ -68,14 +78,18 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
   const [tableRows, setTableRows] = useState<Record<string, any>[]>([]);
   const [marksheetValues, setMarksheetValues] = useState<Record<string, any>>({});
 
-  const [timerSeconds, setTimerSeconds] = useState<number>(0);
+  const [timerElapsedSeconds, setTimerElapsedSeconds] = useState<number>(0);
   const [showInstructions, setShowInstructions] = useState<boolean>(true);
   const [showReviewModal, setShowReviewModal] = useState<boolean>(false);
   const [validationSummary, setValidationSummary] = useState<StageValidationSummary | null>(null);
+  const [stageTransitionData, setStageTransitionData] = useState<{ completedStage: number; nextStage: number } | null>(null);
 
   const [pendingDraft, setPendingDraft] = useState<StageDraft | null>(null);
   const [validationMode, setValidationMode] = useState<ValidationMode>('NORMAL');
   const [manualSaveNotification, setManualSaveNotification] = useState<boolean>(false);
+
+  // Mobile Reference Drawer toggle
+  const [isMobileReferenceOpen, setIsMobileReferenceOpen] = useState<boolean>(false);
 
   // Initialize or check for autosave draft
   useEffect(() => {
@@ -87,20 +101,20 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
     }
   }, [stage.levelNumber, stage.stageNumber]);
 
-  // Timer loop
+  // Timer loop - counts upward (Time Elapsed)
   useEffect(() => {
-    if (showInstructions || validationSummary) return;
+    if (showInstructions || validationSummary || stageTransitionData) return;
     const interval = setInterval(() => {
-      setTimerSeconds(prev => {
+      setTimerElapsedSeconds(prev => {
         const next = prev + 1;
-        if (onTimerTick) onTimerTick(next);
+        if (onTimerTick) onTimerTick(next, timeLimitSeconds);
         return next;
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [showInstructions, validationSummary]);
+  }, [showInstructions, validationSummary, stageTransitionData, timeLimitSeconds]);
 
-  // Periodic autosave every 5 seconds
+  // Periodic autosave every 3 seconds
   useEffect(() => {
     if (showInstructions || validationSummary || !sourceRecord) return;
     const timeout = setTimeout(() => {
@@ -111,13 +125,13 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
         formValues,
         tableRows,
         marksheetValues,
-        timeSeconds: timerSeconds,
+        timeSeconds: timerElapsedSeconds,
         isGuidedMode,
         savedAt: new Date().toISOString()
       });
     }, 3000);
     return () => clearTimeout(timeout);
-  }, [formValues, tableRows, marksheetValues, timerSeconds, uid, stage, isGuidedMode]);
+  }, [formValues, tableRows, marksheetValues, timerElapsedSeconds, uid, stage, isGuidedMode]);
 
   // Reset helper
   const resetToNewStage = (st: StageConfig, targetUid?: string) => {
@@ -160,8 +174,9 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
       setMarksheetValues({});
     }
 
-    setTimerSeconds(0);
+    setTimerElapsedSeconds(0);
     setValidationSummary(null);
+    setStageTransitionData(null);
   };
 
   // Draft Resume / Discard handlers
@@ -172,7 +187,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
     setFormValues(pendingDraft.formValues || {});
     setTableRows(pendingDraft.tableRows || []);
     setMarksheetValues(pendingDraft.marksheetValues || {});
-    setTimerSeconds(pendingDraft.timeSeconds || 0);
+    setTimerElapsedSeconds(pendingDraft.timeSeconds || 0);
     setPendingDraft(null);
     setShowInstructions(false);
   };
@@ -188,7 +203,6 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
     setUid(newUid);
     const newRecord = generateSyntheticRecord(newUid);
     setSourceRecord(newRecord);
-    // Clear draft for this stage on explicit new UID
     clearStageDraft(stage.levelNumber, stage.stageNumber);
     resetToNewStage(stage, newUid);
   };
@@ -202,7 +216,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
       formValues,
       tableRows,
       marksheetValues,
-      timeSeconds: timerSeconds,
+      timeSeconds: timerElapsedSeconds,
       isGuidedMode,
       savedAt: new Date().toISOString()
     });
@@ -211,8 +225,8 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
     setTimeout(() => setManualSaveNotification(false), 2000);
   };
 
-  // Final Submit Handler
-  const handleFinalSubmit = () => {
+  // Stage Advance Handler (either Next Stage or Final Submit)
+  const handleAdvance = () => {
     setShowReviewModal(false);
 
     const summary = evaluateStageSubmission(
@@ -221,17 +235,14 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
       formValues,
       tableRows,
       marksheetValues,
-      timerSeconds,
+      timerElapsedSeconds,
       isGuidedMode,
-      validationMode
+      validationMode,
+      studentProgress.studentIdentity,
+      timeLimitSeconds
     );
 
-    // Check achievement unlock
-    const { newAchievements, newBatchTitle } = checkUnlockedAchievements(summary, studentProgress);
-    summary.unlockedAchievements = newAchievements;
-    if (newBatchTitle) summary.newBatchUnlocked = newBatchTitle;
-
-    // Update student progress
+    // Save attempt record
     const stageKey = `L${stage.levelNumber}-S${stage.stageNumber}`;
     const prevStageRecord = studentProgress.completedStages[stageKey];
 
@@ -249,33 +260,59 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
           completedAt: new Date().toISOString()
         }
       },
-      unlockedAchievements: [
-        ...studentProgress.unlockedAchievements,
-        ...newAchievements.map(a => a.id)
-      ],
-      currentBatchTitle: newBatchTitle || studentProgress.currentBatchTitle,
       recentAttempts: [summary, ...studentProgress.recentAttempts.slice(0, 19)]
     };
 
-    setStudentProgress(updatedProgress);
-    saveStudentProgress(updatedProgress);
-
-    // Clear saved draft on completion
     clearStageDraft(stage.levelNumber, stage.stageNumber);
 
-    // Trigger EXP floating badge animation if earned
-    if (summary.expEarned > 0) {
-      onExpAwarded(summary.expEarned);
-    }
+    if (!isFinalStage) {
+      // Intermediate stage: save progress and show brief transition
+      setStudentProgress(updatedProgress);
+      saveStudentProgress(updatedProgress);
+      setStageTransitionData({
+        completedStage: stage.stageNumber,
+        nextStage: stage.stageNumber + 1
+      });
+    } else {
+      // Final stage of the level: check achievements and show full ResultScreen
+      const { newAchievements, newBatchTitle } = checkUnlockedAchievements(summary, updatedProgress);
+      summary.unlockedAchievements = newAchievements;
+      if (newBatchTitle) summary.newBatchUnlocked = newBatchTitle;
 
-    setValidationSummary(summary);
+      const finalProgress: StudentProgress = {
+        ...updatedProgress,
+        unlockedAchievements: [
+          ...updatedProgress.unlockedAchievements,
+          ...newAchievements.map(a => a.id)
+        ],
+        currentBatchTitle: newBatchTitle || updatedProgress.currentBatchTitle
+      };
+
+      setStudentProgress(finalProgress);
+      saveStudentProgress(finalProgress);
+
+      if (summary.expEarned > 0) {
+        onExpAwarded(summary.expEarned);
+      }
+
+      setValidationSummary(summary);
+    }
   };
 
-  // Check next stage existence
+  const handleContinueAfterTransition = () => {
+    if (stageTransitionData) {
+      const nextStg = stageTransitionData.nextStage;
+      setStageTransitionData(null);
+      onStageChange(stage.levelNumber, nextStg);
+      setShowInstructions(false);
+    }
+  };
+
+  // Next Stage / Next Level helper from ResultScreen
   const currentStageIndex = STAGES.findIndex(s => s.levelNumber === stage.levelNumber && s.stageNumber === stage.stageNumber);
   const nextStageConfig = STAGES[currentStageIndex + 1];
 
-  const handleNextStage = () => {
+  const handleNextStageFromResult = () => {
     if (nextStageConfig) {
       onStageChange(nextStageConfig.levelNumber, nextStageConfig.stageNumber);
       setShowInstructions(true);
@@ -317,24 +354,35 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
         />
       )}
 
-      {/* Review Modal */}
+      {/* Review Modal with Full Form Data */}
       {showReviewModal && (
         <ReviewModal
           stage={stage}
           formValues={formValues}
           tableRows={tableRows}
           marksheetValues={marksheetValues}
+          isFinalStage={isFinalStage}
           onClose={() => setShowReviewModal(false)}
-          onFinalSubmit={handleFinalSubmit}
+          onConfirmAdvance={handleAdvance}
         />
       )}
 
-      {/* If result is ready, display Result Screen */}
+      {/* Intermediate Stage Transition Modal */}
+      {stageTransitionData && (
+        <StageTransitionModal
+          completedLevelNumber={stage.levelNumber}
+          completedStageNumber={stageTransitionData.completedStage}
+          nextStageNumber={stageTransitionData.nextStage}
+          onContinue={handleContinueAfterTransition}
+        />
+      )}
+
+      {/* Result Screen (Final Stage) */}
       {validationSummary ? (
         <ResultScreen
           summary={validationSummary}
           stage={stage}
-          onNextStage={nextStageConfig ? handleNextStage : undefined}
+          onNextStage={nextStageConfig ? handleNextStageFromResult : undefined}
           onRetry={() => resetToNewStage(stage)}
           hasNextStage={!!nextStageConfig}
         />
@@ -347,14 +395,46 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
             sampleUid={stage.sampleUid}
           />
 
-          {/* Workbench Split View (Source reference on Left, Data-Entry form on Right) */}
+          {/* Mobile Reference Floating / Top Access Button */}
+          <div className="mobile-reference-banner">
+            <button
+              type="button"
+              className="btn btn-primary btn-sm mobile-ref-btn"
+              onClick={() => setIsMobileReferenceOpen(true)}
+            >
+              <FileText size={15} />
+              <span>REFERENCE DATA (UID: {uid})</span>
+              <ChevronRight size={15} />
+            </button>
+            <span className="mobile-ref-hint">
+              Tap to view source dossier
+            </span>
+          </div>
+
+          {/* Workbench Layout (Desktop: Side-by-Side; Mobile: Form Primary, Reference in Drawer) */}
           <div className="workbench-split">
-            {/* Left: Authentic Source Dossier Card */}
-            <div>
+            {/* Desktop Left: Sticky Non-Selectable Source Dossier */}
+            <div className="desktop-source-pane">
               <SourceDocumentViewer sourceRecord={sourceRecord} />
             </div>
 
-            {/* Right: Destination Form Panel */}
+            {/* Mobile Reference Drawer Modal */}
+            {isMobileReferenceOpen && (
+              <div className="modal-overlay" onClick={() => setIsMobileReferenceOpen(false)}>
+                <div 
+                  className="modal-card mobile-drawer-card" 
+                  onClick={e => e.stopPropagation()}
+                >
+                  <SourceDocumentViewer 
+                    sourceRecord={sourceRecord} 
+                    isMobileDrawer={true}
+                    onClose={() => setIsMobileReferenceOpen(false)}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Right / Primary: Destination Form Panel */}
             <div className="form-panel">
               <div className="form-header-bar">
                 <div>
@@ -422,28 +502,32 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
 
               {/* Tabular Grid (if configured for this stage) */}
               {stage.tableSchema && (
-                <TabularEntryGrid
-                  columns={stage.tableSchema.columns}
-                  rows={tableRows}
-                  onChange={setTableRows}
-                  sourceRows={sourceRecord.tableRows}
-                  isGuidedMode={isGuidedMode}
-                  tableName={stage.tableSchema.tableName}
-                />
+                <div className="table-responsive-wrapper">
+                  <TabularEntryGrid
+                    columns={stage.tableSchema.columns}
+                    rows={tableRows}
+                    onChange={setTableRows}
+                    sourceRows={sourceRecord.tableRows}
+                    isGuidedMode={isGuidedMode}
+                    tableName={stage.tableSchema.tableName}
+                  />
+                </div>
               )}
 
               {/* Marksheet Grid (if configured for this stage) */}
               {stage.marksheetSchema && (
-                <MarksheetGrid
-                  schema={stage.marksheetSchema}
-                  marksheetValues={marksheetValues}
-                  onChange={setMarksheetValues}
-                  sourceRecord={sourceRecord}
-                  isGuidedMode={isGuidedMode}
-                />
+                <div className="table-responsive-wrapper">
+                  <MarksheetGrid
+                    schema={stage.marksheetSchema}
+                    marksheetValues={marksheetValues}
+                    onChange={setMarksheetValues}
+                    sourceRecord={sourceRecord}
+                    isGuidedMode={isGuidedMode}
+                  />
+                </div>
               )}
 
-              {/* Bottom Action Controls */}
+              {/* Bottom Action Controls: REVIEW + NEXT STAGE or FINAL SUBMIT */}
               <div className="bottom-action-bar">
                 <button
                   type="button"
@@ -464,14 +548,25 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
                     <span>REVIEW</span>
                   </button>
 
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={handleFinalSubmit}
-                  >
-                    <Send size={15} />
-                    <span>FINAL SUBMIT</span>
-                  </button>
+                  {isFinalStage ? (
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={handleAdvance}
+                    >
+                      <Send size={15} />
+                      <span>FINAL SUBMIT</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={handleAdvance}
+                    >
+                      <span>NEXT STAGE</span>
+                      <ArrowRight size={15} />
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
