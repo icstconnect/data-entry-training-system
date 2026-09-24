@@ -15,14 +15,36 @@ import { TeacherPasswordModal } from './components/common/TeacherPasswordModal';
 import { ClearDataConfirmModal } from './components/common/ClearDataConfirmModal';
 import { StudentSetupModal } from './components/student/StudentSetupModal';
 import { OfflineNotice } from './components/common/OfflineNotice';
-
 import { LandingPage } from './components/landing/LandingPage';
-import { PracticeWorkbench } from './components/practice/PracticeWorkbench';
-import { StudentDashboard } from './components/student/StudentDashboard';
-import { TeacherDashboard } from './components/teacher/TeacherDashboard';
-import { ShowcasePage } from './components/showcase/ShowcasePage';
-import { ExcelDashboard } from './components/excel/ExcelDashboard';
-import { ExcelWorkbench } from './components/excel/ExcelWorkbench';
+
+// Lazy-loaded routes for lightning-fast initial page load
+const PracticeWorkbench = React.lazy(() => import('./components/practice/PracticeWorkbench').then(m => ({ default: m.PracticeWorkbench })));
+const StudentDashboard = React.lazy(() => import('./components/student/StudentDashboard').then(m => ({ default: m.StudentDashboard })));
+const TeacherDashboard = React.lazy(() => import('./components/teacher/TeacherDashboard').then(m => ({ default: m.TeacherDashboard })));
+const ShowcasePage = React.lazy(() => import('./components/showcase/ShowcasePage').then(m => ({ default: m.ShowcasePage })));
+const ExcelDashboard = React.lazy(() => import('./components/excel/ExcelDashboard').then(m => ({ default: m.ExcelDashboard })));
+const ExcelWorkbench = React.lazy(() => import('./components/excel/ExcelWorkbench').then(m => ({ default: m.ExcelWorkbench })));
+
+// Inline lightweight view loader
+const ViewLoader: React.FC = () => (
+  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '380px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+      <div 
+        style={{ 
+          width: '30px', 
+          height: '30px', 
+          border: '3px solid var(--border-medium)', 
+          borderTopColor: '#1c6aa7', 
+          borderRadius: '50%', 
+          animation: 'spin 0.75s linear infinite' 
+        }} 
+      />
+      <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.3px' }}>
+        Loading Lab Engine...
+      </span>
+    </div>
+  </div>
+);
 
 export function App() {
   const [currentRole, setCurrentRole] = useState<UserRole>('student');
@@ -205,61 +227,63 @@ export function App() {
           />
         )}
 
-        {activeView === 'practice' && (
-          <PracticeWorkbench
-            currentLevel={currentLevel}
-            currentStage={currentStage}
-            onStageChange={(lvl, stg) => {
-              setCurrentLevel(lvl);
-              setCurrentStage(stg);
-            }}
-            studentProgress={studentProgress}
-            setStudentProgress={setStudentProgress}
-            isGuidedMode={isGuidedMode}
-            onExpAwarded={handleExpAwarded}
-            onTimerTick={(elapsed, limit) => {
-              setTimerElapsedSeconds(elapsed);
-              setTimerLimitSeconds(limit);
-            }}
-          />
-        )}
+        <React.Suspense fallback={<ViewLoader />}>
+          {activeView === 'practice' && (
+            <PracticeWorkbench
+              currentLevel={currentLevel}
+              currentStage={currentStage}
+              onStageChange={(lvl, stg) => {
+                setCurrentLevel(lvl);
+                setCurrentStage(stg);
+              }}
+              studentProgress={studentProgress}
+              setStudentProgress={setStudentProgress}
+              isGuidedMode={isGuidedMode}
+              onExpAwarded={handleExpAwarded}
+              onTimerTick={(elapsed, limit) => {
+                setTimerElapsedSeconds(elapsed);
+                setTimerLimitSeconds(limit);
+              }}
+            />
+          )}
 
-        {activeView === 'student-dashboard' && (
-          <StudentDashboard
-            progress={studentProgress}
-            onSelectStage={handleSelectStage}
-          />
-        )}
+          {activeView === 'student-dashboard' && (
+            <StudentDashboard
+              progress={studentProgress}
+              onSelectStage={handleSelectStage}
+            />
+          )}
 
-        {activeView === 'teacher-dashboard' && (
-          <TeacherDashboard
-            onLaunchTest={handleSelectStage}
-            studentProgress={studentProgress}
-          />
-        )}
+          {activeView === 'teacher-dashboard' && (
+            <TeacherDashboard
+              onLaunchTest={handleSelectStage}
+              studentProgress={studentProgress}
+            />
+          )}
 
-        {activeView === 'showcase' && (
-          <ShowcasePage
-            onStartPractice={() => handleViewChange('practice')}
-          />
-        )}
+          {activeView === 'showcase' && (
+            <ShowcasePage
+              onStartPractice={() => handleViewChange('practice')}
+            />
+          )}
 
-        {activeView === 'excel' && excelLevel === null && (
-          <ExcelDashboard
-            onSelectLevel={(lvl) => setExcelLevel(lvl)}
-            studentProgress={studentProgress}
-          />
-        )}
+          {activeView === 'excel' && excelLevel === null && (
+            <ExcelDashboard
+              onSelectLevel={(lvl) => setExcelLevel(lvl)}
+              studentProgress={studentProgress}
+            />
+          )}
 
-        {activeView === 'excel' && excelLevel !== null && (
-          <ExcelWorkbench
-            levelNumber={excelLevel}
-            onBackToDashboard={() => setExcelLevel(null)}
-            onSelectLevel={(lvl) => setExcelLevel(lvl)}
-            studentProgress={studentProgress}
-            onExpAwarded={handleExpAwarded}
-          />
-        )}
+          {activeView === 'excel' && excelLevel !== null && (
+            <ExcelWorkbench
+              levelNumber={excelLevel}
+              onBackToDashboard={() => setExcelLevel(null)}
+              onSelectLevel={(lvl) => setExcelLevel(lvl)}
+              studentProgress={studentProgress}
+              onExpAwarded={handleExpAwarded}
+            />
+          )}
+        </React.Suspense>
       </main>
 
       {/* Brand Footer */}
