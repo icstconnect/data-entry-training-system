@@ -80,7 +80,7 @@ export const STAGES: StageConfig[] = [
     fields: [
       { id: 'studentName', label: 'Full Student Name', type: 'text', placeholder: 'e.g. Sourav Ghosh', required: true, weight: 1 },
       { id: 'guardianName', label: 'Guardian / Father Name', type: 'text', placeholder: 'e.g. Shri Pranab Ghosh', required: true, weight: 1 },
-      { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', required: true, weight: 1 },
+      { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1 },
       { 
         id: 'gender', 
         label: 'Gender', 
@@ -160,7 +160,7 @@ export const STAGES: StageConfig[] = [
     ],
     fields: [
       { id: 'studentName', label: 'Candidate Full Name', type: 'text', required: true, weight: 1 },
-      { id: 'dob', label: 'Date of Birth', type: 'date', required: true, weight: 1 },
+      { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1 },
       { 
         id: 'gender', 
         label: 'Gender', 
@@ -242,7 +242,7 @@ export const STAGES: StageConfig[] = [
         options: [{ label: 'Bengali', value: 'Bengali' }, { label: 'English', value: 'English' }]
       },
       { id: 'schoolInfo.admissionNumber', label: 'Admission Number', type: 'text', required: true, weight: 1 },
-      { id: 'schoolInfo.admissionDate', label: 'Admission Date', type: 'date', required: true, weight: 1 }
+      { id: 'schoolInfo.admissionDate', label: 'Admission Date (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1 }
     ]
   },
   {
@@ -341,7 +341,7 @@ export const STAGES: StageConfig[] = [
       // Section 1: Identity
       { id: 'studentName', label: 'Full Legal Name', type: 'text', required: true, weight: 1, section: 'Identity Details' },
       { id: 'guardianName', label: 'Father / Guardian Name', type: 'text', required: true, weight: 1, section: 'Identity Details' },
-      { id: 'dob', label: 'Date of Birth', type: 'date', required: true, weight: 1, section: 'Identity Details' },
+      { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1, section: 'Identity Details' },
       { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1, section: 'Identity Details',
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
       },
@@ -462,7 +462,7 @@ export const STAGES: StageConfig[] = [
     fields: [
       { id: 'studentName', label: 'Candidate Name', type: 'text', required: true, weight: 1 },
       { id: 'schoolInfo.admissionNumber', label: 'Enrollment / Admission Serial', type: 'text', required: true, weight: 1.5 },
-      { id: 'schoolInfo.admissionDate', label: 'Date of Admission', type: 'date', required: true, weight: 1 },
+      { id: 'schoolInfo.admissionDate', label: 'Date of Admission (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1 },
       { id: 'schoolInfo.board', label: 'Examination Board', type: 'select', required: true, weight: 1,
         options: [
           { label: 'WBBSE', value: 'WBBSE' },

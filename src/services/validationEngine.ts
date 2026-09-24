@@ -121,7 +121,19 @@ export function validateField(
     }
 
     case 'date': {
-      const dateStr = String(enteredValue).trim();
+      let dateStr = String(enteredValue).trim();
+
+      // Normalize DD-MM-YYYY or DD/MM/YYYY into YYYY-MM-DD
+      const ddmmyyyyMatch = dateStr.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+      if (ddmmyyyyMatch) {
+        const d = ddmmyyyyMatch[1].padStart(2, '0');
+        const m = ddmmyyyyMatch[2].padStart(2, '0');
+        const y = ddmmyyyyMatch[3];
+        dateStr = `${y}-${m}-${d}`;
+      } else if (dateStr.includes('/')) {
+        dateStr = dateStr.replace(/\//g, '-');
+      }
+
       const isoPattern = /^\d{4}-\d{2}-\d{2}$/;
       if (!isoPattern.test(dateStr)) {
         return {
@@ -131,7 +143,7 @@ export function validateField(
           enteredValue,
           status: 'incorrect',
           errorType: 'wrong_date',
-          errorMessage: 'DOB format incorrect (expected YYYY-MM-DD)',
+          errorMessage: 'Date format incorrect (expected YYYY-MM-DD)',
           weight,
           section: field.section
         };

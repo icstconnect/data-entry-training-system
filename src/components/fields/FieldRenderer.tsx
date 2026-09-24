@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FieldDefinition, SourceRecord, ValidationMode } from '../../types';
 import { validateField } from '../../services/validationEngine';
-import { AlertCircle, Check, X, Search } from 'lucide-react';
+import { AlertCircle, Check, X, Search, Calendar } from 'lucide-react';
 
 interface FieldRendererProps {
   field: FieldDefinition;
@@ -68,16 +68,82 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
           />
         );
 
-      case 'date':
+      case 'date': {
+        const datePlaceholder = field.placeholder || 'YYYY-MM-DD';
         return (
-          <input
-            type="date"
-            id={`field-${field.id}`}
-            className={inputClass}
-            value={value ?? ''}
-            onChange={e => onChange(e.target.value)}
-          />
+          <div className="date-input-container">
+            <input
+              type="text"
+              id={`field-${field.id}`}
+              className={`${inputClass} date-text-input`}
+              placeholder={datePlaceholder}
+              value={value ?? ''}
+              maxLength={10}
+              inputMode="numeric"
+              autoComplete="off"
+              onChange={e => {
+                const raw = e.target.value;
+                // If user is deleting/backspacing, allow naturally
+                if (raw.length < (value || '').length) {
+                  onChange(raw);
+                  return;
+                }
+                // Strip characters other than digits, dashes, and slashes
+                const cleaned = raw.replace(/[^\d-/]/g, '');
+                const digits = cleaned.replace(/\D/g, '');
+
+                // If user enters pure digits without separator, auto-format to YYYY-MM-DD
+                if (!cleaned.includes('-') && !cleaned.includes('/')) {
+                  if (digits.length <= 4) {
+                    onChange(digits);
+                  } else if (digits.length <= 6) {
+                    onChange(`${digits.slice(0, 4)}-${digits.slice(4)}`);
+                  } else {
+                    onChange(`${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`);
+                  }
+                } else {
+                  onChange(cleaned);
+                }
+              }}
+              onBlur={() => {
+                if (value) {
+                  const str = String(value).trim();
+                  // Normalize DD-MM-YYYY or DD/MM/YYYY to YYYY-MM-DD
+                  const ddmmyyyy = str.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+                  if (ddmmyyyy) {
+                    const d = ddmmyyyy[1].padStart(2, '0');
+                    const m = ddmmyyyy[2].padStart(2, '0');
+                    const y = ddmmyyyy[3];
+                    onChange(`${y}-${m}-${d}`);
+                  } else if (/^\d{4}\/\d{2}\/\d{2}$/.test(str)) {
+                    onChange(str.replace(/\//g, '-'));
+                  }
+                }
+              }}
+            />
+            {/* Clickable calendar picker trigger button */}
+            <label 
+              htmlFor={`native-date-${field.id}`} 
+              className="date-picker-trigger" 
+              title="Open calendar picker"
+            >
+              <Calendar size={15} color="var(--icst-blue)" />
+              <input
+                type="date"
+                id={`native-date-${field.id}`}
+                tabIndex={-1}
+                className="date-picker-native-hidden"
+                value={/^\d{4}-\d{2}-\d{2}$/.test(value ?? '') ? value : ''}
+                onChange={e => {
+                  if (e.target.value) {
+                    onChange(e.target.value);
+                  }
+                }}
+              />
+            </label>
+          </div>
         );
+      }
 
       case 'number':
       case 'decimal':
