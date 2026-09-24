@@ -1,0 +1,21 @@
+{
+  "short_name": "ICST Data Entry",
+  "name": "ICST Data Entry Lab - Institute of Computer Science and Technology Chowberia",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#f8fafc",
+  "theme_color": "#1872c0",
+  "display": "standalone",
+  "orientation": "portrait"
+}
