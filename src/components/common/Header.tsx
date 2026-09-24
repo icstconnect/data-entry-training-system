@@ -63,9 +63,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="app-header">
+      {/* Primary Global Navigation Header */}
       <div className="header-container">
-        {/* Brand Section with ORIGINAL LOGO */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {/* Brand Section with ORIGINAL LOGO & Student Badge */}
+        <div className="header-brand-cluster">
           <a 
             href="#home" 
             className="brand-section"
@@ -91,9 +92,11 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               className="student-identity-chip"
               onClick={onOpenStudentSetup}
-              title="Click to edit student identity"
+              title={`Trainee: ${studentIdentity.name} (${studentIdentity.generatedRollId}). Click to edit.`}
             >
-              <User size={13} color="var(--icst-blue)" />
+              <span className="student-chip-avatar">
+                <User size={12} color="var(--icst-blue)" />
+              </span>
               <span className="student-name-text">{studentIdentity.name}</span>
               <span className="student-roll-text">{studentIdentity.generatedRollId}</span>
             </button>
@@ -110,50 +113,7 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        {/* Practice Bar (Visible in practice or student dashboard) */}
-        {activeView === 'practice' && (
-          <div className="practice-header-status">
-            <div className="status-badge status-badge-level">
-              L{currentLevel}
-            </div>
-            <div className="status-badge status-badge-stage">
-              Stage {currentStage}
-            </div>
-
-            {/* Time Limit & Time Elapsed Display */}
-            <div className="time-display-box" title={`Configured Limit: ${formatTime(timerLimitSeconds)}`}>
-              <div className="time-item">
-                <span className="time-lbl">LIMIT</span>
-                <span className="time-val">{formatTime(timerLimitSeconds)}</span>
-              </div>
-              <div className="time-separator">|</div>
-              <div className={`time-item ${isOvertime ? 'time-item-over' : ''}`}>
-                <span className="time-lbl">ELAPSED</span>
-                <span className="time-val">{formatTime(timerElapsedSeconds)}</span>
-              </div>
-              {isOvertime && (
-                <div className="time-over-tag" title="Operating past standard time limit">
-                  <AlertTriangle size={11} />
-                  <span>+{formatTime(overtimeSeconds)}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Guided Mode Toggle */}
-            <button
-              type="button"
-              id="guided-mode-toggle"
-              className={`guided-toggle ${isGuidedMode ? 'active' : 'inactive'}`}
-              onClick={() => setIsGuidedMode(!isGuidedMode)}
-              title={isGuidedMode ? 'Guided Mode is ON: Realtime feedback active, 0 EXP awarded' : 'Guided Mode is OFF: Standard assessment mode, normal EXP'}
-            >
-              <Sparkles size={13} color={isGuidedMode ? '#b45309' : '#64748b'} />
-              <span>{isGuidedMode ? 'GUIDED ON' : 'GUIDED OFF'}</span>
-            </button>
-          </div>
-        )}
-
-        {/* Right Nav Actions & Persistent Clear Data */}
+        {/* Right Nav Actions & Controls */}
         <div className="header-nav">
           {/* Persistent EXP Display */}
           <div 
@@ -229,6 +189,58 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Practice Sub-Toolbar Strip (Visible only in practice view) */}
+      {activeView === 'practice' && (
+        <div className="practice-sub-toolbar">
+          <div className="practice-sub-toolbar-container">
+            {/* Left: Level & Stage Indicators */}
+            <div className="practice-sub-left">
+              <span className="status-badge status-badge-level">
+                LEVEL {currentLevel}
+              </span>
+              <span className="status-badge status-badge-stage">
+                Stage {currentStage}
+              </span>
+            </div>
+
+            {/* Center: High-Legibility Time Telemetry Box */}
+            <div className="practice-sub-center">
+              <div className="time-display-box" title={`Configured Limit: ${formatTime(timerLimitSeconds)}`}>
+                <div className="time-item">
+                  <span className="time-lbl">LIMIT</span>
+                  <span className="time-val">{formatTime(timerLimitSeconds)}</span>
+                </div>
+                <div className="time-separator">|</div>
+                <div className={`time-item ${isOvertime ? 'time-item-over' : ''}`}>
+                  <span className="time-lbl">ELAPSED</span>
+                  <span className="time-val">{formatTime(timerElapsedSeconds)}</span>
+                </div>
+                {isOvertime && (
+                  <div className="time-over-tag" title="Operating past standard time limit">
+                    <AlertTriangle size={11} />
+                    <span>+{formatTime(overtimeSeconds)}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right: Guided Mode Toggle Switch */}
+            <div className="practice-sub-right">
+              <button
+                type="button"
+                id="guided-mode-toggle"
+                className={`guided-toggle ${isGuidedMode ? 'active' : 'inactive'}`}
+                onClick={() => setIsGuidedMode(!isGuidedMode)}
+                title={isGuidedMode ? 'Guided Mode is ON: Realtime feedback active, 0 EXP awarded' : 'Guided Mode is OFF: Standard assessment mode, normal EXP'}
+              >
+                <Sparkles size={13} color={isGuidedMode ? '#b45309' : '#64748b'} />
+                <span>{isGuidedMode ? 'GUIDED ON' : 'GUIDED OFF'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Progress Strip in Practice View */}
       {activeView === 'practice' && (

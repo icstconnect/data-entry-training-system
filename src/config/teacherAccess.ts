@@ -6,7 +6,7 @@
  * with a secure server-side authentication endpoint without rewriting Teacher Mode UI.
  */
 
-export const TEACHER_MODE_PASSWORD = "ICST_TEACHER_2026";
+export const TEACHER_MODE_PASSWORD = "ICST";
 
 export interface TeacherAuthResult {
   success: boolean;

@@ -139,11 +139,19 @@ input, select, textarea {
 .header-container {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 8px 16px;
+  padding: 8px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
+  min-height: 56px;
+}
+
+.header-brand-cluster {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
 }
 
 .brand-section {
@@ -156,8 +164,8 @@ input, select, textarea {
 }
 
 .brand-logo-img {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
   display: block;
 }
@@ -168,7 +176,7 @@ input, select, textarea {
 }
 
 .brand-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--icst-charcoal);
   letter-spacing: -0.2px;
@@ -187,7 +195,7 @@ input, select, textarea {
 .student-identity-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: #f8fafc;
   border: 1px solid var(--border-medium);
   padding: 4px 10px;
@@ -196,6 +204,7 @@ input, select, textarea {
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .student-identity-chip:hover {
@@ -203,44 +212,89 @@ input, select, textarea {
   border-color: var(--icst-blue-border);
 }
 
+.student-chip-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+}
+
 .student-name-text {
   font-weight: 700;
   color: var(--text-primary);
-  max-width: 140px;
+  max-width: 170px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .student-roll-text {
   font-family: var(--font-mono);
   color: var(--icst-blue-dark);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 11px;
+  background: var(--icst-blue-soft);
+  border: 1px solid var(--icst-blue-border);
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
 }
 
 .student-identity-chip-setup {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   background: #fffbeb;
   border: 1px dashed #d97706;
   color: #b45309;
-  padding: 3px 8px;
-  border-radius: 14px;
+  padding: 4px 10px;
+  border-radius: 16px;
   font-size: 11px;
   font-weight: 700;
+  cursor: pointer;
 }
 
-/* Practice Bar in Header */
-.practice-header-status {
+/* Dedicated Practice Sub-Toolbar Strip */
+.practice-sub-toolbar {
+  background: #f8fafc;
+  border-top: 1px solid #edf2f7;
+  border-bottom: 1px solid var(--border-light);
+  padding: 6px 20px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.practice-sub-toolbar-container {
+  max-width: 1440px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: var(--bg-subtle);
-  padding: 4px 10px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
-  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.practice-sub-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.practice-sub-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.practice-sub-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .status-badge {
@@ -253,36 +307,44 @@ input, select, textarea {
 }
 
 .status-badge-level {
-  background: var(--icst-blue-soft);
-  color: var(--icst-blue-dark);
-  padding: 2px 7px;
+  background: var(--icst-blue);
+  color: #ffffff;
+  padding: 2px 8px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--icst-blue-border);
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
 }
 
 .status-badge-stage {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: #ffffff;
+  border: 1px solid var(--border-medium);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
 }
 
 /* Time Display Box (Time Limit & Time Elapsed) */
 .time-display-box {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: #ffffff;
   border: 1px solid var(--border-medium);
-  border-radius: var(--radius-sm);
-  padding: 2px 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+  padding: 3px 12px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 .time-item {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
 
 .time-item-over .time-val {
@@ -292,17 +354,20 @@ input, select, textarea {
 
 .time-lbl {
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 10px;
+  letter-spacing: 0.5px;
 }
 
 .time-val {
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
+  font-size: 12px;
 }
 
 .time-separator {
   color: #cbd5e1;
+  font-weight: 300;
 }
 
 .time-over-tag {
@@ -310,7 +375,7 @@ input, select, textarea {
   color: #b91c1c;
   border: 1px solid #fca5a5;
   border-radius: 4px;
-  padding: 1px 4px;
+  padding: 1px 5px;
   font-size: 10px;
   font-weight: 800;
   display: flex;
@@ -326,7 +391,7 @@ input, select, textarea {
   gap: 6px;
   background: #fef3c7;
   border: 1px solid #fde68a;
-  padding: 3px 10px;
+  padding: 4px 10px;
   border-radius: 20px;
   color: #92400e;
   font-weight: 700;
@@ -358,13 +423,13 @@ input, select, textarea {
 
 /* Guided Mode Switch */
 .guided-toggle {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 11px;
   font-weight: 700;
-  padding: 3px 8px;
-  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
   user-select: none;
@@ -378,7 +443,7 @@ input, select, textarea {
 }
 
 .guided-toggle.inactive {
-  background: var(--bg-surface);
+  background: #ffffff;
   border: 1px solid var(--border-medium);
   color: var(--text-muted);
 }
@@ -1121,25 +1186,51 @@ input, select, textarea {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .header-container {
-    flex-wrap: wrap;
-    gap: 6px;
+    padding: 6px 12px;
+    gap: 8px;
   }
   
-  .practice-header-status {
-    width: 100%;
-    justify-content: space-between;
-    padding: 4px 6px;
-    gap: 6px;
+  .brand-title {
+    font-size: 13px;
   }
-  
+
+  .brand-logo-img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .student-name-text {
+    max-width: 110px;
+  }
+
+  .practice-sub-toolbar {
+    padding: 6px 12px;
+  }
+
+  .practice-sub-toolbar-container {
+    gap: 8px;
+  }
+
   .time-display-box {
-    flex: 1;
+    padding: 2px 8px;
+    font-size: 11px;
+    gap: 6px;
+  }
+
+  .keyboard-shortcuts-btn {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .practice-sub-toolbar-container {
+    flex-wrap: wrap;
     justify-content: center;
   }
-  
-  .keyboard-shortcuts-btn {
+
+  .student-roll-text {
     display: none;
   }
 }
