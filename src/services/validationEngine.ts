@@ -248,8 +248,99 @@ export function validateField(
       };
     }
 
+    case 'name-with-prefix': {
+      // Normalize salutation dots: e.g. "dr." -> "dr", "mr." -> "mr"
+      const normEntered = normalizeString(enteredValue, mode).replace(/\b(dr|mr|mrs|md|prof|smt)\./gi, '$1');
+      const normSource = normalizeString(sourceValue, mode).replace(/\b(dr|mr|mrs|md|prof|smt)\./gi, '$1');
+
+      if (normEntered !== normSource) {
+        return {
+          fieldId: field.id,
+          label: field.label,
+          sourceValue,
+          enteredValue,
+          status: 'incorrect',
+          errorType: 'wrong_text',
+          errorMessage: 'Name does not match source record (check prefix and spelling)',
+          weight,
+          section: field.section
+        };
+      }
+      return {
+        fieldId: field.id,
+        label: field.label,
+        sourceValue,
+        enteredValue,
+        status: 'correct',
+        weight,
+        section: field.section
+      };
+    }
+
     default: {
-      // Text, email, tel, structured-id
+      // 1. Aadhaar Card Identification: ignore spaces and hyphens
+      const isAadhaarField = field.id.toLowerCase().includes('aadhaar') || 
+                             field.label.toLowerCase().includes('aadhaar');
+
+      if (isAadhaarField) {
+        const cleanEntered = String(enteredValue ?? '').replace(/[\s-]+/g, '').trim();
+        const cleanSource = String(sourceValue ?? '').replace(/[\s-]+/g, '').trim();
+
+        if (cleanEntered !== cleanSource) {
+          return {
+            fieldId: field.id,
+            label: field.label,
+            sourceValue,
+            enteredValue,
+            status: 'incorrect',
+            errorType: 'wrong_text',
+            errorMessage: 'Aadhaar number does not match source record (12 digits)',
+            weight,
+            section: field.section
+          };
+        }
+        return {
+          fieldId: field.id,
+          label: field.label,
+          sourceValue,
+          enteredValue,
+          status: 'correct',
+          weight,
+          section: field.section
+        };
+      }
+
+      // 2. Guardian Name: Normalize prefix dots
+      const isGuardianField = field.id.toLowerCase().includes('guardian');
+      if (isGuardianField) {
+        const normEntered = normalizeString(enteredValue, mode).replace(/\b(dr|mr|mrs|md|prof|smt)\./gi, '$1');
+        const normSource = normalizeString(sourceValue, mode).replace(/\b(dr|mr|mrs|md|prof|smt)\./gi, '$1');
+
+        if (normEntered !== normSource) {
+          return {
+            fieldId: field.id,
+            label: field.label,
+            sourceValue,
+            enteredValue,
+            status: 'incorrect',
+            errorType: 'wrong_text',
+            errorMessage: 'Guardian name does not match source record (check prefix and spelling)',
+            weight,
+            section: field.section
+          };
+        }
+        return {
+          fieldId: field.id,
+          label: field.label,
+          sourceValue,
+          enteredValue,
+          status: 'correct',
+          weight,
+          section: field.section
+        };
+      }
+
+      // 3. Standard Text, email, tel, structured-id
       const normEntered = normalizeString(enteredValue, mode);
       const normSource = normalizeString(sourceValue, mode);
 

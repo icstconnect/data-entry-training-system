@@ -875,6 +875,31 @@ input, select, textarea {
   pointer-events: auto;
 }
 
+/* Name with Prefix Compound Control */
+.name-prefix-control-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.name-prefix-select {
+  width: 95px !important;
+  flex-shrink: 0;
+  font-weight: 600;
+  color: var(--text-primary);
+  background-color: #f8fafc;
+  cursor: pointer;
+}
+
+.name-prefix-select:focus {
+  background-color: #ffffff;
+}
+
+.name-body-input {
+  flex: 1;
+}
+
 .field-help {
   font-size: 11px;
   color: var(--text-muted);

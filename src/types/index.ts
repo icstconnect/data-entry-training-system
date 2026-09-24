@@ -20,7 +20,8 @@ export type FieldType =
   | 'checkbox-group'
   | 'smart-chips'
   | 'cascading-select'
-  | 'structured-id';
+  | 'structured-id'
+  | 'name-with-prefix';
 
 export interface SelectOption {
   label: string;

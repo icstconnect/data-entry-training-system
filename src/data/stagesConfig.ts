@@ -79,7 +79,7 @@ export const STAGES: StageConfig[] = [
     ],
     fields: [
       { id: 'studentName', label: 'Full Student Name', type: 'text', placeholder: 'e.g. Sourav Ghosh', required: true, weight: 1 },
-      { id: 'guardianName', label: 'Guardian / Father Name', type: 'text', placeholder: 'e.g. Shri Pranab Ghosh', required: true, weight: 1 },
+      { id: 'guardianName', label: 'Guardian / Father Name', type: 'name-with-prefix', placeholder: 'First & Last Name (e.g. Tanmay Sen)', required: true, weight: 1 },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1 },
       { 
         id: 'gender', 
@@ -154,7 +154,7 @@ export const STAGES: StageConfig[] = [
     description: 'Enter structured identification data (Aadhaar number format), social category, nationality, and mother tongue.',
     instructions: [
       'Input the UID to fetch student identity credentials.',
-      'Aadhaar number must follow the standard 4-4-4 digit spacing pattern (e.g. 1234 5678 9012).',
+      'Aadhaar number: enter 12 digits (spaces are optional).',
       'Select matching Category from the dropdown options.',
       'Check nationality and mother tongue against the source record.'
     ],
@@ -185,7 +185,7 @@ export const STAGES: StageConfig[] = [
           { label: 'EWS', value: 'EWS' }
         ]
       },
-      { id: 'aadhaarNumber', label: 'Aadhaar Identification Number', type: 'text', placeholder: 'XXXX XXXX XXXX', required: true, weight: 2 },
+      { id: 'aadhaarNumber', label: 'Aadhaar Identification Number', type: 'text', placeholder: '12-digit number (e.g. 766255747683)', required: true, weight: 2 },
       { id: 'nationality', label: 'Nationality', type: 'text', defaultValue: 'Indian', required: true, weight: 1 },
       { id: 'motherTongue', label: 'Mother Tongue', type: 'text', defaultValue: 'Bengali', required: true, weight: 1 }
     ]
@@ -340,7 +340,7 @@ export const STAGES: StageConfig[] = [
     fields: [
       // Section 1: Identity
       { id: 'studentName', label: 'Full Legal Name', type: 'text', required: true, weight: 1, section: 'Identity Details' },
-      { id: 'guardianName', label: 'Father / Guardian Name', type: 'text', required: true, weight: 1, section: 'Identity Details' },
+      { id: 'guardianName', label: 'Father / Guardian Name', type: 'name-with-prefix', placeholder: 'First & Last Name', required: true, weight: 1, section: 'Identity Details' },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1, section: 'Identity Details' },
       { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1, section: 'Identity Details',
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
@@ -429,7 +429,7 @@ export const STAGES: StageConfig[] = [
       { id: 'academic.rollNumber', label: 'Admit Card Roll Number', type: 'text', required: true, weight: 2 },
       { id: 'academic.examCenterCode', label: 'Allocated Examination Center Code', type: 'text', required: true, weight: 1.5 },
       { id: 'studentName', label: 'Student Legal Name', type: 'text', required: true, weight: 1 },
-      { id: 'guardianName', label: 'Father / Guardian Name', type: 'text', required: true, weight: 1 },
+      { id: 'guardianName', label: 'Father / Guardian Name', type: 'name-with-prefix', placeholder: 'First & Last Name', required: true, weight: 1 },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', required: true, weight: 1 },
       { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1,
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
@@ -573,14 +573,14 @@ export const STAGES: StageConfig[] = [
     ],
     fields: [
       { id: 'studentName', label: 'Student Full Name', type: 'text', required: true, weight: 2 },
-      { id: 'guardianName', label: 'Guardian Full Name', type: 'text', required: true, weight: 2 },
+      { id: 'guardianName', label: 'Guardian Full Name', type: 'name-with-prefix', placeholder: 'First & Last Name', required: true, weight: 2 },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', required: true, weight: 2 },
       { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1,
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
       },
       { id: 'phone', label: '10-Digit Mobile', type: 'tel', required: true, weight: 2 },
       { id: 'email', label: 'Email ID', type: 'email', required: true, weight: 2 },
-      { id: 'aadhaarNumber', label: 'Aadhaar Identification', type: 'text', required: true, weight: 3 },
+      { id: 'aadhaarNumber', label: 'Aadhaar Identification', type: 'text', placeholder: '12-digit number (spaces optional)', required: true, weight: 3 },
       { id: 'address.premise', label: 'Holding / Premise', type: 'text', required: true, weight: 2 },
       { id: 'address.district', label: 'District', type: 'text', required: true, weight: 2 },
       { id: 'address.pinCode', label: 'PIN Code', type: 'text', required: true, weight: 2 },
@@ -740,14 +740,14 @@ export const STAGES: StageConfig[] = [
     ],
     fields: [
       { id: 'studentName', label: 'Student Legal Name', type: 'text', required: true, weight: 2 },
-      { id: 'guardianName', label: 'Father / Guardian Name', type: 'text', required: true, weight: 2 },
+      { id: 'guardianName', label: 'Father / Guardian Name', type: 'name-with-prefix', placeholder: 'First & Last Name', required: true, weight: 2 },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', required: true, weight: 2 },
       { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1,
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
       },
       { id: 'phone', label: 'Mobile Number', type: 'tel', required: true, weight: 2 },
       { id: 'email', label: 'Official Email', type: 'email', required: true, weight: 2 },
-      { id: 'aadhaarNumber', label: 'Aadhaar Identification', type: 'text', required: true, weight: 3 },
+      { id: 'aadhaarNumber', label: 'Aadhaar Identification', type: 'text', placeholder: '12-digit number (spaces optional)', required: true, weight: 3 },
       { id: 'schoolInfo.schoolName', label: 'School Name', type: 'searchable-select', required: true, weight: 2,
         options: [
           { label: 'Chowberia High School (H.S.)', value: 'Chowberia High School (H.S.)' },

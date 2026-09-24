@@ -376,8 +376,169 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
           />
         );
 
-      default:
-        // text, structured-id
+      case 'name-with-prefix': {
+        const PREFIX_OPTIONS = ['Shri', 'Late', 'Dr.', 'Mr.', 'Mrs.', 'Md.', 'Prof.', 'Smt.'];
+        const valStr = String(value ?? '').trim();
+        let currentPrefix = '';
+        let currentNameBody = valStr;
+
+        for (const p of PREFIX_OPTIONS) {
+          const cleanP = p.replace(/\.$/, '');
+          const prefixRegex = new RegExp(`^(${cleanP}\\.?)\\s+(.*)$`, 'i');
+          const match = valStr.match(prefixRegex);
+          if (match) {
+            const canonical = PREFIX_OPTIONS.find(opt => opt.toLowerCase().replace(/\.$/, '') === match[1].toLowerCase().replace(/\.$/, ''));
+            currentPrefix = canonical || match[1];
+            currentNameBody = match[2];
+            break;
+          }
+        }
+
+        const handlePrefixChange = (newPrefix: string) => {
+          if (!newPrefix) {
+            onChange(currentNameBody);
+          } else {
+            onChange(currentNameBody ? `${newPrefix} ${currentNameBody}` : newPrefix);
+          }
+        };
+
+        const handleNameBodyChange = (newName: string) => {
+          for (const p of PREFIX_OPTIONS) {
+            const cleanP = p.replace(/\.$/, '');
+            const prefixRegex = new RegExp(`^(${cleanP}\\.?)\\s+(.*)$`, 'i');
+            const match = newName.match(prefixRegex);
+            if (match) {
+              const canonical = PREFIX_OPTIONS.find(opt => opt.toLowerCase().replace(/\.$/, '') === match[1].toLowerCase().replace(/\.$/, ''));
+              onChange(`${canonical || match[1]} ${match[2]}`);
+              return;
+            }
+          }
+          if (currentPrefix) {
+            onChange(newName ? `${currentPrefix} ${newName}` : currentPrefix);
+          } else {
+            onChange(newName);
+          }
+        };
+
+        return (
+          <div className="name-prefix-control-wrapper">
+            <select
+              id={`field-${field.id}-prefix`}
+              className={`field-input name-prefix-select ${inputClass.includes('has-error') ? 'has-error' : ''} ${inputClass.includes('is-valid-guided') ? 'is-valid-guided' : ''}`}
+              value={currentPrefix}
+              onChange={e => handlePrefixChange(e.target.value)}
+              title="Select Salutation / Prefix"
+            >
+              <option value="">Prefix</option>
+              {PREFIX_OPTIONS.map(p => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+            <input
+              type="text"
+              id={`field-${field.id}`}
+              className={`${inputClass} name-body-input`}
+              placeholder={field.placeholder || "First & Last Name (e.g. Tanmay Sen)"}
+              value={currentNameBody}
+              onChange={e => handleNameBodyChange(e.target.value)}
+              autoComplete="off"
+            />
+          </div>
+        );
+      }
+
+      default: {
+        // If field is guardianName, automatically render as name-with-prefix
+        if (field.id.toLowerCase().includes('guardian')) {
+          const PREFIX_OPTIONS = ['Shri', 'Late', 'Dr.', 'Mr.', 'Mrs.', 'Md.', 'Prof.', 'Smt.'];
+          const valStr = String(value ?? '').trim();
+          let currentPrefix = '';
+          let currentNameBody = valStr;
+
+          for (const p of PREFIX_OPTIONS) {
+            const cleanP = p.replace(/\.$/, '');
+            const prefixRegex = new RegExp(`^(${cleanP}\\.?)\\s+(.*)$`, 'i');
+            const match = valStr.match(prefixRegex);
+            if (match) {
+              const canonical = PREFIX_OPTIONS.find(opt => opt.toLowerCase().replace(/\.$/, '') === match[1].toLowerCase().replace(/\.$/, ''));
+              currentPrefix = canonical || match[1];
+              currentNameBody = match[2];
+              break;
+            }
+          }
+
+          const handlePrefixChange = (newPrefix: string) => {
+            if (!newPrefix) {
+              onChange(currentNameBody);
+            } else {
+              onChange(currentNameBody ? `${newPrefix} ${currentNameBody}` : newPrefix);
+            }
+          };
+
+          const handleNameBodyChange = (newName: string) => {
+            for (const p of PREFIX_OPTIONS) {
+              const cleanP = p.replace(/\.$/, '');
+              const prefixRegex = new RegExp(`^(${cleanP}\\.?)\\s+(.*)$`, 'i');
+              const match = newName.match(prefixRegex);
+              if (match) {
+                const canonical = PREFIX_OPTIONS.find(opt => opt.toLowerCase().replace(/\.$/, '') === match[1].toLowerCase().replace(/\.$/, ''));
+                onChange(`${canonical || match[1]} ${match[2]}`);
+                return;
+              }
+            }
+            if (currentPrefix) {
+              onChange(newName ? `${currentPrefix} ${newName}` : currentPrefix);
+            } else {
+              onChange(newName);
+            }
+          };
+
+          return (
+            <div className="name-prefix-control-wrapper">
+              <select
+                id={`field-${field.id}-prefix`}
+                className={`field-input name-prefix-select ${inputClass.includes('has-error') ? 'has-error' : ''} ${inputClass.includes('is-valid-guided') ? 'is-valid-guided' : ''}`}
+                value={currentPrefix}
+                onChange={e => handlePrefixChange(e.target.value)}
+                title="Select Salutation / Prefix"
+              >
+                <option value="">Prefix</option>
+                {PREFIX_OPTIONS.map(p => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+              <input
+                type="text"
+                id={`field-${field.id}`}
+                className={`${inputClass} name-body-input`}
+                placeholder={field.placeholder || "First & Last Name (e.g. Tanmay Sen)"}
+                value={currentNameBody}
+                onChange={e => handleNameBodyChange(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+          );
+        }
+
+        // If field is Aadhaar identification, allow direct 12 digits without space
+        const isAadhaar = field.id.toLowerCase().includes('aadhaar') || field.label.toLowerCase().includes('aadhaar');
+        if (isAadhaar) {
+          return (
+            <input
+              type="text"
+              id={`field-${field.id}`}
+              className={inputClass}
+              placeholder={field.placeholder || "12-digit number (spaces optional)"}
+              maxLength={14}
+              inputMode="numeric"
+              value={value ?? ''}
+              onChange={e => onChange(e.target.value)}
+              autoComplete="off"
+            />
+          );
+        }
+
+        // Standard text, structured-id
         return (
           <input
             type="text"
@@ -388,6 +549,7 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
             onChange={e => onChange(e.target.value)}
           />
         );
+      }
     }
   };
 
