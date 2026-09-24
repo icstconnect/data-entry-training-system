@@ -2,32 +2,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Brand Colors inspired by original ICST Chowberia logo */
-  --icst-blue-dark: #0f4c81;
-  --icst-blue: #1872c0;
-  --icst-blue-light: #3895e6;
-  --icst-blue-soft: #ebf5ff;
-  --icst-blue-border: #bfdbfe;
+  /* Brand Colors with warm institutional harmony */
+  --icst-blue-dark: #124d7b;
+  --icst-blue: #1c6aa7;
+  --icst-blue-light: #3685c7;
+  --icst-blue-soft: #edf4fa;
+  --icst-blue-border: #bfd6ea;
   
-  --icst-charcoal: #23272f;
-  --icst-charcoal-light: #3e4451;
-  --icst-slate: #64748b;
-  --icst-slate-light: #94a3b8;
+  --icst-charcoal: #221e1a;
+  --icst-charcoal-light: #3c352d;
+  --icst-slate: #5e564b;
+  --icst-slate-light: #8c8172;
   
-  --bg-main: #f8fafc;
-  --bg-surface: #ffffff;
-  --bg-card: #ffffff;
-  --bg-subtle: #f1f5f9;
-  --bg-hover: #f8fafc;
+  /* Eye-Care Warm Tone Theme (Eliminating harsh cool blue-white glare) */
+  --bg-main: #f9f6f0;           /* Warm soothing ivory/sand base */
+  --bg-surface: #fffdf9;        /* Warm parchment off-white surface */
+  --bg-card: #fffdf9;           /* Warm soft cards */
+  --bg-subtle: #f2ece0;         /* Warm linen/biscuit tone */
+  --bg-hover: #ebe3d3;          /* Warm hover tone */
   
-  --border-light: #e2e8f0;
-  --border-medium: #cbd5e1;
-  --border-focus: #1872c0;
+  --border-light: #e4ddd0;      /* Soft warm stone border */
+  --border-medium: #d2c8b7;     /* Structured warm border */
+  --border-focus: #1c6aa7;
   
-  --text-primary: #1e293b;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --text-inverse: #ffffff;
+  --text-primary: #1c1915;      /* Deep warm charcoal (sharp contrast, zero cool glare) */
+  --text-secondary: #4d463b;    /* Warm slate-brown */
+  --text-muted: #756c5e;        /* Muted warm earth text */
+  --text-inverse: #fffdf9;
   
   /* Status Colors */
   --success-green: #15803d;
@@ -107,20 +108,20 @@ input, select, textarea {
   font-size: 14px;
 }
 
-/* Scrollbars */
+/* Scrollbars with eye-comfort warm neutral tones */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--bg-subtle);
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--border-medium);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--text-muted);
 }
 
 /* ========================================================
@@ -130,7 +131,7 @@ input, select, textarea {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: #ffffff;
+  background: var(--bg-surface);
   border-bottom: 1px solid var(--border-light);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   width: 100%;
@@ -196,7 +197,7 @@ input, select, textarea {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #f8fafc;
+  background: var(--bg-subtle);
   border: 1px solid var(--border-medium);
   padding: 4px 10px;
   border-radius: 20px;
@@ -219,8 +220,8 @@ input, select, textarea {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
 }
 
 .student-name-text {
@@ -260,8 +261,8 @@ input, select, textarea {
 
 /* Dedicated Practice Sub-Toolbar Strip */
 .practice-sub-toolbar {
-  background: #f8fafc;
-  border-top: 1px solid #edf2f7;
+  background: var(--bg-subtle);
+  border-top: 1px solid var(--border-light);
   border-bottom: 1px solid var(--border-light);
   padding: 6px 20px;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
@@ -320,7 +321,7 @@ input, select, textarea {
   font-size: 12px;
   font-weight: 700;
   color: var(--text-primary);
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid var(--border-medium);
   padding: 2px 8px;
   border-radius: var(--radius-sm);
@@ -331,7 +332,7 @@ input, select, textarea {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid var(--border-medium);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   border-radius: 6px;
@@ -443,7 +444,7 @@ input, select, textarea {
 }
 
 .guided-toggle.inactive {
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid var(--border-medium);
   color: var(--text-muted);
 }
@@ -452,7 +453,7 @@ input, select, textarea {
 .header-progress-strip {
   width: 100%;
   height: 3px;
-  background: #e2e8f0;
+  background: var(--border-light);
 }
 
 .header-progress-fill {
@@ -499,7 +500,7 @@ input, select, textarea {
 .clear-data-btn {
   border-color: #fecaca;
   color: var(--error-red);
-  background: #ffffff;
+  background: var(--bg-surface);
   padding: 4px 8px;
   font-size: 11px;
 }
@@ -533,12 +534,12 @@ input, select, textarea {
 }
 
 .btn-secondary {
-  background: #ffffff;
+  background: var(--bg-surface);
   color: var(--text-primary);
   border: 1px solid var(--border-medium);
 }
 .btn-secondary:hover {
-  background: var(--bg-subtle);
+  background: var(--bg-hover);
   border-color: var(--border-medium);
 }
 
@@ -630,7 +631,7 @@ input, select, textarea {
 
 /* Reference Source Record Card */
 .source-card {
-  background: #ffffff;
+  background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
@@ -672,7 +673,7 @@ input, select, textarea {
   padding: 14px;
   max-height: calc(100vh - 160px);
   overflow-y: auto;
-  background: #fbfcfe;
+  background: var(--bg-main);
 }
 
 .source-watermark {
@@ -681,15 +682,15 @@ input, select, textarea {
   gap: 8px;
   padding: 6px 10px;
   margin-bottom: 12px;
-  background: #f1f5f9;
-  border: 1px dashed #cbd5e1;
+  background: var(--bg-subtle);
+  border: 1px dashed var(--border-medium);
   border-radius: var(--radius-md);
   font-size: 11px;
   color: var(--text-muted);
 }
 
 .source-section {
-  background: #ffffff;
+  background: var(--bg-surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
   padding: 12px;
@@ -703,7 +704,7 @@ input, select, textarea {
   letter-spacing: 0.5px;
   color: var(--icst-blue-dark);
   margin-bottom: 8px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
   padding-bottom: 4px;
 }
 
@@ -738,7 +739,7 @@ input, select, textarea {
 
 /* User Destination Form Panel */
 .form-panel {
-  background: #ffffff;
+  background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
@@ -804,7 +805,7 @@ input, select, textarea {
   padding: 8px 12px;
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-md);
-  background: #ffffff;
+  background: var(--bg-surface);
   color: var(--text-primary);
   transition: all 0.15s ease;
   font-size: 14px;
@@ -814,6 +815,12 @@ input, select, textarea {
   outline: none;
   border-color: var(--icst-blue);
   box-shadow: var(--shadow-focus);
+  background-color: var(--bg-surface);
+}
+
+.field-input:disabled {
+  background-color: var(--bg-subtle);
+  color: var(--text-muted);
 }
 
 .field-input.has-error {
@@ -875,7 +882,42 @@ input, select, textarea {
   pointer-events: auto;
 }
 
-/* Name with Prefix Compound Control */
+/* Prefix & Name Form Controls */
+.field-prefix-name-row {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.field-prefix-wrapper {
+  flex: 0 0 115px;
+  max-width: 120px;
+}
+
+.field-name-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.field-prefix-compact {
+  max-width: 120px;
+}
+
+.field-select-prefix,
+select#field-guardianPrefix {
+  width: 100% !important;
+  max-width: 115px !important;
+  padding: 8px 10px !important;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  cursor: pointer;
+}
+
 .name-prefix-control-wrapper {
   display: flex;
   align-items: center;
@@ -888,12 +930,12 @@ input, select, textarea {
   flex-shrink: 0;
   font-weight: 600;
   color: var(--text-primary);
-  background-color: #f8fafc;
+  background-color: var(--bg-surface);
   cursor: pointer;
 }
 
 .name-prefix-select:focus {
-  background-color: #ffffff;
+  background-color: var(--bg-surface);
 }
 
 .name-body-input {
@@ -939,7 +981,7 @@ input, select, textarea {
   padding: 6px 10px;
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-md);
-  background: #ffffff;
+  background: var(--bg-surface);
   min-height: 42px;
 }
 
@@ -985,7 +1027,7 @@ input, select, textarea {
   margin-top: 16px;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
-  background: #ffffff;
+  background: var(--bg-card);
 }
 
 .table-wrapper {
@@ -994,7 +1036,7 @@ input, select, textarea {
   border-radius: var(--radius-md);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  background: #ffffff;
+  background: var(--bg-card);
 }
 
 .data-entry-table {
@@ -1005,7 +1047,7 @@ input, select, textarea {
 }
 
 .data-entry-table th {
-  background: #f1f5f9;
+  background: var(--bg-subtle);
   color: var(--text-secondary);
   font-weight: 600;
   font-size: 12px;
@@ -1034,7 +1076,7 @@ input, select, textarea {
 
 .table-cell-input:focus {
   outline: none;
-  background: #ffffff;
+  background: var(--bg-surface);
   border-color: var(--icst-blue);
   box-shadow: var(--shadow-focus);
 }
@@ -1050,7 +1092,7 @@ input, select, textarea {
   align-items: center;
   justify-content: space-between;
   padding: 14px 18px;
-  background: #ffffff;
+  background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   margin-top: 18px;
@@ -1074,9 +1116,10 @@ input, select, textarea {
 }
 
 .modal-card {
-  background: #ffffff;
+  background: var(--bg-surface);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-light);
   width: 100%;
   max-width: 680px;
   max-height: 90vh;
@@ -1114,7 +1157,7 @@ input, select, textarea {
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
   font-size: 13px;
 }
 
@@ -1152,7 +1195,7 @@ input, select, textarea {
    ======================================================== */
 .app-footer {
   margin-top: auto;
-  background: #ffffff;
+  background: var(--bg-surface);
   border-top: 1px solid var(--border-light);
   padding: 20px 16px;
   color: var(--text-secondary);

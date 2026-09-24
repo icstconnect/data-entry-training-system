@@ -159,11 +159,12 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
           />
         );
 
-      case 'select':
+      case 'select': {
+        const isPrefix = field.id.toLowerCase().includes('prefix');
         return (
           <select
             id={`field-${field.id}`}
-            className={inputClass}
+            className={`${inputClass} ${isPrefix ? 'field-select-prefix' : ''}`}
             value={value ?? ''}
             onChange={e => onChange(e.target.value)}
           >
@@ -174,6 +175,7 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
             ))}
           </select>
         );
+      }
 
       case 'searchable-select': {
         const filteredOptions = (field.options || []).filter(opt =>
@@ -409,8 +411,9 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
     }
   };
 
+  const isPrefix = field.id.toLowerCase().includes('prefix');
   return (
-    <div className={`field-group ${field.type === 'textarea' || field.type === 'smart-chips' ? 'full-width' : ''}`}>
+    <div className={`field-group ${isPrefix ? 'field-prefix-compact' : ''} ${field.type === 'textarea' || field.type === 'smart-chips' ? 'full-width' : ''}`}>
       <label htmlFor={`field-${field.id}`} className="field-label">
         <span>
           {field.label}

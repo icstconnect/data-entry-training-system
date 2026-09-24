@@ -1,7 +1,7 @@
 import { StageConfig, LevelInfo, BatchTitle } from '../types';
 
 export const GUARDIAN_PREFIX_OPTIONS = [
-  { label: 'Select Prefix', value: '' },
+  { label: 'Prefix', value: '' },
   { label: 'Shri', value: 'Shri' },
   { label: 'Late', value: 'Late' },
   { label: 'Dr.', value: 'Dr.' },

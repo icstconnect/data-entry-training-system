@@ -335,6 +335,58 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
     });
   });
 
+  // Render fields with prefix + name pairing for compact UX
+  const renderFieldList = (fields: typeof stage.fields) => {
+    const nodes: React.ReactNode[] = [];
+    for (let i = 0; i < fields.length; i++) {
+      const field = fields[i];
+      const isPrefix = field.id.toLowerCase().includes('prefix');
+      const nextField = fields[i + 1];
+      const isNextName = nextField && (nextField.id.toLowerCase().includes('name') || nextField.id.toLowerCase().includes('guardian'));
+
+      if (isPrefix && isNextName) {
+        nodes.push(
+          <div className="field-prefix-name-row" key={`${field.id}-${nextField.id}-pair`}>
+            <div className="field-prefix-wrapper">
+              <FieldRenderer
+                field={field}
+                value={formValues[field.id]}
+                onChange={val => setFormValues(prev => ({ ...prev, [field.id]: val }))}
+                sourceRecord={sourceRecord}
+                isGuidedMode={isGuidedMode}
+                validationMode={validationMode}
+              />
+            </div>
+            <div className="field-name-wrapper">
+              <FieldRenderer
+                field={nextField}
+                value={formValues[nextField.id]}
+                onChange={val => setFormValues(prev => ({ ...prev, [nextField.id]: val }))}
+                sourceRecord={sourceRecord}
+                isGuidedMode={isGuidedMode}
+                validationMode={validationMode}
+              />
+            </div>
+          </div>
+        );
+        i++; // skip nextField since it's paired with prefix
+      } else {
+        nodes.push(
+          <FieldRenderer
+            key={field.id}
+            field={field}
+            value={formValues[field.id]}
+            onChange={val => setFormValues(prev => ({ ...prev, [field.id]: val }))}
+            sourceRecord={sourceRecord}
+            isGuidedMode={isGuidedMode}
+            validationMode={validationMode}
+          />
+        );
+      }
+    }
+    return nodes;
+  };
+
   return (
     <div className="workbench-container">
       {/* Autosave Draft Prompt Modal */}
@@ -485,17 +537,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
                   )}
 
                   <div className="form-grid">
-                    {section.fields.map(field => (
-                      <FieldRenderer
-                        key={field.id}
-                        field={field}
-                        value={formValues[field.id]}
-                        onChange={val => setFormValues(prev => ({ ...prev, [field.id]: val }))}
-                        sourceRecord={sourceRecord}
-                        isGuidedMode={isGuidedMode}
-                        validationMode={validationMode}
-                      />
-                    ))}
+                    {renderFieldList(section.fields)}
                   </div>
                 </div>
               ))}
