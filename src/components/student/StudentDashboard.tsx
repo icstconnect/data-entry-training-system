@@ -3,6 +3,7 @@ import { StudentProgress, LevelInfo, Achievement, StageValidationSummary } from 
 import { LEVELS_INFO, STAGES } from '../../data/stagesConfig';
 import { ALL_ACHIEVEMENTS } from '../../services/achievementEngine';
 import { AchievementShareModal } from '../common/AchievementShareModal';
+import { TrophyGraphic } from '../common/TrophyGraphic';
 import { 
   Trophy, 
   Award, 
@@ -278,15 +279,59 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
         </div>
       </div>
 
-      {/* Achievements Gallery */}
-      <div style={{ marginTop: '28px' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '14px', color: 'var(--icst-charcoal)' }}>
-          Honor Achievements
-        </h3>
+      {/* Honor Achievements & Operator Badges Gallery */}
+      <div style={{ marginTop: '32px' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '12px',
+          marginBottom: '18px'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Trophy size={22} color="#f59e0b" />
+              <h3 style={{ fontSize: '19px', fontWeight: 800, color: 'var(--icst-charcoal)' }}>
+                Honor Achievements & Operator Badges
+              </h3>
+            </div>
+            <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
+              Milestones certified by Institute of Computer Science and Technology Chowberia
+            </p>
+          </div>
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-medium)',
+            padding: '6px 14px',
+            borderRadius: '20px',
+            boxShadow: 'var(--shadow-sm)'
+          }}>
+            <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' }}>
+              {progress.unlockedAchievements.length} of {ALL_ACHIEVEMENTS.length} Badges Unlocked
+            </span>
+            <div style={{ width: '84px', height: '6px', background: 'var(--bg-subtle)', borderRadius: '3px', overflow: 'hidden' }}>
+              <div 
+                style={{ 
+                  width: `${(progress.unlockedAchievements.length / ALL_ACHIEVEMENTS.length) * 100}%`,
+                  height: '100%',
+                  background: 'linear-gradient(90deg, #f59e0b, #10b981)',
+                  borderRadius: '3px',
+                  transition: 'width 0.4s ease'
+                }} 
+              />
+            </div>
+          </div>
+        </div>
+
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '12px'
+          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+          gap: '16px'
         }}>
           {ALL_ACHIEVEMENTS.map(ach => {
             const isUnlocked = progress.unlockedAchievements.includes(ach.id);
@@ -295,64 +340,150 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
               <div
                 key={ach.id}
                 style={{
-                  background: isUnlocked ? 'var(--bg-surface)' : 'var(--bg-card)',
-                  border: `1px solid ${isUnlocked ? '#f59e0b' : 'var(--border-light)'}`,
-                  borderRadius: 'var(--radius-md)',
-                  padding: '12px 14px',
+                  background: isUnlocked 
+                    ? 'linear-gradient(145deg, var(--bg-surface) 0%, rgba(254, 243, 199, 0.28) 100%)' 
+                    : 'var(--bg-card)',
+                  border: `1.5px solid ${isUnlocked ? '#f59e0b' : 'var(--border-light)'}`,
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '16px',
                   display: 'flex',
-                  alignItems: 'center',
+                  flexDirection: 'column',
                   gap: '12px',
-                  boxShadow: isUnlocked ? '0 2px 8px rgba(245, 158, 11, 0.12)' : 'none',
-                  opacity: isUnlocked ? 1 : 0.75,
-                  transition: 'all 0.15s ease'
+                  boxShadow: isUnlocked 
+                    ? '0 4px 14px rgba(245, 158, 11, 0.12), 0 1px 3px rgba(0,0,0,0.04)' 
+                    : 'var(--shadow-sm)',
+                  opacity: isUnlocked ? 1 : 0.78,
+                  transition: 'all 0.2s ease',
+                  position: 'relative'
                 }}
               >
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  background: isUnlocked ? '#fef3c7' : 'var(--bg-subtle)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: isUnlocked ? '#b45309' : 'var(--text-muted)',
-                  flexShrink: 0
-                }}>
-                  {isUnlocked ? <Trophy size={19} /> : <Lock size={16} />}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>{ach.title}</span>
-                    {isUnlocked && (
-                      <span style={{ fontSize: '10px', background: '#fef3c7', color: '#b45309', padding: '1px 6px', borderRadius: '10px', fontWeight: 800 }}>
+                {/* Header Tag Bar */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                  <span style={{
+                    fontSize: '10px',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.6px',
+                    color: isUnlocked ? '#b45309' : 'var(--text-muted)',
+                    background: isUnlocked ? '#fef3c7' : 'var(--bg-subtle)',
+                    padding: '2px 8px',
+                    borderRadius: '4px'
+                  }}>
+                    LEVEL {ach.badgeLevel} • TASK
+                  </span>
+
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    color: isUnlocked ? '#15803d' : 'var(--text-muted)'
+                  }}>
+                    {isUnlocked ? (
+                      <>
+                        <span style={{
+                          display: 'inline-block',
+                          width: '7px',
+                          height: '7px',
+                          borderRadius: '50%',
+                          background: '#16a34a'
+                        }} />
                         UNLOCKED
-                      </span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock size={11} />
+                        LOCKED
+                      </>
                     )}
+                  </span>
+                </div>
+
+                {/* Main Content with Trophy Graphic */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ flexShrink: 0, position: 'relative' }}>
+                    <TrophyGraphic
+                      achievementId={ach.id}
+                      level={ach.badgeLevel}
+                      isUnlocked={isUnlocked}
+                      size={66}
+                    />
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', lineHeight: 1.3 }}>
-                    {ach.description}
+
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h4 style={{
+                      fontSize: '14px',
+                      fontWeight: 800,
+                      color: isUnlocked ? 'var(--text-primary)' : 'var(--text-secondary)',
+                      marginBottom: '4px',
+                      lineHeight: 1.3
+                    }}>
+                      {ach.title}
+                    </h4>
+                    <p style={{
+                      fontSize: '12px',
+                      color: 'var(--text-muted)',
+                      lineHeight: 1.4,
+                      marginBottom: '6px'
+                    }}>
+                      {ach.description}
+                    </p>
+                    <div style={{
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      color: isUnlocked ? '#d97706' : 'var(--text-muted)',
+                      fontFamily: 'var(--font-mono)'
+                    }}>
+                      +{ach.badgeLevel * 50} EXP REWARD
+                    </div>
                   </div>
                 </div>
 
-                {/* Share Button for Achievement */}
-                <button
-                  type="button"
-                  className={`btn btn-sm ${isUnlocked ? 'btn-primary' : 'btn-secondary'}`}
-                  onClick={() => setSelectedAchievementForShare(ach)}
-                  style={{
-                    marginLeft: 'auto',
-                    fontSize: '11px',
-                    padding: '6px 12px',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                    flexShrink: 0
-                  }}
-                  title={`Share ${ach.title} certificate`}
-                >
-                  <Share2 size={13} />
-                  <span>Share</span>
-                </button>
+                {/* Footer Action Bar */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingTop: '10px',
+                  borderTop: `1px solid ${isUnlocked ? '#fde68a' : 'var(--border-light)'}`,
+                  marginTop: 'auto'
+                }}>
+                  <div style={{ fontSize: '11px', color: isUnlocked ? '#15803d' : 'var(--text-muted)', fontWeight: 600 }}>
+                    {isUnlocked ? '✓ Certificate Ready' : '🔒 Requires task pass'}
+                  </div>
+
+                  {/* Share button: default disabled when locked, active only when unlocked */}
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${isUnlocked ? 'btn-primary' : 'btn-secondary'}`}
+                    disabled={!isUnlocked}
+                    onClick={() => {
+                      if (isUnlocked) {
+                        setSelectedAchievementForShare(ach);
+                      }
+                    }}
+                    style={{
+                      fontSize: '12px',
+                      padding: '6px 14px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      borderRadius: 'var(--radius-md)',
+                      cursor: isUnlocked ? 'pointer' : 'not-allowed',
+                      opacity: isUnlocked ? 1 : 0.45,
+                      background: isUnlocked ? 'linear-gradient(135deg, #1c6aa7, #124d7b)' : 'var(--bg-subtle)',
+                      color: isUnlocked ? '#ffffff' : 'var(--text-muted)',
+                      border: isUnlocked ? '1px solid #124d7b' : '1px solid var(--border-medium)',
+                      fontWeight: 700,
+                      boxShadow: isUnlocked ? '0 2px 6px rgba(24, 114, 192, 0.25)' : 'none'
+                    }}
+                    title={isUnlocked ? `Share ${ach.title} certificate` : 'Complete task to unlock certificate sharing'}
+                  >
+                    {isUnlocked ? <Share2 size={13} /> : <Lock size={12} />}
+                    <span>{isUnlocked ? 'Share Certificate' : 'Share (Locked)'}</span>
+                  </button>
+                </div>
               </div>
             );
           })}
