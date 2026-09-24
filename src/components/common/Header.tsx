@@ -9,14 +9,15 @@ import {
   Clock,
   Trash2,
   User,
-  AlertTriangle
+  AlertTriangle,
+  FileSpreadsheet
 } from 'lucide-react';
 import { UserRole, StudentIdentity } from '../../types';
 
 interface HeaderProps {
   currentRole: UserRole;
-  activeView: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase';
-  setActiveView: (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase') => void;
+  activeView: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel';
+  setActiveView: (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel') => void;
   currentLevel: number;
   currentStage: number;
   totalExp: number;
@@ -137,6 +138,17 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <GraduationCap size={15} />
             <span className="nav-btn-text">Practice</span>
+          </button>
+
+          <button
+            type="button"
+            className={`nav-btn ${activeView === 'excel' ? 'active' : ''}`}
+            onClick={() => setActiveView('excel')}
+            title="Excel Mass Data Entry Simulation Lab (5 Scenarios)"
+          >
+            <FileSpreadsheet size={15} color="#16a34a" />
+            <span className="nav-btn-text">Excel Lab</span>
+            <span className="excel-nav-tag">NEW</span>
           </button>
 
           <button

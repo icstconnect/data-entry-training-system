@@ -11,7 +11,8 @@ import {
   Target, 
   Sparkles, 
   ShieldCheck, 
-  Layers 
+  Layers,
+  FileSpreadsheet
 } from 'lucide-react';
 import { LEVELS_INFO } from '../../data/stagesConfig';
 
@@ -20,13 +21,15 @@ interface LandingPageProps {
   onOpenTeacherMode: () => void;
   onOpenDashboard: () => void;
   onOpenShowcase: () => void;
+  onOpenExcel?: () => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({
   onStartPractice,
   onOpenTeacherMode,
   onOpenDashboard,
-  onOpenShowcase
+  onOpenShowcase,
+  onOpenExcel
 }) => {
   const steps = [
     { title: '1. UID Entry', desc: 'Input or load assigned student reference UID' },
@@ -104,6 +107,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <Play size={17} />
               <span>START PRACTICE</span>
             </button>
+
+            {onOpenExcel && (
+              <button
+                type="button"
+                className="btn btn-primary btn-lg"
+                onClick={onOpenExcel}
+                style={{ background: '#107c41', borderColor: '#0d5e2e' }}
+              >
+                <FileSpreadsheet size={17} />
+                <span>EXCEL MASS ENTRY LAB</span>
+              </button>
+            )}
 
             <button
               type="button"

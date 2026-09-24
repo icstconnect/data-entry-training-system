@@ -20,10 +20,13 @@ import { PracticeWorkbench } from './components/practice/PracticeWorkbench';
 import { StudentDashboard } from './components/student/StudentDashboard';
 import { TeacherDashboard } from './components/teacher/TeacherDashboard';
 import { ShowcasePage } from './components/showcase/ShowcasePage';
+import { ExcelDashboard } from './components/excel/ExcelDashboard';
+import { ExcelWorkbench } from './components/excel/ExcelWorkbench';
 
 export function App() {
   const [currentRole, setCurrentRole] = useState<UserRole>('student');
-  const [activeView, setActiveView] = useState<'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase'>('landing');
+  const [activeView, setActiveView] = useState<'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel'>('landing');
+  const [excelLevel, setExcelLevel] = useState<number | null>(null);
 
   // Active level and stage
   const [currentLevel, setCurrentLevel] = useState<number>(1);
@@ -59,6 +62,8 @@ export function App() {
         setActiveView('showcase');
       } else if (hash === '#practice') {
         setActiveView('practice');
+      } else if (hash === '#excel' || path.includes('excel')) {
+        setActiveView('excel');
       } else if (hash === '#dashboard') {
         setActiveView('student-dashboard');
       } else if (hash === '#teacher') {
@@ -77,7 +82,7 @@ export function App() {
   }, []);
 
   // Sync active view to window hash
-  const handleViewChange = (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase') => {
+  const handleViewChange = (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel') => {
     // If entering practice but no student identity is registered yet, gate with StudentSetupModal
     if (view === 'practice' && !studentProgress.studentIdentity) {
       setPendingPracticeStart(true);
@@ -90,6 +95,8 @@ export function App() {
       window.location.hash = 'showcase';
     } else if (view === 'practice') {
       window.location.hash = 'practice';
+    } else if (view === 'excel') {
+      window.location.hash = 'excel';
     } else if (view === 'student-dashboard') {
       window.location.hash = 'dashboard';
     } else if (view === 'teacher-dashboard') {
@@ -155,6 +162,7 @@ export function App() {
     setStudentProgress(fresh);
     setCurrentLevel(1);
     setCurrentStage(1);
+    setExcelLevel(null);
     setTimerElapsedSeconds(0);
     setIsClearDataOpen(false);
     setActiveView('landing');
@@ -192,6 +200,7 @@ export function App() {
             onOpenTeacherMode={() => setIsTeacherPasswordOpen(true)}
             onOpenDashboard={() => handleViewChange('student-dashboard')}
             onOpenShowcase={() => handleViewChange('showcase')}
+            onOpenExcel={() => handleViewChange('excel')}
           />
         )}
 
@@ -231,6 +240,23 @@ export function App() {
         {activeView === 'showcase' && (
           <ShowcasePage
             onStartPractice={() => handleViewChange('practice')}
+          />
+        )}
+
+        {activeView === 'excel' && excelLevel === null && (
+          <ExcelDashboard
+            onSelectLevel={(lvl) => setExcelLevel(lvl)}
+            studentProgress={studentProgress}
+          />
+        )}
+
+        {activeView === 'excel' && excelLevel !== null && (
+          <ExcelWorkbench
+            levelNumber={excelLevel}
+            onBackToDashboard={() => setExcelLevel(null)}
+            onSelectLevel={(lvl) => setExcelLevel(lvl)}
+            studentProgress={studentProgress}
+            onExpAwarded={handleExpAwarded}
           />
         )}
       </main>

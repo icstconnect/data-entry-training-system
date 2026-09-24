@@ -2,7 +2,7 @@ import React from 'react';
 
 export interface TrophyGraphicProps {
   achievementId: string;
-  level: number;
+  level?: number;
   isUnlocked: boolean;
   size?: number;
   className?: string;
@@ -292,6 +292,161 @@ export const TrophyGraphic: React.FC<TrophyGraphicProps> = ({
         >
           FLAWLESS
         </text>
+      </svg>
+    );
+  }
+
+  // EXCEL MASS DATA ENTRY ACHIEVEMENTS (5 LEVELS)
+
+  // E1. excel_novice_grid (Level 1: Spreadsheet Starter - Excel Green & Grid Trophy)
+  if (achievementId === 'excel_novice_grid') {
+    return (
+      <svg width={s} height={s} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+        <defs>
+          <linearGradient id="excelGreenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#22c55e" />
+            <stop offset="50%" stopColor="#16a34a" />
+            <stop offset="100%" stopColor="#14532d" />
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" r="46" fill="#f0fdf4" stroke="#86efac" strokeWidth="2" />
+        {/* Handles */}
+        <path d="M28 28 C16 28 14 48 30 52" stroke="url(#excelGreenGrad)" strokeWidth="4" strokeLinecap="round" />
+        <path d="M72 28 C84 28 86 48 70 52" stroke="url(#excelGreenGrad)" strokeWidth="4" strokeLinecap="round" />
+        {/* Cup */}
+        <path d="M28 22 H72 V46 C72 58 62 66 50 66 C38 66 28 58 28 46 Z" fill="url(#excelGreenGrad)" />
+        <ellipse cx="50" cy="22" rx="22" ry="3.5" fill="#bbf7d0" />
+        {/* Base */}
+        <path d="M46 66 H54 V74 H46 Z" fill="#15803d" />
+        <path d="M30 74 H70 V82 H30 Z" fill="#14532d" rx="3" />
+        {/* Excel "X" Green Badge */}
+        <rect x="42" y="32" width="16" height="16" rx="3" fill="#107c41" stroke="#ffffff" strokeWidth="1.5" />
+        <path d="M46 36 L54 44 M54 36 L46 44" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  // E2. excel_commercial_master (Level 2: Commercial Inventory - Gold Coin & Stock Ledger)
+  if (achievementId === 'excel_commercial_master') {
+    return (
+      <svg width={s} height={s} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+        <defs>
+          <linearGradient id="commGold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fef08a" />
+            <stop offset="40%" stopColor="#eab308" />
+            <stop offset="100%" stopColor="#854d0e" />
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" r="46" fill="#fffbeb" stroke="#fde047" strokeWidth="2" />
+        {/* Wing Handles */}
+        <path d="M26 26 C12 26 12 50 28 54" stroke="url(#commGold)" strokeWidth="4.5" strokeLinecap="round" />
+        <path d="M74 26 C88 26 88 50 72 54" stroke="url(#commGold)" strokeWidth="4.5" strokeLinecap="round" />
+        {/* Cup */}
+        <path d="M26 20 H74 V46 C74 58 63 68 50 68 C37 68 26 58 26 46 Z" fill="url(#commGold)" />
+        <ellipse cx="50" cy="20" rx="24" ry="4" fill="#fef9c3" />
+        <path d="M45 68 H55 V75 H45 Z" fill="#ca8a04" />
+        <path d="M28 75 H72 V83 H28 Z" fill="#854d0e" rx="3" />
+        {/* Rupee Symbol Coin */}
+        <circle cx="50" cy="42" r="11" fill="#78350f" stroke="#fde047" strokeWidth="1.5" />
+        <text x="50" y="47" fontSize="13" fontWeight="900" fontFamily="Inter, sans-serif" fill="#fef08a" textAnchor="middle">₹</text>
+      </svg>
+    );
+  }
+
+  // E3. excel_banking_kyc (Level 3: Banking KYC Ledger - Vault Shield & Azure Trophy)
+  if (achievementId === 'excel_banking_kyc') {
+    return (
+      <svg width={s} height={s} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+        <defs>
+          <linearGradient id="bankAzure" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#38bdf8" />
+            <stop offset="50%" stopColor="#0284c7" />
+            <stop offset="100%" stopColor="#0c4a6e" />
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" r="46" fill="#f0f9ff" stroke="#7dd3fc" strokeWidth="2" />
+        <path d="M26 26 C12 26 12 50 28 54" stroke="url(#bankAzure)" strokeWidth="4.5" strokeLinecap="round" />
+        <path d="M74 26 C88 26 88 50 72 54" stroke="url(#bankAzure)" strokeWidth="4.5" strokeLinecap="round" />
+        <path d="M26 20 H74 V46 C74 58 63 68 50 68 C37 68 26 58 26 46 Z" fill="url(#bankAzure)" />
+        <ellipse cx="50" cy="20" rx="24" ry="4" fill="#e0f2fe" />
+        <path d="M45 68 H55 V75 H45 Z" fill="#0369a1" />
+        <path d="M28 75 H72 V83 H28 Z" fill="#0c4a6e" rx="3" />
+        {/* Bank Pillar / Vault Icon */}
+        <rect x="42" y="32" width="16" height="18" rx="2" fill="#ffffff" />
+        <polygon points="41,32 50,26 59,32" fill="#0284c7" />
+        <rect x="44" y="35" width="2.5" height="12" fill="#0284c7" />
+        <rect x="49" y="35" width="2.5" height="12" fill="#0284c7" />
+        <rect x="54" y="35" width="2.5" height="12" fill="#0284c7" />
+      </svg>
+    );
+  }
+
+  // E4. excel_board_marksheet (Level 4: State Board Tabulation - Crimson & Gold Graduation Cup)
+  if (achievementId === 'excel_board_marksheet') {
+    return (
+      <svg width={s} height={s} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+        <defs>
+          <linearGradient id="boardCrimson" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fb7185" />
+            <stop offset="50%" stopColor="#e11d48" />
+            <stop offset="100%" stopColor="#881337" />
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" r="46" fill="#fff1f2" stroke="#fda4af" strokeWidth="2" />
+        {/* Graduation Cap on top */}
+        <polygon points="50,10 68,16 50,22 32,16" fill="#1e293b" />
+        <rect x="42" y="20" width="16" height="4" fill="#334155" />
+        <path d="M64 18 V28" stroke="#eab308" strokeWidth="1.5" />
+        {/* Handles */}
+        <path d="M26 28 C12 28 12 52 28 56" stroke="url(#boardCrimson)" strokeWidth="4.5" strokeLinecap="round" />
+        <path d="M74 28 C88 28 88 52 72 56" stroke="url(#boardCrimson)" strokeWidth="4.5" strokeLinecap="round" />
+        {/* Cup */}
+        <path d="M26 24 H74 V48 C74 60 63 69 50 69 C37 69 26 60 26 48 Z" fill="url(#boardCrimson)" />
+        <path d="M45 69 H55 V76 H45 Z" fill="#be123c" />
+        <path d="M28 76 H72 V84 H28 Z" fill="#881337" rx="3" />
+        {/* Tabular Marksheet Grid Emblem */}
+        <rect x="40" y="34" width="20" height="18" rx="2" fill="#ffffff" />
+        <line x1="40" y1="40" x2="60" y2="40" stroke="#be123c" strokeWidth="1.2" />
+        <line x1="40" y1="46" x2="60" y2="46" stroke="#be123c" strokeWidth="1.2" />
+        <line x1="47" y1="34" x2="47" y2="52" stroke="#be123c" strokeWidth="1.2" />
+        <line x1="53" y1="34" x2="53" y2="52" stroke="#be123c" strokeWidth="1.2" />
+      </svg>
+    );
+  }
+
+  // E5. excel_census_grandmaster (Level 5 Capstone: Grandmaster Excel Registrar - Imperial Platinum Star)
+  if (achievementId === 'excel_census_grandmaster') {
+    return (
+      <svg width={s} height={s} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+        <defs>
+          <linearGradient id="censusPlat" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="30%" stopColor="#e2e8f0" />
+            <stop offset="70%" stopColor="#94a3b8" />
+            <stop offset="100%" stopColor="#1e293b" />
+          </linearGradient>
+          <linearGradient id="censusGold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fef08a" />
+            <stop offset="50%" stopColor="#eab308" />
+            <stop offset="100%" stopColor="#a16207" />
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" r="46" fill="#f8fafc" stroke="#eab308" strokeWidth="2.5" />
+        {/* Crown 5 Stars */}
+        <polygon points="50,6 52,11 57,11 53,14 55,19 50,16 45,19 47,14 43,11 48,11" fill="#eab308" />
+        <polygon points="34,10 35.5,13.5 39,13.5 36,16 37.5,19.5 34,17.5 30.5,19.5 32,16 29,13.5 32.5,13.5" fill="#eab308" />
+        <polygon points="66,10 67.5,13.5 71,13.5 68,16 69.5,19.5 66,17.5 62.5,19.5 64,16 61,13.5 64.5,13.5" fill="#eab308" />
+        {/* Dual Dragon Handles */}
+        <path d="M24 24 C6 24 6 54 26 58" stroke="url(#censusGold)" strokeWidth="5" strokeLinecap="round" />
+        <path d="M76 24 C94 24 94 54 74 58" stroke="url(#censusGold)" strokeWidth="5" strokeLinecap="round" />
+        {/* Platinum Cup */}
+        <path d="M24 20 H76 V48 C76 62 65 71 50 71 C35 71 24 62 24 48 Z" fill="url(#censusPlat)" stroke="url(#censusGold)" strokeWidth="1.5" />
+        <ellipse cx="50" cy="20" rx="26" ry="4" fill="#ffffff" />
+        <path d="M44 71 H56 V78 H44 Z" fill="url(#censusGold)" />
+        <path d="M24 78 H76 V86 H24 Z" fill="url(#censusGold)" rx="3.5" />
+        {/* Grand Census Seal */}
+        <circle cx="50" cy="44" r="12" fill="#1e293b" stroke="url(#censusGold)" strokeWidth="2" />
+        <polygon points="50,36 53,42 59,42 54,46 56,52 50,48 44,52 46,46 41,42 47,42" fill="url(#censusGold)" />
       </svg>
     );
   }
