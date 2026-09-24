@@ -41,16 +41,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
       {/* Hero Section */}
       <section style={{
-        background: 'linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%)',
+        background: 'linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-main) 100%)',
         borderBottom: '1px solid var(--border-light)',
         padding: '56px 20px 64px',
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: '840px', margin: '0 auto' }}>
-          {/* Logo Brand Header */}
+          {/* Logo Brand Header - uses logo-icst.png as requested for marked hero area */}
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '14px', marginBottom: '24px' }}>
             <img 
-              src="/logo.png" 
+              src="/logo-icst.png" 
               alt="ICST Chowberia Logo" 
               style={{ width: '72px', height: '72px', objectFit: 'contain' }} 
             />
@@ -127,7 +127,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* Visual Workflow Steps */}
-      <section style={{ padding: '48px 20px', background: '#ffffff', borderBottom: '1px solid var(--border-light)' }}>
+      <section style={{ padding: '48px 20px', background: 'var(--bg-surface)', borderBottom: '1px solid var(--border-light)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '36px' }}>
             <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--icst-charcoal)' }}>
@@ -147,8 +147,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <div 
                 key={i}
                 style={{
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-light)',
                   borderRadius: 'var(--radius-lg)',
                   padding: '18px 14px',
                   textAlign: 'center',
@@ -185,7 +185,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* 5-Level Curriculum Highlights */}
-      <section style={{ padding: '48px 20px', background: '#f8fafc' }}>
+      <section style={{ padding: '48px 20px', background: 'var(--bg-main)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
             <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--icst-charcoal)' }}>
@@ -205,7 +205,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <div 
                 key={lvl.levelNumber}
                 style={{
-                  background: '#ffffff',
+                  background: 'var(--bg-card)',
                   border: '1px solid var(--border-light)',
                   borderRadius: 'var(--radius-lg)',
                   padding: '20px',
@@ -239,7 +239,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   </p>
                 </div>
 
-                <div style={{ marginTop: '16px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)' }}>
+                <div style={{ marginTop: '16px', paddingTop: '10px', borderTop: '1px solid var(--border-light)', fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)' }}>
                   Title: <strong>{lvl.badgeTitle}</strong>
                 </div>
               </div>
