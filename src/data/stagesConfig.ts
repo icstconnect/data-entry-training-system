@@ -1,5 +1,16 @@
 import { StageConfig, LevelInfo, BatchTitle } from '../types';
 
+export const GUARDIAN_PREFIX_OPTIONS = [
+  { label: 'Select Prefix', value: '' },
+  { label: 'Shri', value: 'Shri' },
+  { label: 'Late', value: 'Late' },
+  { label: 'Dr.', value: 'Dr.' },
+  { label: 'Mr.', value: 'Mr.' },
+  { label: 'Mrs.', value: 'Mrs.' },
+  { label: 'Md.', value: 'Md.' },
+  { label: 'Prof.', value: 'Prof.' }
+];
+
 export const LEVELS_INFO: LevelInfo[] = [
   {
     levelNumber: 1,
@@ -79,7 +90,15 @@ export const STAGES: StageConfig[] = [
     ],
     fields: [
       { id: 'studentName', label: 'Full Student Name', type: 'text', placeholder: 'e.g. Sourav Ghosh', required: true, weight: 1 },
-      { id: 'guardianName', label: 'Guardian / Father Name', type: 'name-with-prefix', placeholder: 'First & Last Name (e.g. Tanmay Sen)', required: true, weight: 1 },
+      { 
+        id: 'guardianPrefix', 
+        label: 'Prefix', 
+        type: 'select', 
+        required: true, 
+        weight: 0.5,
+        options: GUARDIAN_PREFIX_OPTIONS 
+      },
+      { id: 'guardianName', label: 'Guardian / Father Name', type: 'text', placeholder: 'First & Last Name (e.g. Sayantan Biswas)', required: true, weight: 1 },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1 },
       { 
         id: 'gender', 
@@ -340,7 +359,16 @@ export const STAGES: StageConfig[] = [
     fields: [
       // Section 1: Identity
       { id: 'studentName', label: 'Full Legal Name', type: 'text', required: true, weight: 1, section: 'Identity Details' },
-      { id: 'guardianName', label: 'Father / Guardian Name', type: 'name-with-prefix', placeholder: 'First & Last Name', required: true, weight: 1, section: 'Identity Details' },
+      { 
+        id: 'guardianPrefix', 
+        label: 'Prefix', 
+        type: 'select', 
+        required: true, 
+        weight: 0.5,
+        options: GUARDIAN_PREFIX_OPTIONS,
+        section: 'Identity Details'
+      },
+      { id: 'guardianName', label: 'Father / Guardian Name', type: 'text', placeholder: 'First & Last Name', required: true, weight: 1, section: 'Identity Details' },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1, section: 'Identity Details' },
       { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1, section: 'Identity Details',
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
@@ -429,7 +457,15 @@ export const STAGES: StageConfig[] = [
       { id: 'academic.rollNumber', label: 'Admit Card Roll Number', type: 'text', required: true, weight: 2 },
       { id: 'academic.examCenterCode', label: 'Allocated Examination Center Code', type: 'text', required: true, weight: 1.5 },
       { id: 'studentName', label: 'Student Legal Name', type: 'text', required: true, weight: 1 },
-      { id: 'guardianName', label: 'Father / Guardian Name', type: 'name-with-prefix', placeholder: 'First & Last Name', required: true, weight: 1 },
+      { 
+        id: 'guardianPrefix', 
+        label: 'Prefix', 
+        type: 'select', 
+        required: true, 
+        weight: 0.5,
+        options: GUARDIAN_PREFIX_OPTIONS 
+      },
+      { id: 'guardianName', label: 'Father / Guardian Name', type: 'text', placeholder: 'First & Last Name', required: true, weight: 1 },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', required: true, weight: 1 },
       { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1,
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
@@ -573,7 +609,15 @@ export const STAGES: StageConfig[] = [
     ],
     fields: [
       { id: 'studentName', label: 'Student Full Name', type: 'text', required: true, weight: 2 },
-      { id: 'guardianName', label: 'Guardian Full Name', type: 'name-with-prefix', placeholder: 'First & Last Name', required: true, weight: 2 },
+      { 
+        id: 'guardianPrefix', 
+        label: 'Prefix', 
+        type: 'select', 
+        required: true, 
+        weight: 0.5,
+        options: GUARDIAN_PREFIX_OPTIONS 
+      },
+      { id: 'guardianName', label: 'Guardian Full Name', type: 'text', placeholder: 'First & Last Name', required: true, weight: 2 },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', required: true, weight: 2 },
       { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1,
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
@@ -740,7 +784,15 @@ export const STAGES: StageConfig[] = [
     ],
     fields: [
       { id: 'studentName', label: 'Student Legal Name', type: 'text', required: true, weight: 2 },
-      { id: 'guardianName', label: 'Father / Guardian Name', type: 'name-with-prefix', placeholder: 'First & Last Name', required: true, weight: 2 },
+      { 
+        id: 'guardianPrefix', 
+        label: 'Prefix', 
+        type: 'select', 
+        required: true, 
+        weight: 0.5,
+        options: GUARDIAN_PREFIX_OPTIONS 
+      },
+      { id: 'guardianName', label: 'Father / Guardian Name', type: 'text', placeholder: 'First & Last Name', required: true, weight: 2 },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', required: true, weight: 2 },
       { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1,
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]

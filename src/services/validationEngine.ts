@@ -43,7 +43,25 @@ export function validateField(
   field: FieldDefinition,
   mode: ValidationMode = 'NORMAL'
 ): FieldValidationResult {
-  const sourceValue = getNestedValue(sourceRecord, field.id);
+  let sourceValue = getNestedValue(sourceRecord, field.id);
+
+  // If field is guardianPrefix, resolve prefix from source record
+  if (field.id === 'guardianPrefix') {
+    if (!sourceValue && sourceRecord.guardianPrefix) {
+      sourceValue = sourceRecord.guardianPrefix;
+    }
+    if (!sourceValue && sourceRecord.guardianName) {
+      const match = String(sourceRecord.guardianName).trim().match(/^(Shri|Late|Dr\.?|Mr\.?|Mrs\.?|Md\.?|Prof\.?|Smt\.?)\b/i);
+      sourceValue = match ? match[0] : '';
+    }
+  }
+
+  // If field is guardianName, the expected value in this name field is ONLY the first and last name!
+  if (field.id === 'guardianName' && sourceRecord.guardianName) {
+    const full = String(sourceRecord.guardianName).trim();
+    sourceValue = full.replace(/^(Shri|Late|Dr\.?|Mr\.?|Mrs\.?|Md\.?|Prof\.?|Smt\.?)\s+/i, '').trim();
+  }
+
   const enteredValue = userValues[field.id];
   const weight = field.weight ?? 1;
 
@@ -175,8 +193,14 @@ export function validateField(
     case 'select':
     case 'searchable-select':
     case 'radio': {
-      const normEntered = normalizeString(enteredValue, mode);
-      const normSource = normalizeString(sourceValue, mode);
+      let normEntered = normalizeString(enteredValue, mode);
+      let normSource = normalizeString(sourceValue, mode);
+
+      if (field.id === 'guardianPrefix') {
+        normEntered = normEntered.replace(/\.$/, '');
+        normSource = normSource.replace(/\.$/, '');
+      }
+
       if (normEntered !== normSource) {
         return {
           fieldId: field.id,
@@ -310,13 +334,13 @@ export function validateField(
         };
       }
 
-      // 2. Guardian Name: Normalize prefix dots
+      // 2. Guardian Name: First and Last Name only
       const isGuardianField = field.id.toLowerCase().includes('guardian');
       if (isGuardianField) {
-        const normEntered = normalizeString(enteredValue, mode).replace(/\b(dr|mr|mrs|md|prof|smt)\./gi, '$1');
-        const normSource = normalizeString(sourceValue, mode).replace(/\b(dr|mr|mrs|md|prof|smt)\./gi, '$1');
+        const cleanEntered = normalizeString(enteredValue, mode).replace(/^(shri|late|dr\.?|mr\.?|mrs\.?|md\.?|prof\.?|smt\.?)\s+/i, '').trim();
+        const cleanSource = normalizeString(sourceValue, mode).replace(/^(shri|late|dr\.?|mr\.?|mrs\.?|md\.?|prof\.?|smt\.?)\s+/i, '').trim();
 
-        if (normEntered !== normSource) {
+        if (cleanEntered !== cleanSource) {
           return {
             fieldId: field.id,
             label: field.label,
@@ -324,7 +348,7 @@ export function validateField(
             enteredValue,
             status: 'incorrect',
             errorType: 'wrong_text',
-            errorMessage: 'Guardian name does not match source record (check prefix and spelling)',
+            errorMessage: 'Name does not match source record (enter first and last name only)',
             weight,
             section: field.section
           };

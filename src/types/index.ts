@@ -124,6 +124,7 @@ export interface LevelInfo {
 export interface SourceRecord {
   uid: string;
   studentName: string;
+  guardianPrefix?: string;
   guardianName: string;
   dob: string;
   gender: string;

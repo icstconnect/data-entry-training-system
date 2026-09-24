@@ -208,6 +208,7 @@ export function generateSyntheticRecord(uid: string): SourceRecord {
   return {
     uid,
     studentName,
+    guardianPrefix,
     guardianName,
     dob,
     gender,
