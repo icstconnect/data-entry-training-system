@@ -7,8 +7,8 @@
 .excel-workbench-root {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 120px);
-  min-height: 640px;
+  height: calc(100vh - 58px);
+  min-height: 520px;
   background-color: var(--bg-main);
   overflow: hidden;
   position: relative;
@@ -26,12 +26,21 @@
   font-weight: 500;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
   user-select: none;
+  gap: 10px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.excel-title-bar::-webkit-scrollbar {
+  display: none;
 }
 
 .excel-title-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .excel-app-badge {
@@ -45,6 +54,7 @@
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .excel-filename-tag {
@@ -54,6 +64,7 @@
   font-family: var(--font-mono);
   font-size: 12px;
   opacity: 0.95;
+  white-space: nowrap;
 }
 
 .excel-autosave-pill {
@@ -65,12 +76,53 @@
   padding: 2px 8px;
   border-radius: 12px;
   color: #e2fbe8;
+  white-space: nowrap;
+}
+
+/* Center: Responsive View Mode Switcher */
+.excel-view-mode-cluster {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.excel-mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 4px 9px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.excel-mode-pill:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.excel-mode-pill.active {
+  background: #ffffff;
+  color: #0c5e31;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .excel-title-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .excel-timer-chip {
@@ -83,6 +135,7 @@
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .excel-timer-chip.overtime {
@@ -99,6 +152,8 @@
 .excel-split-workspace {
   display: flex;
   flex: 1;
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
   position: relative;
 }
@@ -106,7 +161,7 @@
 /* Left Pane: Authentic Physical Document / Ledger */
 .excel-source-pane {
   width: 44%;
-  min-width: 380px;
+  min-width: 300px;
   max-width: 580px;
   display: flex;
   flex-direction: column;
@@ -115,6 +170,34 @@
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
+  transition: width 0.2s ease;
+}
+
+.excel-grid-pane {
+  flex: 1 1 0%;
+  min-width: 0;
+  width: 0;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  overflow: hidden;
+  position: relative;
+  transition: width 0.2s ease;
+}
+
+/* Fullscreen / Hidden View Modes */
+.excel-source-pane.mode-hidden,
+.excel-grid-pane.mode-hidden {
+  display: none !important;
+}
+
+.excel-source-pane.mode-fullscreen,
+.excel-grid-pane.mode-fullscreen {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 100% !important;
+  flex: 1 1 100% !important;
+  border-right: none !important;
 }
 
 .excel-source-header {
@@ -266,15 +349,6 @@
   margin-right: 4px;
 }
 
-/* Right Pane: Authentic Excel Grid */
-.excel-grid-pane {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: #ffffff;
-  overflow: hidden;
-  position: relative;
-}
 
 /* Excel Ribbon Toolbar */
 .excel-ribbon-bar {
@@ -887,3 +961,89 @@
   margin-left: 4px;
   letter-spacing: 0.5px;
 }
+
+/* ==========================================================================
+   RESPONSIVE LAYOUT & MOBILE / TABLET ADAPTATION
+   ========================================================================== */
+
+@media (max-width: 1080px) {
+  .excel-app-badge {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  /* In split mode on narrower devices, stack vertically: Reference ledger on top, Excel sheet on bottom */
+  .excel-split-workspace.split-mode-split {
+    flex-direction: column;
+  }
+
+  .excel-split-workspace.split-mode-split .excel-source-pane {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: 42%;
+    min-height: 180px;
+    max-height: 50%;
+    border-right: none;
+    border-bottom: 2px solid var(--border-medium);
+  }
+
+  .excel-split-workspace.split-mode-split .excel-grid-pane {
+    width: 100%;
+    min-width: 0;
+    height: 58%;
+    flex: 1;
+  }
+
+  .excel-filename-tag span:nth-child(2),
+  .excel-filename-tag span:nth-child(3) {
+    display: none;
+  }
+}
+
+@media (max-width: 680px) {
+  .excel-workbench-root {
+    height: calc(100vh - 52px);
+    min-height: 460px;
+  }
+
+  .excel-title-bar {
+    padding: 5px 8px;
+    font-size: 11px;
+    gap: 6px;
+  }
+
+  .excel-autosave-pill {
+    display: none;
+  }
+
+  .excel-mode-pill {
+    padding: 4px 6px;
+  }
+
+  .excel-mode-pill .mode-pill-text {
+    display: none;
+  }
+
+  .excel-title-right .excel-autosave-pill {
+    display: none;
+  }
+
+  .excel-ribbon-bar {
+    padding: 3px 6px;
+    gap: 6px;
+    overflow-x: auto;
+  }
+
+  .excel-formula-bar {
+    padding: 2px 6px;
+  }
+
+  .excel-name-box {
+    width: 50px;
+    min-width: 50px;
+    font-size: 10.5px;
+  }
+}
+

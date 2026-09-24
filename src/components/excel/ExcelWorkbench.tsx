@@ -29,7 +29,10 @@ import {
   ZoomOut, 
   Eye, 
   AlertCircle,
-  HardDrive
+  HardDrive,
+  Columns,
+  Maximize2,
+  BookOpen
 } from 'lucide-react';
 
 interface ExcelWorkbenchProps {
@@ -48,6 +51,9 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
   onExpAwarded
 }) => {
   const level: ExcelScenarioLevel = EXCEL_LEVELS.find(l => l.levelNumber === levelNumber) || EXCEL_LEVELS[0];
+
+  // Responsive View Mode: 'split' | 'ledger' | 'grid'
+  const [viewMode, setViewMode] = useState<'split' | 'ledger' | 'grid'>('split');
 
   // Grid Data State: key is "r_c", e.g. "0_0" = value
   const [gridData, setGridData] = useState<Record<string, string>>({});
@@ -357,6 +363,37 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
           </div>
         </div>
 
+        {/* Center: Responsive View Mode Switcher */}
+        <div className="excel-view-mode-cluster">
+          <button 
+            type="button" 
+            className={`excel-mode-pill ${viewMode === 'split' ? 'active' : ''}`}
+            onClick={() => setViewMode('split')}
+            title="Dual View: Reference Ledger + Excel Spreadsheet"
+          >
+            <Columns size={12} />
+            <span className="mode-pill-text">Split View</span>
+          </button>
+          <button 
+            type="button" 
+            className={`excel-mode-pill ${viewMode === 'grid' ? 'active' : ''}`}
+            onClick={() => setViewMode('grid')}
+            title="Full Width: Focus Excel Spreadsheet"
+          >
+            <Maximize2 size={12} />
+            <span className="mode-pill-text">Excel Only</span>
+          </button>
+          <button 
+            type="button" 
+            className={`excel-mode-pill ${viewMode === 'ledger' ? 'active' : ''}`}
+            onClick={() => setViewMode('ledger')}
+            title="Full Width: Inspect Reference Ledger"
+          >
+            <BookOpen size={12} />
+            <span className="mode-pill-text">Ledger Only</span>
+          </button>
+        </div>
+
         <div className="excel-title-right">
           <div className={`excel-timer-chip ${isOvertime ? 'overtime' : ''}`} title={`Benchmark: ${formatTime(level.timeLimitSeconds)}`}>
             <Clock size={13} />
@@ -372,10 +409,10 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
       </div>
 
       {/* Main Split Workspace */}
-      <div className="excel-split-workspace">
+      <div className={`excel-split-workspace split-mode-${viewMode}`}>
         {/* Left Side: Physical Ledger Reference Document */}
         <section 
-          className="excel-source-pane"
+          className={`excel-source-pane ${viewMode === 'grid' ? 'mode-hidden' : viewMode === 'ledger' ? 'mode-fullscreen' : ''}`}
           aria-label="Official Source Register Document"
           onCopy={(e) => {
             e.preventDefault();
@@ -460,7 +497,10 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
         </section>
 
         {/* Right Side: Authentic Microsoft Excel Grid Simulation */}
-        <section className="excel-grid-pane" aria-label="Interactive Excel Spreadsheet">
+        <section 
+          className={`excel-grid-pane ${viewMode === 'ledger' ? 'mode-hidden' : viewMode === 'grid' ? 'mode-fullscreen' : ''}`} 
+          aria-label="Interactive Excel Spreadsheet"
+        >
           {/* Excel Ribbon Bar */}
           <div className="excel-ribbon-bar">
             <div className="excel-ribbon-group">

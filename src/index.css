@@ -1247,6 +1247,15 @@ select#field-guardianPrefix {
   }
 }
 
+@media (max-width: 1040px) {
+  .nav-btn-text {
+    display: none;
+  }
+  .clear-data-text {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .header-container {
     padding: 6px 12px;
