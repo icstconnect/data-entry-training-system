@@ -1351,3 +1351,233 @@ select#field-guardianPrefix {
     display: none;
   }
 }
+
+/* ==========================================================================
+   LANDING PAGE OPTIMIZED STYLES (ELIMINATING INLINE STYLES & FORCED REFLOWS)
+   ========================================================================== */
+.landing-root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-hero {
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-main) 100%);
+  border-bottom: 1px solid var(--border-light);
+  padding: 56px 20px 64px;
+  text-align: center;
+}
+
+.landing-hero-inner {
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.landing-brand-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.landing-brand-logo {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.landing-brand-text {
+  text-align: left;
+}
+
+.landing-inst-name {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--icst-blue-dark);
+}
+
+.landing-inst-sub {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.landing-hero-title {
+  font-size: 44px;
+  font-weight: 800;
+  color: var(--icst-charcoal);
+  line-height: 1.15;
+  letter-spacing: -0.8px;
+  margin-bottom: 16px;
+}
+
+.landing-hero-tagline {
+  font-size: 20px;
+  color: var(--icst-slate);
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.landing-hero-desc {
+  font-size: 15px;
+  color: var(--text-secondary);
+  max-width: 660px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+}
+
+.landing-cta-cluster {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+/* Off-screen sections optimized with content-visibility to eliminate forced reflows */
+.landing-section-workflow {
+  padding: 48px 20px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 360px;
+}
+
+.landing-section-levels {
+  padding: 48px 20px;
+  background: var(--bg-main);
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 360px;
+}
+
+.landing-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.landing-section-header {
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.landing-section-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--icst-charcoal);
+}
+
+.landing-section-sub {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.landing-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.landing-step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 18px 14px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.15s ease;
+}
+
+.landing-step-card:hover {
+  transform: translateY(-2px);
+}
+
+.landing-step-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--icst-blue-soft);
+  color: var(--icst-blue-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.landing-step-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.landing-step-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.landing-levels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.landing-level-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.15s ease;
+}
+
+.landing-level-card:hover {
+  transform: translateY(-2px);
+}
+
+.landing-level-tag {
+  display: inline-block;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.landing-level-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.landing-level-target {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.landing-level-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.landing-level-footer {
+  margin-top: 16px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}

@@ -10,10 +10,6 @@ import { APP_CONFIG } from './config/appConfig';
 
 import { Header } from './components/common/Header';
 import { Footer } from './components/common/Footer';
-import { KeyboardShortcutsModal } from './components/common/KeyboardShortcutsModal';
-import { TeacherPasswordModal } from './components/common/TeacherPasswordModal';
-import { ClearDataConfirmModal } from './components/common/ClearDataConfirmModal';
-import { StudentSetupModal } from './components/student/StudentSetupModal';
 import { OfflineNotice } from './components/common/OfflineNotice';
 import { LandingPage } from './components/landing/LandingPage';
 
@@ -24,6 +20,12 @@ const TeacherDashboard = React.lazy(() => import('./components/teacher/TeacherDa
 const ShowcasePage = React.lazy(() => import('./components/showcase/ShowcasePage').then(m => ({ default: m.ShowcasePage })));
 const ExcelDashboard = React.lazy(() => import('./components/excel/ExcelDashboard').then(m => ({ default: m.ExcelDashboard })));
 const ExcelWorkbench = React.lazy(() => import('./components/excel/ExcelWorkbench').then(m => ({ default: m.ExcelWorkbench })));
+
+// Lazy-loaded modals (never loaded until explicitly triggered)
+const KeyboardShortcutsModal = React.lazy(() => import('./components/common/KeyboardShortcutsModal').then(m => ({ default: m.KeyboardShortcutsModal })));
+const TeacherPasswordModal = React.lazy(() => import('./components/common/TeacherPasswordModal').then(m => ({ default: m.TeacherPasswordModal })));
+const ClearDataConfirmModal = React.lazy(() => import('./components/common/ClearDataConfirmModal').then(m => ({ default: m.ClearDataConfirmModal })));
+const StudentSetupModal = React.lazy(() => import('./components/student/StudentSetupModal').then(m => ({ default: m.StudentSetupModal })));
 
 // Inline lightweight view loader
 const ViewLoader: React.FC = () => (
@@ -289,44 +291,47 @@ export function App() {
       {/* Brand Footer */}
       <Footer />
 
-      {/* Student Setup Gate Modal */}
-      {isStudentSetupOpen && (
-        <StudentSetupModal
-          initialIdentity={studentProgress.studentIdentity}
-          onSave={handleSaveStudentIdentity}
-          onCancel={() => {
-            setIsStudentSetupOpen(false);
-            setPendingPracticeStart(false);
-          }}
-          canCancel={!pendingPracticeStart && !!studentProgress.studentIdentity}
-        />
-      )}
+      {/* Modals wrapped in lightweight Suspense */}
+      <React.Suspense fallback={null}>
+        {/* Student Setup Gate Modal */}
+        {isStudentSetupOpen && (
+          <StudentSetupModal
+            initialIdentity={studentProgress.studentIdentity}
+            onSave={handleSaveStudentIdentity}
+            onCancel={() => {
+              setIsStudentSetupOpen(false);
+              setPendingPracticeStart(false);
+            }}
+            canCancel={!pendingPracticeStart && !!studentProgress.studentIdentity}
+          />
+        )}
 
-      {/* Teacher Password Gate Modal */}
-      {isTeacherPasswordOpen && (
-        <TeacherPasswordModal
-          onSuccess={() => {
-            setIsTeacherPasswordOpen(false);
-            setCurrentRole('teacher');
-            setActiveView('teacher-dashboard');
-            window.location.hash = 'teacher';
-          }}
-          onCancel={() => setIsTeacherPasswordOpen(false)}
-        />
-      )}
+        {/* Teacher Password Gate Modal */}
+        {isTeacherPasswordOpen && (
+          <TeacherPasswordModal
+            onSuccess={() => {
+              setIsTeacherPasswordOpen(false);
+              setCurrentRole('teacher');
+              setActiveView('teacher-dashboard');
+              window.location.hash = 'teacher';
+            }}
+            onCancel={() => setIsTeacherPasswordOpen(false)}
+          />
+        )}
 
-      {/* Clear All Data Confirmation Modal */}
-      {isClearDataOpen && (
-        <ClearDataConfirmModal
-          onConfirm={handleConfirmClearData}
-          onCancel={() => setIsClearDataOpen(false)}
-        />
-      )}
+        {/* Clear All Data Confirmation Modal */}
+        {isClearDataOpen && (
+          <ClearDataConfirmModal
+            onConfirm={handleConfirmClearData}
+            onCancel={() => setIsClearDataOpen(false)}
+          />
+        )}
 
-      {/* Keyboard Shortcuts Modal */}
-      {isShortcutsOpen && (
-        <KeyboardShortcutsModal onClose={() => setIsShortcutsOpen(false)} />
-      )}
+        {/* Keyboard Shortcuts Modal */}
+        {isShortcutsOpen && (
+          <KeyboardShortcutsModal onClose={() => setIsShortcutsOpen(false)} />
+        )}
+      </React.Suspense>
 
       {/* Offline Status Popup (unobtrusive pill) */}
       <OfflineNotice />

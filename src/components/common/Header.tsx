@@ -34,7 +34,7 @@ interface HeaderProps {
   timerLimitSeconds?: number;
 }
 
-export const Header: React.FC<HeaderProps> = ({
+export const Header: React.FC<HeaderProps> = React.memo(({
   currentRole,
   activeView,
   setActiveView,
@@ -53,14 +53,15 @@ export const Header: React.FC<HeaderProps> = ({
   timerElapsedSeconds = 0,
   timerLimitSeconds = 600
 }) => {
+  const isPractice = activeView === 'practice';
+  const isOvertime = isPractice && timerElapsedSeconds > timerLimitSeconds;
+  const overtimeSeconds = isOvertime ? timerElapsedSeconds - timerLimitSeconds : 0;
+
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
     const s = secs % 60;
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
-
-  const isOvertime = timerElapsedSeconds > timerLimitSeconds;
-  const overtimeSeconds = isOvertime ? timerElapsedSeconds - timerLimitSeconds : 0;
 
   return (
     <header className="app-header">
@@ -265,4 +266,4 @@ export const Header: React.FC<HeaderProps> = ({
       )}
     </header>
   );
-};
+});

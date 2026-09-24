@@ -2,16 +2,7 @@ import React from 'react';
 import { 
   Play, 
   UserCheck, 
-  Trophy, 
-  ArrowRight, 
-  CheckCircle2, 
-  FileText, 
-  Table, 
-  Award, 
-  Target, 
   Sparkles, 
-  ShieldCheck, 
-  Layers,
   FileSpreadsheet
 } from 'lucide-react';
 import { LEVELS_INFO } from '../../data/stagesConfig';
@@ -24,81 +15,61 @@ interface LandingPageProps {
   onOpenExcel?: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({
+const STEPS = [
+  { title: '1. UID Entry', desc: 'Input or load assigned student reference UID' },
+  { title: '2. Source Record', desc: 'Dossier archives loaded in authentic reference viewer' },
+  { title: '3. Data Entry', desc: 'Type into multi-control forms, tables, and marksheets' },
+  { title: '4. Review Screen', desc: 'Inspect completed fields and catch blanks before submit' },
+  { title: '5. Validation Engine', desc: 'Exact character-level verification & accuracy % scoring' },
+  { title: '6. EXP & Titles', desc: 'Earn verified EXP and unlock professional operator titles' }
+];
+
+export const LandingPage: React.FC<LandingPageProps> = React.memo(({
   onStartPractice,
   onOpenTeacherMode,
   onOpenDashboard,
   onOpenShowcase,
   onOpenExcel
 }) => {
-  const steps = [
-    { title: '1. UID Entry', desc: 'Input or load assigned student reference UID' },
-    { title: '2. Source Record', desc: 'Dossier archives loaded in authentic reference viewer' },
-    { title: '3. Data Entry', desc: 'Type into multi-control forms, tables, and marksheets' },
-    { title: '4. Review Screen', desc: 'Inspect completed fields and catch blanks before submit' },
-    { title: '5. Validation Engine', desc: 'Exact character-level verification & accuracy % scoring' },
-    { title: '6. EXP & Titles', desc: 'Earn verified EXP and unlock professional operator titles' }
-  ];
-
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+    <div className="landing-root">
       {/* Hero Section */}
-      <section style={{
-        background: 'linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-main) 100%)',
-        borderBottom: '1px solid var(--border-light)',
-        padding: '56px 20px 64px',
-        textAlign: 'center'
-      }}>
-        <div style={{ maxWidth: '840px', margin: '0 auto' }}>
-          {/* Logo Brand Header - uses logo-icst.png as requested for marked hero area */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '14px', marginBottom: '24px' }}>
+      <section className="landing-hero">
+        <div className="landing-hero-inner">
+          {/* Logo Brand Header */}
+          <div className="landing-brand-header">
             <img 
               src="/logo-icst.png" 
               alt="ICST Chowberia Logo" 
-              style={{ width: '72px', height: '72px', objectFit: 'contain' }} 
+              className="landing-brand-logo"
+              width="72"
+              height="72"
+              loading="eager"
             />
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--icst-blue-dark)' }}>
+            <div className="landing-brand-text">
+              <div className="landing-inst-name">
                 Institute of Computer Science and Technology Chowberia
               </div>
-              <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)' }}>
+              <div className="landing-inst-sub">
                 ICST - CHOWBERIA • DATA ENTRY TRAINING SYSTEM
               </div>
             </div>
           </div>
 
-          <h1 style={{
-            fontSize: '44px',
-            fontWeight: 800,
-            color: 'var(--icst-charcoal)',
-            lineHeight: 1.15,
-            letterSpacing: '-0.8px',
-            marginBottom: '16px'
-          }}>
+          <h1 className="landing-hero-title">
             MASTER THE ART OF DATA ENTRY
           </h1>
 
-          <p style={{
-            fontSize: '20px',
-            color: 'var(--icst-slate)',
-            fontWeight: 500,
-            marginBottom: '12px'
-          }}>
+          <p className="landing-hero-tagline">
             Practice. Improve. Achieve.
           </p>
 
-          <p style={{
-            fontSize: '15px',
-            color: 'var(--text-secondary)',
-            maxWidth: '660px',
-            margin: '0 auto 32px',
-            lineHeight: 1.6
-          }}>
+          <p className="landing-hero-desc">
             A professional training platform simulating realistic academic admissions, state board marksheets (WBBSE, WBCHSE, CBSE), and structured governmental databases with zero-error precision scoring.
           </p>
 
           {/* CTA Buttons */}
-          <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '14px' }}>
+          <div className="landing-cta-cluster">
             <button
               type="button"
               className="btn btn-primary btn-lg"
@@ -141,56 +112,28 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
       </section>
 
-      {/* Visual Workflow Steps */}
-      <section style={{ padding: '48px 20px', background: 'var(--bg-surface)', borderBottom: '1px solid var(--border-light)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-            <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--icst-charcoal)' }}>
+      {/* Visual Workflow Steps (Optimized with content-visibility to eliminate forced reflows) */}
+      <section className="landing-section-workflow">
+        <div className="landing-container">
+          <div className="landing-section-header">
+            <h2 className="landing-section-title">
               Authentic Operator Training Workflow
             </h2>
-            <p style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
+            <p className="landing-section-sub">
               From UID lookup to live character verification and internal batch title certification.
             </p>
           </div>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-            gap: '16px'
-          }}>
-            {steps.map((st, i) => (
-              <div 
-                key={i}
-                style={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border-light)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '18px 14px',
-                  textAlign: 'center',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center'
-                }}
-              >
-                <div style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  background: 'var(--icst-blue-soft)',
-                  color: 'var(--icst-blue-dark)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 800,
-                  fontSize: '14px',
-                  marginBottom: '10px'
-                }}>
+          <div className="landing-steps-grid">
+            {STEPS.map((st, i) => (
+              <div key={i} className="landing-step-card">
+                <div className="landing-step-badge">
                   {i + 1}
                 </div>
-                <div style={{ fontWeight: 700, fontSize: '14px', color: 'var(--text-primary)', marginBottom: '4px' }}>
+                <div className="landing-step-title">
                   {st.title}
                 </div>
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                <div className="landing-step-desc">
                   {st.desc}
                 </div>
               </div>
@@ -199,62 +142,43 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
       </section>
 
-      {/* 5-Level Curriculum Highlights */}
-      <section style={{ padding: '48px 20px', background: 'var(--bg-main)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--icst-charcoal)' }}>
+      {/* 5-Level Curriculum Highlights (Optimized with content-visibility) */}
+      <section className="landing-section-levels">
+        <div className="landing-container">
+          <div className="landing-section-header">
+            <h2 className="landing-section-title">
               Progressive 5-Level Mastery Program
             </h2>
-            <p style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
+            <p className="landing-section-sub">
               From beginner field controls to expert 100% zero-tolerance board marksheets.
             </p>
           </div>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '16px'
-          }}>
+          <div className="landing-levels-grid">
             {LEVELS_INFO.map(lvl => (
-              <div 
-                key={lvl.levelNumber}
-                style={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border-light)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '20px',
-                  boxShadow: 'var(--shadow-sm)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between'
-                }}
-              >
+              <div key={lvl.levelNumber} className="landing-level-card">
                 <div>
-                  <div style={{
-                    display: 'inline-block',
-                    background: lvl.color,
-                    color: '#ffffff',
-                    fontSize: '11px',
-                    fontWeight: 800,
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    marginBottom: '8px'
-                  }}>
+                  <div 
+                    className="landing-level-tag"
+                    style={{ background: lvl.color }}
+                  >
                     LEVEL {lvl.levelNumber}
                   </div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
+                  <h3 className="landing-level-title">
                     {lvl.title}
                   </h3>
-                  <div style={{ fontSize: '12px', fontWeight: 600, color: lvl.color, marginBottom: '8px' }}>
+                  <div 
+                    className="landing-level-target"
+                    style={{ color: lvl.color }}
+                  >
                     Pass Target: {lvl.requiredAccuracy}% Accuracy
                   </div>
-                  <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                  <p className="landing-level-desc">
                     {lvl.description}
                   </p>
                 </div>
 
-                <div style={{ marginTop: '16px', paddingTop: '10px', borderTop: '1px solid var(--border-light)', fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)' }}>
+                <div className="landing-level-footer">
                   Title: <strong>{lvl.badgeTitle}</strong>
                 </div>
               </div>
@@ -264,4 +188,4 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
     </div>
   );
-};
+});
