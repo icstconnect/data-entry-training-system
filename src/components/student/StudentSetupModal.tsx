@@ -86,7 +86,7 @@ export const StudentSetupModal: React.FC<StudentSetupModalProps> = ({
                   type="text"
                   className="field-input"
                   style={{ paddingLeft: '34px' }}
-                  placeholder="e.g. Akash Sarkar"
+                  placeholder="e.g. Sourav Ghosh"
                   value={name}
                   onChange={e => {
                     setName(e.target.value);

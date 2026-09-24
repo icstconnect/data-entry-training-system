@@ -32,7 +32,7 @@ const FIRST_NAMES_FEMALE = [
 
 const LAST_NAMES = [
   'Ghosh', 'Biswas', 'Roy', 'Mukherjee', 'Banerjee', 'Chakraborty', 'Mondal', 'Dutta',
-  'Saha', 'Bhowmick', 'Majumdar', 'Paul', 'Sarkar', 'Chatterjee', 'Das', 'Sen'
+  'Saha', 'Bhowmick', 'Majumdar', 'Paul', 'Kundu', 'Chatterjee', 'Das', 'Sen'
 ];
 
 const GUARDIAN_PREFIXES = ['Shri', 'Late', 'Dr.'];
