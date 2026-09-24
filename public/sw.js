@@ -3,7 +3,7 @@
    Institute of Computer Science and Technology Chowberia
    ========================================================================== */
 
-const CACHE_NAME = 'icst-data-entry-v2';
+const CACHE_NAME = 'icst-data-entry-v3';
 
 // Core static assets to cache immediately upon install
 const PRECACHE_ASSETS = [
@@ -12,6 +12,10 @@ const PRECACHE_ASSETS = [
   '/manifest.json',
   '/logo.png',
   '/logo-icst.png',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/icon-maskable-192.png',
+  '/icon-maskable-512.png',
   '/favicon.svg',
   '/icons.svg'
 ];
