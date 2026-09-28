@@ -310,6 +310,8 @@ export function App() {
 
           {activeView === 'windows' && windowsState.inWorkbench && (
             <WindowsWorkbench
+              initialMode={windowsState.mode}
+              initialLevel={windowsState.level}
               onExpAwarded={handleExpAwarded}
               onBackToDashboard={() => setWindowsState(s => ({ ...s, inWorkbench: false }))}
             />

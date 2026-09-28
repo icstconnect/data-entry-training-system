@@ -97,9 +97,14 @@ export const CurriculumModal: React.FC<CurriculumModalProps> = ({
                     {lvl.badge}
                   </span>
                 </div>
-                <p style={{ fontSize: '12px', color: '#cbd5e1', margin: 0, lineHeight: 1.45 }}>
+                <p style={{ fontSize: '12px', color: '#cbd5e1', margin: '0 0 6px 0', lineHeight: 1.45 }}>
                   {lvl.goal}
                 </p>
+                {lvl.goalBn && (
+                  <div style={{ fontSize: '11px', color: '#bfdbfe', background: 'rgba(0,0,0,0.25)', padding: '6px 8px', borderRadius: '4px' }}>
+                    <strong style={{ color: '#60a5fa' }}>বাংলা লক্ষ্য:</strong> {lvl.goalBn}
+                  </div>
+                )}
               </div>
             ))
           ) : (
@@ -124,8 +129,13 @@ export const CurriculumModal: React.FC<CurriculumModalProps> = ({
                 <p style={{ fontSize: '12px', color: '#cbd5e1', margin: '0 0 6px 0', lineHeight: 1.45 }}>
                   {lvl.goal}
                 </p>
-                <div style={{ fontSize: '11px', color: '#a7f3d0', fontStyle: 'italic', background: 'rgba(0,0,0,0.25)', padding: '6px 8px', borderRadius: '4px' }}>
-                  বাংলা: {lvl.bilingualGuide.bn}
+                {lvl.goalBn && (
+                  <div style={{ fontSize: '11px', color: '#a7f3d0', background: 'rgba(0,0,0,0.25)', padding: '6px 8px', borderRadius: '4px', marginBottom: '6px' }}>
+                    <strong style={{ color: '#34d399' }}>বাংলা লক্ষ্য:</strong> {lvl.goalBn}
+                  </div>
+                )}
+                <div style={{ fontSize: '11px', color: '#6ee7b7', fontStyle: 'italic', background: 'rgba(0,0,0,0.18)', padding: '5px 8px', borderRadius: '4px' }}>
+                  গাইড: {lvl.bilingualGuide.bn}
                 </div>
               </div>
             ))

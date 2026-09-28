@@ -293,6 +293,7 @@ export const FILE_MANAGEMENT_LEVELS: Record<number, FileManagementLevel> = {
     title: "Level 3: ISO 8601 & Archiving (Class 8-9)",
     badge: "Class 8-9: Naming Conventions",
     goal: "Clean up confusing names (like 'final_v2_EDIT'). Move outdated revisions into '_Archive' and ensure current files follow the 'YYYY-MM-DD_Subject_v#' standard.",
+    goalBn: "অগোছালো নামের খসড়া ফাইলগুলো বাতিল করে '_Archive' ফোল্ডারে রাখুন এবং আন্তর্জাতিক তারিখ ফরম্যাট (YYYY-MM-DD) যুক্ত সচল ফাইলগুলো 'Current_Drafts'-এ সংরক্ষণ করুন।",
     targetFolders: [
       { 
         id: 'f_active', 
@@ -393,6 +394,7 @@ export const FILE_MANAGEMENT_LEVELS: Record<number, FileManagementLevel> = {
     title: "Level 4: Studio Pipeline (Class 10-11)",
     badge: "Class 10-11: Studio Workflow",
     goal: "Separate raw immutable assets, work-in-progress project source files, and final client deliverables.",
+    goalBn: "স্টুডিও মিডিয়া পাইপলাইনের উপাদানগুলোকে ৩ ভাগে বিভক্ত করুন: মূল অপরিবর্তিত ফাইল '01_Raw_Assets', চলমান কাজের ফাইল '02_Workings_Scripts' এবং চূড়ান্ত রিলিজ ফাইল '03_Final_Deliverables'।",
     targetFolders: [
       { 
         id: 'f_raw', 
@@ -502,6 +504,7 @@ export const FILE_MANAGEMENT_LEVELS: Record<number, FileManagementLevel> = {
     title: "Level 5: AI Data Pipeline (Class 11 AI)",
     badge: "Class 11 AI: Data Architecture",
     goal: "Construct a professional Machine Learning project architecture: Unprocessed dirty data, cleaned feature datasets, model prompts & weights, and validation audit reports.",
+    goalBn: "পেশাদার মেশিন লার্নিং প্রজেক্টের আর্কিটেকচার তৈরি করুন: অপরিশোধিত ডেটা 'data_raw_unprocessed', পরিশোধিত ডেটা 'data_clean_training', মডেল ও প্রম্পট 'models_and_prompts' এবং মূল্যায়ন রিপোর্ট 'reports_and_eval'।",
     targetFolders: [
       { 
         id: 'f_dir_raw', 
@@ -626,6 +629,7 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
     title: "Level 1: Creation & Cleanup Basics (Class 3-4)",
     badge: "Class 3-4: Folder Basics",
     goal: "Create standard media folders in your workspace: 'Photos', 'Homework', 'Music', and 'Projects'. Delete clutter/junk folders like 'New Folder (1)' and 'temp_junk_delete_me' to the Recycle Bin.",
+    goalBn: "আপনার ওয়ার্কস্পেসে ৪টি প্রধান ফোল্ডার তৈরি করুন: 'Photos', 'Homework', 'Music' এবং 'Projects'। এরপর অপ্রয়োজনীয় ও বাতিল ফোল্ডার 'New Folder (1)' এবং 'temp_junk_delete_me' ডিলিট করে রিসাইকেল বিনে পাঠান।",
     instructions: [
       "Click '➕ New folder' on the ribbon to create 'Photos', 'Homework', 'Music', and 'Projects'.",
       "Select 'New Folder (1)' and 'temp_junk_delete_me' and press Delete (or click 🗑️ Delete) to send them to the Recycle Bin.",
@@ -693,6 +697,7 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
     title: "Level 2: Subfolder Nesting & Renaming (Class 5-6)",
     badge: "Class 5-6: Subfolder Nesting",
     goal: "Create a root directory 'School_Work'. Inside 'School_Work', create subfolders: 'Term_1', 'Term_2', 'Exams', and 'Assignments'. Rename the existing messy 'Untitled_Folder' to 'Assignments'.",
+    goalBn: "'School_Work' মূল ফোল্ডারের ভেতর ৪টি সাব-ফোল্ডার তৈরি করুন: 'Term_1', 'Term_2', 'Exams' এবং 'Assignments'। বাইরে থাকা 'Untitled_Folder'-টিকে রিনেম করে 'Assignments' নাম দিন ও সঠিক স্থানে রাখুন।",
     instructions: [
       "Ensure 'School_Work' folder exists in root.",
       "Double click into 'School_Work' and create subfolders: 'Term_1', 'Term_2', and 'Exams'.",
@@ -763,6 +768,7 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
     title: "Level 3: Multi-Tier Departmental Tree (Class 7-8)",
     badge: "Class 7-8: Hierarchy Tree",
     goal: "Construct a 3-tier deep curriculum structure: Root 'Academics' containing 'Science' (subfolders: 'Physics', 'Chemistry', 'Biology'), 'Commerce' (subfolders: 'Accounting', 'Economics'), and 'Humanities' (subfolders: 'History', 'Geography'). Delete empty duplicate 'test_copy_delete'.",
+    goalBn: "৩ স্তরের শিক্ষা বিষয়ক ডিরেক্টরি ট্রি তৈরি করুন: মূল ফোল্ডার 'Academics'-এর ভেতর ৩টি শাখা 'Science', 'Commerce' ও 'Humanities' বানান। এরপর প্রতিটি শাখার ভেতরে বিষয়ভিত্তিক সাব-ফোল্ডার তৈরি করুন এবং বাতিল ফোল্ডার 'test_copy_delete' মুছে ফেলুন।",
     instructions: [
       "In Workspace Root, create 'Academics'.",
       "Inside 'Academics', create 3 faculty folders: 'Science', 'Commerce', and 'Humanities'.",
@@ -839,6 +845,7 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
     title: "Level 4: Corporate Departmental Tree (Class 9-10)",
     badge: "Class 9-10: Corporate Admin",
     goal: "Construct an official enterprise office directory 'Company_HQ': Human_Resources ('Onboarding', 'Payroll', 'Leave_Records'), Finance_Accounts ('Invoices_2026', 'Tax_Audits', 'Budgets'), and Operations ('Logistics', 'Vendor_Contracts'). Rename 'old_hr_stuff' to 'HR_Archives'.",
+    goalBn: "কোম্পানির হেডকোয়ার্টার 'Company_HQ'-এর ভেতর ৩টি বিভাগ বানান: Human_Resources (Onboarding, Payroll, Leave_Records), Finance_Accounts (Invoices_2026, Tax_Audits, Budgets) এবং Operations (Logistics, Vendor_Contracts)। 'old_hr_stuff'-কে রিনেম করে 'HR_Archives' রাখুন।",
     instructions: [
       "In Workspace Root, create 'Company_HQ'.",
       "Inside 'Company_HQ', build 3 corporate divisions: 'Human_Resources', 'Finance_Accounts', and 'Operations'.",
@@ -929,6 +936,7 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
     title: "Level 5: Software & Web Project Architecture (Class 10-11)",
     badge: "Class 10-11: Web DevOps",
     goal: "Construct a professional production web app codebase structure: Root 'Web_Project' with 'src' (subfolders: 'components', 'services', 'types', 'assets'), 'public' (subfolders: 'images', 'fonts'), and 'docs' (subfolders: 'api_specs', 'changelogs'). Delete 'temp_build_cache' and 'scratch_junk'.",
+    goalBn: "প্রফেশনাল ওয়েব প্রজেক্টের কোডবেস ডিরেক্টরি 'Web_Project' তৈরি করুন: 'src' (components, services, types, assets), 'public' (images, fonts) এবং 'docs' (api_specs, changelogs)। ক্ষতিকর ও অস্থায়ী বিল্ড ক্যাশ ফোল্ডার দুটি ডিলিট করুন।",
     instructions: [
       "In Workspace Root, create 'Web_Project'.",
       "Inside 'Web_Project', create 3 standard codebase directories: 'src', 'public', and 'docs'.",
@@ -1015,6 +1023,7 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
     title: "Level 6: Media Studio & Production Pipeline (Class 11-12)",
     badge: "Class 11-12: Studio Pipeline",
     goal: "Construct a numbered sequence studio workflow: Root 'Film_Production' with '01_Pre_Production' ('Scripts', 'Storyboards', 'Casting'), '02_Production' ('Camera_A', 'Camera_B', 'Audio_Stems'), '03_Post_Production' ('VFX_Comps', 'Color_Grade', 'Sound_Mix'), and '04_Exports' ('ProRes_Masters', 'Web_H264'). Delete 'random_shots_delete' and 'test_renders_old'.",
+    goalBn: "মিডিয়া স্টুডিওর ধারাবাহিক পর্যায়ভিত্তিক ফোল্ডার ট্রি 'Film_Production' তৈরি করুন: '01_Pre_Production', '02_Production', '03_Post_Production' এবং '04_Exports'। এরপর প্রতিটি ধাপের ভেতরের সাব-ফোল্ডারগুলো তৈরি করে বাতিল ফুটেজের ফোল্ডারগুলো ডিলিট করুন।",
     instructions: [
       "In Workspace Root, create 'Film_Production'.",
       "Inside 'Film_Production', build 4 numbered pipeline stages: '01_Pre_Production', '02_Production', '03_Post_Production', '04_Exports'.",
@@ -1114,6 +1123,7 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
     title: "Level 7: Enterprise Cloud / Datacenter Infrastructure (Class 12 / Pro)",
     badge: "Professional: Cloud Architecture",
     goal: "Construct a mission-critical cloud infrastructure hierarchy: Root 'Cloud_Infrastructure' with 'Environments' ('Production' with 'App_Cluster', 'Database_Replica', 'SSL_Certs'; 'Staging' with 'QA_Tests', 'Pre_Release'; 'Development' with 'Local_Containers', 'Sandbox'), 'Backups' ('Daily_Snapshots', 'Disaster_Recovery'), and 'Security_Audits' ('Access_Logs_2026', 'Penetration_Reports'). Delete security hazards 'unsecured_dump' and 'test_keys_leak'.",
+    goalBn: "ক্লাউড সার্ভার ও ডাটা সেন্টারের নিরাপদ পরিকাঠামো 'Cloud_Infrastructure' তৈরি করুন: Environments (Production, Staging, Development), Backups (Daily_Snapshots, Disaster_Recovery) এবং Security_Audits (Access_Logs_2026, Penetration_Reports)। নিরাপত্তা লঙ্ঘনকারী ফোল্ডার 'unsecured_dump' ও 'test_keys_leak' তৎক্ষণাৎ মুছে ফেলুন।",
     instructions: [
       "In Workspace Root, create 'Cloud_Infrastructure'.",
       "Inside 'Cloud_Infrastructure', create 3 core tiers: 'Environments', 'Backups', and 'Security_Audits'.",
@@ -1297,4 +1307,14 @@ export const WINDOWS_ACHIEVEMENTS: Achievement[] = [
     id: 'win_devops_structure',
     title: 'DevOps Pipeline Organizer',
     description: 'Engineered a modern web application repository structure (src, public, docs) and pruned build caches in Folder Management Level 5.',
-  
+    iconName: 'Code',
+    badgeLevel: 4
+  },
+  {
+    id: 'win_cloud_grandmaster',
+    title: 'Master Systems Architect',
+    description: 'Mastered production studio sequencing (Level 6) and mission-critical cloud datacenter environments (Level 7) with 100% precision.',
+    iconName: 'Cloud',
+    badgeLevel: 5
+  }
+];

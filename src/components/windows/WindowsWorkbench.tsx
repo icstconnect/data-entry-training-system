@@ -33,17 +33,47 @@ import { AchievementsModal } from './modals/AchievementsModal';
 import './windows.css';
 
 interface WindowsWorkbenchProps {
+  initialMode?: WindowsSimulationMode;
+  initialLevel?: number;
   onExpAwarded?: (exp: number) => void;
   onBackToDashboard?: () => void;
 }
 
 export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
+  initialMode = 'file_management',
+  initialLevel,
   onExpAwarded,
   onBackToDashboard
 }) => {
   // Modes & Levels
-  const [mode, setMode] = useState<WindowsSimulationMode>('file_management');
-  const [windowsProgress, setWindowsProgress] = useState<WindowsProgress>(() => loadWindowsProgress());
+  const [mode, setMode] = useState<WindowsSimulationMode>(initialMode);
+  const [windowsProgress, setWindowsProgress] = useState<WindowsProgress>(() => {
+    const p = loadWindowsProgress();
+    if (initialLevel) {
+      if (initialMode === 'file_management') {
+        p.fileManagementCurrentLevel = initialLevel;
+      } else {
+        p.folderManagementCurrentLevel = initialLevel;
+      }
+    }
+    return p;
+  });
+
+  // Keep mode & level synced if launched from dashboard with specific mode/level
+  useEffect(() => {
+    if (initialMode && initialMode !== mode) {
+      setMode(initialMode);
+    }
+    if (initialLevel) {
+      setWindowsProgress(prev => {
+        const key = initialMode === 'file_management' ? 'fileManagementCurrentLevel' : 'folderManagementCurrentLevel';
+        if (prev[key] !== initialLevel) {
+          return { ...prev, [key]: initialLevel };
+        }
+        return prev;
+      });
+    }
+  }, [initialMode, initialLevel]);
   
   const currentLevel = mode === 'file_management' 
     ? windowsProgress.fileManagementCurrentLevel 

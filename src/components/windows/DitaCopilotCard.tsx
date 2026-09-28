@@ -172,9 +172,26 @@ export const DitaCopilotCard: React.FC<DitaCopilotCardProps> = ({
         background: isFileMode ? 'rgba(30, 58, 138, 0.35)' : 'rgba(6, 78, 59, 0.35)',
         padding: '10px',
         borderRadius: '8px',
-        border: `1px solid ${isFileMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`
+        border: `1px solid ${isFileMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '6px'
       }}>
-        <strong style={{ color: isFileMode ? '#93c5fd' : '#6ee7b7' }}>Objective:</strong> {currentLevelData?.goal}
+        <div>
+          <strong style={{ color: isFileMode ? '#93c5fd' : '#6ee7b7' }}>Objective:</strong> {currentLevelData?.goal}
+        </div>
+        {currentLevelData?.goalBn && (
+          <div style={{
+            fontSize: '11px',
+            color: isFileMode ? '#bfdbfe' : '#a7f3d0',
+            background: 'rgba(0, 0, 0, 0.25)',
+            padding: '6px 8px',
+            borderRadius: '6px',
+            lineHeight: 1.45
+          }}>
+            <strong style={{ color: isFileMode ? '#60a5fa' : '#34d399' }}>বাংলা লক্ষ্য:</strong> {currentLevelData.goalBn}
+          </div>
+        )}
       </div>
 
       {/* Live Organization Status */}
