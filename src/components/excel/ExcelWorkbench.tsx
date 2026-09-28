@@ -32,7 +32,8 @@ import {
   HardDrive,
   Columns,
   Maximize2,
-  BookOpen
+  BookOpen,
+  X
 } from 'lucide-react';
 
 interface ExcelWorkbenchProps {
@@ -78,6 +79,7 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
   const [isEvalModalOpen, setIsEvalModalOpen] = useState<boolean>(false);
   const [shareAchievement, setShareAchievement] = useState<Achievement | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState<boolean>(false);
 
   const gridViewportRef = useRef<HTMLDivElement | null>(null);
   const inlineInputRef = useRef<HTMLInputElement | null>(null);
@@ -315,13 +317,26 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
     }
   };
 
-  // Reset/Clear Grid
+  // Reset/Clear Grid In-App Dialog Handlers
   const handleResetGrid = () => {
-    if (window.confirm('Are you sure you want to clear all entered data in this Excel sheet?')) {
-      setGridData({});
-      setActiveCell({ row: 0, col: 0 });
-      setIsEditing(false);
-    }
+    setIsResetConfirmOpen(true);
+  };
+
+  const handleConfirmReset = () => {
+    setGridData({});
+    setActiveCell({ row: 0, col: 0 });
+    setIsEditing(false);
+    setIsResetConfirmOpen(false);
+    setTimeout(() => {
+      workbenchRootRef.current?.focus();
+    }, 50);
+  };
+
+  const handleCancelReset = () => {
+    setIsResetConfirmOpen(false);
+    setTimeout(() => {
+      workbenchRootRef.current?.focus();
+    }, 50);
   };
 
   // Export entered data as CSV file
@@ -863,6 +878,121 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
           achievement={shareAchievement || undefined}
           onClose={() => setIsShareModalOpen(false)}
         />
+      )}
+
+      {/* In-App Confirmation Modal: Clear Excel Draft */}
+      {isResetConfirmOpen && (
+        <div className="modal-overlay" style={{ zIndex: 1300 }} onClick={handleCancelReset}>
+          <div className="modal-card" style={{ maxWidth: '440px', padding: 0, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
+            <div style={{
+              background: 'linear-gradient(135deg, #107c41, #0b5a2f)',
+              color: '#ffffff',
+              padding: '16px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <RotateCcw size={18} color="#ffffff" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '15px', fontWeight: 800, margin: 0 }}>
+                    Clear Excel Draft?
+                  </h3>
+                  <span style={{ fontSize: '11px', opacity: 0.85 }}>
+                    {level.sheetName}.xlsx • Level {level.levelNumber}
+                  </span>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onClick={handleCancelReset}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  opacity: 0.8,
+                  padding: '4px'
+                }}
+                title="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="modal-body" style={{ padding: '20px', color: 'var(--text-primary)', fontSize: '13px', lineHeight: 1.5 }}>
+              <p style={{ margin: '0 0 12px 0' }}>
+                Are you sure you want to clear all entered data in this Excel worksheet?
+              </p>
+              <div style={{
+                background: '#fffbeb',
+                border: '1px solid #fde68a',
+                borderRadius: '8px',
+                padding: '10px 12px',
+                color: '#92400e',
+                fontSize: '12px',
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'flex-start'
+              }}>
+                <AlertCircle size={16} color="#d97706" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span>
+                  All {filledCellsCount} entered cells and local draft edits will be reset. The source ledger records will remain unchanged for you to re-type.
+                </span>
+              </div>
+            </div>
+
+            <div className="modal-footer" style={{
+              padding: '12px 20px',
+              background: 'var(--bg-card-header, #f8fafc)',
+              borderTop: '1px solid var(--border-light, #e2e8f0)',
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: '10px'
+            }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleCancelReset}
+                style={{ padding: '8px 16px', fontSize: '12px', fontWeight: 600 }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={handleConfirmReset}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  background: '#dc2626',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer'
+                }}
+                autoFocus
+              >
+                <RotateCcw size={14} />
+                <span>Clear All Cells</span>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
