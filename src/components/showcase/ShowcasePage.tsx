@@ -13,18 +13,30 @@ import {
   ShieldCheck, 
   Send 
 } from 'lucide-react';
+import { StudentIdentity } from '../../types';
 
 interface ShowcasePageProps {
   onStartPractice: () => void;
+  onOpenAchievementShare?: () => void;
+  studentIdentity?: StudentIdentity | null;
+  onPromptStudentSetup?: () => void;
 }
 
-export const ShowcasePage: React.FC<ShowcasePageProps> = ({ onStartPractice }) => {
+export const ShowcasePage: React.FC<ShowcasePageProps> = ({ 
+  onStartPractice,
+  onOpenAchievementShare,
+  studentIdentity,
+  onPromptStudentSetup 
+}) => {
   const [devicePreview, setDevicePreview] = useState<'desktop' | 'mobile'>('desktop');
   const [copiedLink, setCopiedLink] = useState(false);
   const [isSimulating, setIsSimulating] = useState(true);
 
+  const activeStudentName = studentIdentity?.name?.trim() || 'Sourav Ghosh';
+  const activeStudentRoll = studentIdentity?.generatedRollId || 'ICST-2026-001010';
+
   // Live simulation state for the showcase demo
-  const [demoUid, setDemoUid] = useState('ICST-2026-001010');
+  const [demoUid, setDemoUid] = useState(activeStudentRoll);
   const [demoName, setDemoName] = useState('');
   const [demoDob, setDemoDob] = useState('');
   const [demoMarks, setDemoMarks] = useState('');
@@ -45,8 +57,9 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ onStartPractice }) =
         setDemoDob('');
         setDemoMarks('');
         setDemoExpGained(false);
+        setDemoUid(activeStudentRoll);
       } else if (step === 1) {
-        setDemoName('Sourav Ghosh');
+        setDemoName(activeStudentName);
       } else if (step === 2) {
         setDemoDob('2006-05-14');
       } else if (step === 3) {
@@ -57,13 +70,21 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ onStartPractice }) =
     }, 1800);
 
     return () => clearInterval(interval);
-  }, [isSimulating]);
+  }, [isSimulating, activeStudentName, activeStudentRoll]);
 
   // Social Share Handlers
   const shareUrl = window.location.origin;
   const shareText = `*ICST DATA ENTRY LAB* - Institute of Computer Science and Technology Chowberia\n\nPractice high-volume real-world data entry, academic marksheets (WBBSE/WBCHSE/CBSE), and earn EXP with verified accuracy!\n\nTry it free: ${shareUrl}`;
 
   const handleShareWhatsApp = () => {
+    if (!studentIdentity?.name?.trim() && onPromptStudentSetup) {
+      onPromptStudentSetup();
+      return;
+    }
+    if (onOpenAchievementShare) {
+      onOpenAchievementShare();
+      return;
+    }
     const encoded = encodeURIComponent(shareText);
     window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
   };
@@ -90,8 +111,15 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ onStartPractice }) =
     }
   };
 
-  // Generate Downloadable Instagram Story Card (1080 x 1920 portrait)
   const handleDownloadStoryCard = () => {
+    if (!studentIdentity?.name?.trim() && onPromptStudentSetup) {
+      onPromptStudentSetup();
+      return;
+    }
+    if (onOpenAchievementShare) {
+      onOpenAchievementShare();
+      return;
+    }
     const canvas = document.createElement('canvas');
     canvas.width = 1080;
     canvas.height = 1920;
@@ -231,7 +259,13 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ onStartPractice }) =
           <button
             type="button"
             className="btn btn-primary btn-lg"
-            onClick={onStartPractice}
+            onClick={() => {
+              if (!studentIdentity?.name?.trim() && onPromptStudentSetup) {
+                onPromptStudentSetup();
+                return;
+              }
+              onStartPractice();
+            }}
             style={{ background: '#0284c7', borderColor: '#0369a1' }}
           >
             <Play size={16} />
@@ -271,6 +305,40 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ onStartPractice }) =
             <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
               Watch automated high-speed data feeding or switch device views.
             </div>
+
+            {studentIdentity?.name ? (
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#eff6ff', border: '1px solid #bfdbfe', padding: '3px 10px', borderRadius: '12px', fontSize: '11px', color: '#1e40af', fontWeight: 600, marginTop: '6px' }}>
+                <span>Simulating Operator: <strong>{studentIdentity.name}</strong> ({studentIdentity.generatedRollId})</span>
+                {onPromptStudentSetup && (
+                  <button type="button" onClick={onPromptStudentSetup} style={{ background: 'transparent', border: 'none', color: '#2563eb', cursor: 'pointer', textDecoration: 'underline', fontSize: '10px', fontWeight: 700 }}>
+                    Change
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div style={{ marginTop: '6px' }}>
+                <button
+                  type="button"
+                  onClick={onPromptStudentSetup}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: '#fef3c7',
+                    border: '1px solid #fde68a',
+                    padding: '4px 10px',
+                    borderRadius: '12px',
+                    fontSize: '11px',
+                    color: '#92400e',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Sparkles size={12} color="#d97706" />
+                  <span>Student Name Not Set • Click to enter your name for showcase & achievements</span>
+                </button>
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

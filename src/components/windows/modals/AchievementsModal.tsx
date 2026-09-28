@@ -154,14 +154,38 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+          <button 
+            type="button"
+            onClick={() => {
+              onClose();
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('icst_open_universal_share'));
+              }
+            }}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '6px',
+              background: 'linear-gradient(135deg, #0284c7, #2563eb)',
+              border: 'none',
+              color: '#ffffff',
+              fontSize: '12px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <span>📜 View Full Certificates & Diplomas</span>
+          </button>
           <button 
             onClick={onClose}
             style={{
               padding: '6px 18px',
               borderRadius: '6px',
-              background: '#0078d4',
-              border: 'none',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
               color: '#ffffff',
               fontSize: '12px',
               fontWeight: 600,

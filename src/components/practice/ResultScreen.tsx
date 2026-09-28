@@ -15,7 +15,8 @@ import {
   Award,
   ShieldCheck,
   Share2,
-  User
+  User,
+  Eye
 } from 'lucide-react';
 import { playFeedbackSound } from '../../services/storageService';
 import { AchievementShareModal } from '../common/AchievementShareModal';
@@ -255,15 +256,26 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
                 <Trophy size={18} />
                 <span>NEW ACHIEVEMENT UNLOCKED!</span>
               </div>
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={() => setIsShareModalOpen(true)}
-                style={{ background: '#ffffff', borderColor: '#86efac' }}
-              >
-                <Share2 size={13} />
-                <span>Share Card</span>
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => setIsShareModalOpen(true)}
+                  style={{ background: '#ffffff', borderColor: '#86efac', display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <Eye size={13} />
+                  <span>View Achievement</span>
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={() => setIsShareModalOpen(true)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#16a34a', borderColor: '#15803d' }}
+                >
+                  <Share2 size={13} />
+                  <span>Share Achievement</span>
+                </button>
+              </div>
             </div>
             {summary.unlockedAchievements.map(ach => (
               <div key={ach.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#166534', marginTop: '4px' }}>
