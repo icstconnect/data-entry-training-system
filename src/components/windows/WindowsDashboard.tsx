@@ -166,7 +166,7 @@ export const WindowsDashboard: React.FC<WindowsDashboardProps> = ({
                   File Management Lab
                 </h3>
                 <span style={{ fontSize: '12px', color: 'var(--text-muted, #64748b)' }}>
-                  Class 3 to 11 • 5 Progressive Levels
+                  Class 3 to 11 • 5 Progressive Levels • <strong>750 EXP Max</strong>
                 </span>
               </div>
             </div>
@@ -194,6 +194,7 @@ export const WindowsDashboard: React.FC<WindowsDashboardProps> = ({
               const lvlNum = i + 1;
               const isCleared = progress.fileManagementCompleted[lvlNum]?.score === 100;
               const isUnlocked = lvlNum <= progress.fileManagementMaxUnlocked;
+              const expReward = lvlNum * 50;
               return (
                 <button
                   key={lvlNum}
@@ -211,10 +212,13 @@ export const WindowsDashboard: React.FC<WindowsDashboardProps> = ({
                     fontWeight: 700,
                     transition: 'all 0.15s ease'
                   }}
-                  title={isUnlocked ? `Launch Level ${lvlNum}` : `Level ${lvlNum} is locked`}
+                  title={isUnlocked ? `Launch Level ${lvlNum} (+${expReward} EXP)` : `Level ${lvlNum} is locked`}
                 >
                   <div>{isCleared ? '✅' : isUnlocked ? '🔓' : '🔒'}</div>
                   <div style={{ marginTop: '2px' }}>Lvl {lvlNum}</div>
+                  <div style={{ fontSize: '9px', marginTop: '2px', color: isCleared ? '#059669' : isUnlocked ? '#2563eb' : '#94a3b8', fontWeight: 800 }}>
+                    +{expReward} EXP
+                  </div>
                 </button>
               );
             })}
@@ -281,7 +285,7 @@ export const WindowsDashboard: React.FC<WindowsDashboardProps> = ({
                   </span>
                 </div>
                 <span style={{ fontSize: '12px', color: 'var(--text-muted, #64748b)' }}>
-                  Class 3 to Pro • 7 Progressive Levels
+                  Class 3 to Pro • 7 Progressive Levels • <strong>1,400 EXP Max</strong>
                 </span>
               </div>
             </div>
@@ -309,6 +313,7 @@ export const WindowsDashboard: React.FC<WindowsDashboardProps> = ({
               const lvlNum = i + 1;
               const isCleared = progress.folderManagementCompleted[lvlNum]?.score === 100;
               const isUnlocked = lvlNum <= progress.folderManagementMaxUnlocked;
+              const expReward = lvlNum * 50;
               return (
                 <button
                   key={lvlNum}
@@ -326,10 +331,13 @@ export const WindowsDashboard: React.FC<WindowsDashboardProps> = ({
                     fontWeight: 700,
                     transition: 'all 0.15s ease'
                   }}
-                  title={isUnlocked ? `Launch Level ${lvlNum}` : `Level ${lvlNum} is locked`}
+                  title={isUnlocked ? `Launch Level ${lvlNum} (+${expReward} EXP)` : `Level ${lvlNum} is locked`}
                 >
                   <div>{isCleared ? '✅' : isUnlocked ? '🔓' : '🔒'}</div>
                   <div style={{ marginTop: '2px' }}>L{lvlNum}</div>
+                  <div style={{ fontSize: '8px', marginTop: '2px', color: isCleared ? '#059669' : isUnlocked ? '#16a34a' : '#94a3b8', fontWeight: 800 }}>
+                    +{expReward}
+                  </div>
                 </button>
               );
             })}

@@ -177,8 +177,24 @@ export const DitaCopilotCard: React.FC<DitaCopilotCardProps> = ({
         flexDirection: 'column',
         gap: '6px'
       }}>
-        <div>
-          <strong style={{ color: isFileMode ? '#93c5fd' : '#6ee7b7' }}>Objective:</strong> {currentLevelData?.goal}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+          <div>
+            <strong style={{ color: isFileMode ? '#93c5fd' : '#6ee7b7' }}>Objective:</strong> {currentLevelData?.goal}
+          </div>
+          <span style={{
+            fontSize: '10px',
+            fontWeight: 800,
+            color: '#fbbf24',
+            background: 'rgba(245, 158, 11, 0.25)',
+            border: '1px solid rgba(245, 158, 11, 0.4)',
+            padding: '2px 8px',
+            borderRadius: '10px',
+            fontFamily: 'monospace',
+            whiteSpace: 'nowrap',
+            flexShrink: 0
+          }}>
+            +{currentLevel * 50} EXP
+          </span>
         </div>
         {currentLevelData?.goalBn && (
           <div style={{

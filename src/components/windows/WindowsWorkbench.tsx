@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { 
   VirtualFolder, 
   VirtualFile, 
@@ -574,16 +574,22 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
   }, [mode, currentLevel, files, folders, recycleBin]);
 
   // Check 100% completion & unlock
+  const completedLevelsRef = useRef<Set<string>>(new Set());
+
   useEffect(() => {
     if (auditEvaluation.percentage === 100) {
-      const result = recordLevelCompletion(mode, currentLevel, 100);
-      setWindowsProgress(result.updatedProgress);
-      if (result.expEarned > 0 && onExpAwarded) {
-        onExpAwarded(result.expEarned);
-      }
-      if (result.newAchievements.length > 0) {
-        soundEffects.playTone('success');
-        showToast('🏆', `Unlocked Achievement: ${result.newAchievements[0].title}!`);
+      const key = `${mode}_L${currentLevel}`;
+      if (!completedLevelsRef.current.has(key)) {
+        completedLevelsRef.current.add(key);
+        const result = recordLevelCompletion(mode, currentLevel, 100);
+        setWindowsProgress(result.updatedProgress);
+        if (result.expEarned > 0 && onExpAwarded) {
+          onExpAwarded(result.expEarned);
+        }
+        if (result.newAchievements.length > 0) {
+          soundEffects.playTone('success');
+          showToast('🏆', `Unlocked Achievement: ${result.newAchievements[0].title}!`);
+        }
       }
     }
   }, [auditEvaluation.percentage, mode, currentLevel, onExpAwarded, showToast]);

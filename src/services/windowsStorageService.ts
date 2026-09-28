@@ -15,6 +15,23 @@ const DEFAULT_WINDOWS_PROGRESS: WindowsProgress = {
   totalWindowsExp: 0
 };
 
+export function calculateTotalWindowsExp(progress: WindowsProgress): number {
+  let total = 0;
+  Object.entries(progress.fileManagementCompleted || {}).forEach(([lvl, data]) => {
+    if (data && data.score === 100) {
+      total += Number(lvl) * 50;
+    }
+  });
+
+  Object.entries(progress.folderManagementCompleted || {}).forEach(([lvl, data]) => {
+    if (data && data.score === 100) {
+      total += Number(lvl) * 50;
+    }
+  });
+
+  return total;
+}
+
 export function loadWindowsProgress(): WindowsProgress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -28,8 +45,9 @@ export function loadWindowsProgress(): WindowsProgress {
       folderManagementMaxUnlocked: parsed.folderManagementMaxUnlocked || 1,
       folderManagementCompleted: parsed.folderManagementCompleted || {},
       unlockedAchievements: Array.isArray(parsed.unlockedAchievements) ? parsed.unlockedAchievements : [],
-      totalWindowsExp: typeof parsed.totalWindowsExp === 'number' ? parsed.totalWindowsExp : 0
+      totalWindowsExp: 0
     };
+    progress.totalWindowsExp = calculateTotalWindowsExp(progress);
     return syncWindowsAchievements(progress);
   } catch {
     return { ...DEFAULT_WINDOWS_PROGRESS };
@@ -120,7 +138,7 @@ export function recordLevelCompletion(
     }
   }
 
-  current.totalWindowsExp += expEarned;
+  current.totalWindowsExp = calculateTotalWindowsExp(current);
   const synced = syncWindowsAchievements(current);
   saveWindowsProgress(synced);
 

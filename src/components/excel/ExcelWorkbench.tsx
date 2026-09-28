@@ -82,6 +82,7 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
   const gridViewportRef = useRef<HTMLDivElement | null>(null);
   const inlineInputRef = useRef<HTMLInputElement | null>(null);
   const formulaInputRef = useRef<HTMLInputElement | null>(null);
+  const workbenchRootRef = useRef<HTMLDivElement | null>(null);
 
   // Load Saved Draft or Initialize Fresh Grid
   useEffect(() => {
@@ -98,6 +99,9 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
       setLastSavedTime('New Sheet');
     }
     setIsEditing(false);
+    setTimeout(() => {
+      workbenchRootRef.current?.focus();
+    }, 100);
   }, [level.levelNumber]);
 
   // Persistent Timer
@@ -178,37 +182,81 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
     setIsEditing(false);
   }, [activeCell]);
 
+  // Unified Tab navigation: moves to next cell, wrapping to next row 1st cell at the row end
+  const navigateTab = useCallback((shiftKey = false, currentEditValue?: string) => {
+    if (currentEditValue !== undefined) {
+      commitEdit(currentEditValue);
+    } else if (isEditing) {
+      commitEdit(cellEditVal);
+    }
+
+    const totalCols = level.columns.length;
+    const totalRows = level.sourceRecords.length;
+
+    setActiveCell(prev => {
+      if (shiftKey) {
+        if (prev.col > 0) {
+          return { row: prev.row, col: prev.col - 1 };
+        } else if (prev.row > 0) {
+          // Wrap backward to last column of previous row
+          return { row: prev.row - 1, col: totalCols - 1 };
+        }
+        return prev;
+      } else {
+        if (prev.col < totalCols - 1) {
+          return { row: prev.row, col: prev.col + 1 };
+        } else if (prev.row < totalRows - 1) {
+          // At the end of the row -> go to next row 1st cell!
+          return { row: prev.row + 1, col: 0 };
+        }
+        return prev;
+      }
+    });
+
+    setIsEditing(false);
+    setTimeout(() => {
+      workbenchRootRef.current?.focus();
+    }, 0);
+  }, [level.columns.length, level.sourceRecords.length, isEditing, cellEditVal, commitEdit]);
+
+  // Unified Enter navigation: moves down, or up if Shift+Enter
+  const navigateEnter = useCallback((shiftKey = false, currentEditValue?: string) => {
+    if (currentEditValue !== undefined) {
+      commitEdit(currentEditValue);
+    } else if (isEditing) {
+      commitEdit(cellEditVal);
+    }
+
+    const totalRows = level.sourceRecords.length;
+
+    setActiveCell(prev => {
+      if (shiftKey) {
+        return { row: Math.max(0, prev.row - 1), col: prev.col };
+      } else {
+        return { row: Math.min(totalRows - 1, prev.row + 1), col: prev.col };
+      }
+    });
+
+    setIsEditing(false);
+    setTimeout(() => {
+      workbenchRootRef.current?.focus();
+    }, 0);
+  }, [level.sourceRecords.length, isEditing, cellEditVal, commitEdit]);
+
   // Handle Tab, Enter, Arrows, F2, Esc in Grid
   const handleGridKeyDown = (e: React.KeyboardEvent) => {
     if (isEditing) {
       if (e.key === 'Enter') {
         e.preventDefault();
-        commitEdit(cellEditVal);
-        if (e.shiftKey) {
-          moveActiveCell(-1, 0);
-        } else {
-          moveActiveCell(1, 0);
-        }
+        navigateEnter(e.shiftKey, cellEditVal);
       } else if (e.key === 'Tab') {
         e.preventDefault();
-        commitEdit(cellEditVal);
-        if (e.shiftKey) {
-          moveActiveCell(0, -1);
-        } else {
-          if (activeCell.col >= level.columns.length - 1) {
-            // Wrap to next row
-            if (activeCell.row < level.sourceRecords.length - 1) {
-              setActiveCell({ row: activeCell.row + 1, col: 0 });
-              setIsEditing(false);
-            }
-          } else {
-            moveActiveCell(0, 1);
-          }
-        }
+        navigateTab(e.shiftKey, cellEditVal);
       } else if (e.key === 'Escape') {
         e.preventDefault();
         setCellEditVal(currentCellVal);
         setIsEditing(false);
+        workbenchRootRef.current?.focus();
       }
       return;
     }
@@ -216,24 +264,10 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
     // When NOT in inline edit mode
     if (e.key === 'Tab') {
       e.preventDefault();
-      if (e.shiftKey) {
-        moveActiveCell(0, -1);
-      } else {
-        if (activeCell.col >= level.columns.length - 1) {
-          if (activeCell.row < level.sourceRecords.length - 1) {
-            setActiveCell({ row: activeCell.row + 1, col: 0 });
-          }
-        } else {
-          moveActiveCell(0, 1);
-        }
-      }
+      navigateTab(e.shiftKey);
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (e.shiftKey) {
-        moveActiveCell(-1, 0);
-      } else {
-        moveActiveCell(1, 0);
-      }
+      navigateEnter(e.shiftKey);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       moveActiveCell(-1, 0);
@@ -330,8 +364,18 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
     setIsShareModalOpen(true);
   };
 
+  // Auto-scroll selected cell into view
+  useEffect(() => {
+    if (gridViewportRef.current) {
+      const activeEl = gridViewportRef.current.querySelector('.cell-selected');
+      if (activeEl) {
+        (activeEl as HTMLElement).scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
+    }
+  }, [activeCell]);
+
   return (
-    <div className="excel-workbench-root" onKeyDown={handleGridKeyDown} tabIndex={0}>
+    <div ref={workbenchRootRef} className="excel-workbench-root" onKeyDown={handleGridKeyDown} tabIndex={0}>
       {/* Excel Title Bar (Emerald Green) */}
       <div className="excel-title-bar">
         <div className="excel-title-left">
@@ -623,12 +667,16 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  commitEdit(e.currentTarget.value);
-                  moveActiveCell(1, 0);
+                  e.preventDefault();
+                  navigateEnter(e.shiftKey, e.currentTarget.value);
                 } else if (e.key === 'Tab') {
                   e.preventDefault();
-                  commitEdit(e.currentTarget.value);
-                  moveActiveCell(0, 1);
+                  navigateTab(e.shiftKey, e.currentTarget.value);
+                } else if (e.key === 'Escape') {
+                  e.preventDefault();
+                  setCellEditVal(currentCellVal);
+                  setIsEditing(false);
+                  workbenchRootRef.current?.focus();
                 }
               }}
               placeholder={`Enter value for cell ${activeCoordinate}...`}
@@ -700,6 +748,7 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
                                 commitEdit(cellEditVal);
                               }
                               setActiveCell({ row: rIdx, col: cIdx });
+                              workbenchRootRef.current?.focus();
                             }}
                             onDoubleClick={() => {
                               setActiveCell({ row: rIdx, col: cIdx });
@@ -715,6 +764,23 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
                                 value={cellEditVal}
                                 onChange={(e) => setCellEditVal(e.target.value)}
                                 onBlur={() => commitEdit(cellEditVal)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Tab') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    navigateTab(e.shiftKey, e.currentTarget.value);
+                                  } else if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    navigateEnter(e.shiftKey, e.currentTarget.value);
+                                  } else if (e.key === 'Escape') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setCellEditVal(currentCellVal);
+                                    setIsEditing(false);
+                                    workbenchRootRef.current?.focus();
+                                  }
+                                }}
                                 autoFocus
                               />
                             ) : (

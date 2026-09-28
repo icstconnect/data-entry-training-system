@@ -159,12 +159,23 @@ export function App() {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
-  // EXP Awarded Micro-animation trigger
-  const handleExpAwarded = (amount: number) => {
+  // EXP Awarded Micro-animation trigger & profile synchronization
+  const handleExpAwarded = (amount: number, fromExternalModule = false) => {
     setFloatingExp(amount);
     setTimeout(() => {
       setFloatingExp(null);
     }, 1800);
+
+    if (fromExternalModule && amount > 0) {
+      setStudentProgress(prev => {
+        const next = {
+          ...prev,
+          totalExp: (prev.totalExp || 0) + amount
+        };
+        saveStudentProgress(next);
+        return next;
+      });
+    }
   };
 
   // Launch a specific stage
@@ -295,7 +306,7 @@ export function App() {
               onBackToDashboard={() => setExcelLevel(null)}
               onSelectLevel={(lvl) => setExcelLevel(lvl)}
               studentProgress={studentProgress}
-              onExpAwarded={handleExpAwarded}
+              onExpAwarded={(exp) => handleExpAwarded(exp, true)}
             />
           )}
 
@@ -312,7 +323,7 @@ export function App() {
             <WindowsWorkbench
               initialMode={windowsState.mode}
               initialLevel={windowsState.level}
-              onExpAwarded={handleExpAwarded}
+              onExpAwarded={(exp) => handleExpAwarded(exp, true)}
               onBackToDashboard={() => setWindowsState(s => ({ ...s, inWorkbench: false }))}
             />
           )}

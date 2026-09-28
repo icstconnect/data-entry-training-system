@@ -93,9 +93,14 @@ export const CurriculumModal: React.FC<CurriculumModalProps> = ({
                   <span style={{ fontWeight: 700, color: '#93c5fd', fontSize: '13px' }}>
                     {lvl.title}
                   </span>
-                  <span style={{ fontSize: '10px', background: 'rgba(59, 130, 246, 0.3)', color: '#bfdbfe', padding: '2px 8px', borderRadius: '12px', fontFamily: 'monospace' }}>
-                    {lvl.badge}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '10px', background: 'rgba(245, 158, 11, 0.25)', color: '#fbbf24', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '2px 8px', borderRadius: '12px', fontFamily: 'monospace', fontWeight: 700 }}>
+                      +{lvl.levelNumber * 50} EXP
+                    </span>
+                    <span style={{ fontSize: '10px', background: 'rgba(59, 130, 246, 0.3)', color: '#bfdbfe', padding: '2px 8px', borderRadius: '12px', fontFamily: 'monospace' }}>
+                      {lvl.badge}
+                    </span>
+                  </div>
                 </div>
                 <p style={{ fontSize: '12px', color: '#cbd5e1', margin: '0 0 6px 0', lineHeight: 1.45 }}>
                   {lvl.goal}
@@ -122,9 +127,14 @@ export const CurriculumModal: React.FC<CurriculumModalProps> = ({
                   <span style={{ fontWeight: 700, color: '#6ee7b7', fontSize: '13px' }}>
                     {lvl.title}
                   </span>
-                  <span style={{ fontSize: '10px', background: 'rgba(16, 185, 129, 0.3)', color: '#a7f3d0', padding: '2px 8px', borderRadius: '12px', fontFamily: 'monospace' }}>
-                    {lvl.badge}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '10px', background: 'rgba(245, 158, 11, 0.25)', color: '#fbbf24', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '2px 8px', borderRadius: '12px', fontFamily: 'monospace', fontWeight: 700 }}>
+                      +{lvl.levelNumber * 50} EXP
+                    </span>
+                    <span style={{ fontSize: '10px', background: 'rgba(16, 185, 129, 0.3)', color: '#a7f3d0', padding: '2px 8px', borderRadius: '12px', fontFamily: 'monospace' }}>
+                      {lvl.badge}
+                    </span>
+                  </div>
                 </div>
                 <p style={{ fontSize: '12px', color: '#cbd5e1', margin: '0 0 6px 0', lineHeight: 1.45 }}>
                   {lvl.goal}
