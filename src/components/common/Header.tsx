@@ -10,14 +10,15 @@ import {
   Trash2,
   User,
   AlertTriangle,
-  FileSpreadsheet
+  FileSpreadsheet,
+  FolderTree
 } from 'lucide-react';
 import { UserRole, StudentIdentity } from '../../types';
 
 interface HeaderProps {
   currentRole: UserRole;
-  activeView: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel';
-  setActiveView: (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel') => void;
+  activeView: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows';
+  setActiveView: (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows') => void;
   currentLevel: number;
   currentStage: number;
   totalExp: number;
@@ -150,6 +151,17 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             <FileSpreadsheet size={15} color="#16a34a" />
             <span className="nav-btn-text">Excel Lab</span>
             <span className="excel-nav-tag">NEW</span>
+          </button>
+
+          <button
+            type="button"
+            className={`nav-btn ${activeView === 'windows' ? 'active' : ''}`}
+            onClick={() => setActiveView('windows')}
+            title="Windows 11 Organization Simulation (File & Folder Tracks)"
+          >
+            <FolderTree size={15} color="#0284c7" />
+            <span className="nav-btn-text">Windows Lab</span>
+            <span className="excel-nav-tag" style={{ background: '#0284c7' }}>NEW</span>
           </button>
 
           <button

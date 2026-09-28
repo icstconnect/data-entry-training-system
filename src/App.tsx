@@ -20,6 +20,9 @@ const TeacherDashboard = React.lazy(() => import('./components/teacher/TeacherDa
 const ShowcasePage = React.lazy(() => import('./components/showcase/ShowcasePage').then(m => ({ default: m.ShowcasePage })));
 const ExcelDashboard = React.lazy(() => import('./components/excel/ExcelDashboard').then(m => ({ default: m.ExcelDashboard })));
 const ExcelWorkbench = React.lazy(() => import('./components/excel/ExcelWorkbench').then(m => ({ default: m.ExcelWorkbench })));
+const WindowsDashboard = React.lazy(() => import('./components/windows/WindowsDashboard').then(m => ({ default: m.WindowsDashboard })));
+const WindowsWorkbench = React.lazy(() => import('./components/windows/WindowsWorkbench').then(m => ({ default: m.WindowsWorkbench })));
+import { WindowsSimulationMode } from './types/windows';
 
 // Lazy-loaded modals (never loaded until explicitly triggered)
 const KeyboardShortcutsModal = React.lazy(() => import('./components/common/KeyboardShortcutsModal').then(m => ({ default: m.KeyboardShortcutsModal })));
@@ -50,8 +53,13 @@ const ViewLoader: React.FC = () => (
 
 export function App() {
   const [currentRole, setCurrentRole] = useState<UserRole>('student');
-  const [activeView, setActiveView] = useState<'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel'>('landing');
+  const [activeView, setActiveView] = useState<'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows'>('landing');
   const [excelLevel, setExcelLevel] = useState<number | null>(null);
+  const [windowsState, setWindowsState] = useState<{ inWorkbench: boolean; mode: WindowsSimulationMode; level: number }>({
+    inWorkbench: false,
+    mode: 'file_management',
+    level: 1
+  });
 
   // Active level and stage
   const [currentLevel, setCurrentLevel] = useState<number>(1);
@@ -89,6 +97,8 @@ export function App() {
         setActiveView('practice');
       } else if (hash === '#excel' || path.includes('excel')) {
         setActiveView('excel');
+      } else if (hash === '#windows' || hash === '#windows-org' || path.includes('windows')) {
+        setActiveView('windows');
       } else if (hash === '#dashboard') {
         setActiveView('student-dashboard');
       } else if (hash === '#teacher') {
@@ -107,7 +117,7 @@ export function App() {
   }, []);
 
   // Sync active view to window hash
-  const handleViewChange = (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel') => {
+  const handleViewChange = (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows') => {
     // If entering practice but no student identity is registered yet, gate with StudentSetupModal
     if (view === 'practice' && !studentProgress.studentIdentity) {
       setPendingPracticeStart(true);
@@ -122,6 +132,8 @@ export function App() {
       window.location.hash = 'practice';
     } else if (view === 'excel') {
       window.location.hash = 'excel';
+    } else if (view === 'windows') {
+      window.location.hash = 'windows';
     } else if (view === 'student-dashboard') {
       window.location.hash = 'dashboard';
     } else if (view === 'teacher-dashboard') {
@@ -226,6 +238,7 @@ export function App() {
             onOpenDashboard={() => handleViewChange('student-dashboard')}
             onOpenShowcase={() => handleViewChange('showcase')}
             onOpenExcel={() => handleViewChange('excel')}
+            onOpenWindows={() => handleViewChange('windows')}
           />
         )}
 
@@ -283,6 +296,22 @@ export function App() {
               onSelectLevel={(lvl) => setExcelLevel(lvl)}
               studentProgress={studentProgress}
               onExpAwarded={handleExpAwarded}
+            />
+          )}
+
+          {activeView === 'windows' && !windowsState.inWorkbench && (
+            <WindowsDashboard
+              onStartSimulation={(simMode, simLevel) => {
+                setWindowsState({ inWorkbench: true, mode: simMode, level: simLevel });
+              }}
+              onBackToHome={() => handleViewChange('landing')}
+            />
+          )}
+
+          {activeView === 'windows' && windowsState.inWorkbench && (
+            <WindowsWorkbench
+              onExpAwarded={handleExpAwarded}
+              onBackToDashboard={() => setWindowsState(s => ({ ...s, inWorkbench: false }))}
             />
           )}
         </React.Suspense>

@@ -3,7 +3,8 @@ import {
   Play, 
   UserCheck, 
   Sparkles, 
-  FileSpreadsheet
+  FileSpreadsheet,
+  FolderTree
 } from 'lucide-react';
 import { LEVELS_INFO } from '../../data/stagesConfig';
 
@@ -13,6 +14,7 @@ interface LandingPageProps {
   onOpenDashboard: () => void;
   onOpenShowcase: () => void;
   onOpenExcel?: () => void;
+  onOpenWindows?: () => void;
 }
 
 const STEPS = [
@@ -29,7 +31,8 @@ export const LandingPage: React.FC<LandingPageProps> = React.memo(({
   onOpenTeacherMode,
   onOpenDashboard,
   onOpenShowcase,
-  onOpenExcel
+  onOpenExcel,
+  onOpenWindows
 }) => {
   return (
     <div className="landing-root">
@@ -88,6 +91,18 @@ export const LandingPage: React.FC<LandingPageProps> = React.memo(({
               >
                 <FileSpreadsheet size={17} />
                 <span>EXCEL MASS ENTRY LAB</span>
+              </button>
+            )}
+
+            {onOpenWindows && (
+              <button
+                type="button"
+                className="btn btn-primary btn-lg"
+                onClick={onOpenWindows}
+                style={{ background: '#0284c7', borderColor: '#0369a1' }}
+              >
+                <FolderTree size={17} />
+                <span>WINDOWS ORG LAB</span>
               </button>
             )}
 

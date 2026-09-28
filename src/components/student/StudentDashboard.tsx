@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { StudentProgress, LevelInfo, Achievement, StageValidationSummary } from '../../types';
 import { LEVELS_INFO, STAGES } from '../../data/stagesConfig';
 import { ALL_ACHIEVEMENTS } from '../../services/achievementEngine';
+import { WINDOWS_ACHIEVEMENTS } from '../../data/windowsCurriculumData';
+import { loadWindowsProgress } from '../../services/windowsStorageService';
 import { AchievementShareModal } from '../common/AchievementShareModal';
 import { TrophyGraphic } from '../common/TrophyGraphic';
 import { 
@@ -27,6 +29,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   onSelectStage
 }) => {
   const [selectedAchievementForShare, setSelectedAchievementForShare] = useState<Achievement | null>(null);
+  const [winProgress] = useState(() => loadWindowsProgress());
 
   const totalStagesCount = STAGES.length; // 18 stages
   const completedStagesCount = Object.keys(progress.completedStages).length;
@@ -483,6 +486,104 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
                     {isUnlocked ? <Share2 size={13} /> : <Lock size={12} />}
                     <span>{isUnlocked ? 'Share Certificate' : 'Share (Locked)'}</span>
                   </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Windows Organization Lab Achievements Section */}
+      <div style={{ marginTop: '28px' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '14px',
+          flexWrap: 'wrap',
+          gap: '10px'
+        }}>
+          <div>
+            <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--icst-charcoal)', margin: 0 }}>
+              🪟 Windows Organization Badges (10 Badges)
+            </h3>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+              Mastery across File Management (5 Levels) and Folder Management (7 Levels)
+            </span>
+          </div>
+
+          <span style={{
+            fontSize: '12px',
+            fontWeight: 700,
+            color: '#0284c7',
+            background: '#e0f2fe',
+            padding: '4px 12px',
+            borderRadius: '20px'
+          }}>
+            {winProgress.unlockedAchievements.length} of {WINDOWS_ACHIEVEMENTS.length} Badges Unlocked • {winProgress.totalWindowsExp} EXP
+          </span>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+          gap: '12px'
+        }}>
+          {WINDOWS_ACHIEVEMENTS.map(ach => {
+            const isUnlocked = winProgress.unlockedAchievements.includes(ach.id);
+            const isFolderTrack = ach.id.includes('folder') || ach.id.includes('tree') || ach.id.includes('enterprise') || ach.id.includes('devops') || ach.id.includes('cloud');
+
+            return (
+              <div
+                key={ach.id}
+                style={{
+                  background: isUnlocked 
+                    ? (isFolderTrack ? '#f0fdf4' : '#eff6ff') 
+                    : 'var(--bg-card)',
+                  border: `1.5px solid ${isUnlocked ? (isFolderTrack ? '#34d399' : '#60a5fa') : 'var(--border-light)'}`,
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  opacity: isUnlocked ? 1 : 0.65
+                }}
+              >
+                <div style={{
+                  width: '46px',
+                  height: '46px',
+                  borderRadius: '10px',
+                  background: isUnlocked 
+                    ? (isFolderTrack ? 'linear-gradient(135deg, #059669, #047857)' : 'linear-gradient(135deg, #2563eb, #1d4ed8)') 
+                    : '#334155',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '22px',
+                  flexShrink: 0
+                }}>
+                  {isUnlocked ? (isFolderTrack ? '🏆' : '⭐') : '🔒'}
+                </div>
+
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+                    <h4 style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+                      {ach.title}
+                    </h4>
+                    <span style={{
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      color: isUnlocked ? '#15803d' : 'var(--text-muted)'
+                    }}>
+                      {isUnlocked ? '✓ EARNED' : 'LOCKED'}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: '3px 0 4px 0', lineHeight: 1.35 }}>
+                    {ach.description}
+                  </p>
+                  <div style={{ fontSize: '10px', fontWeight: 700, color: '#d97706', fontFamily: 'monospace' }}>
+                    +{ach.badgeLevel * 50} EXP REWARD
+                  </div>
                 </div>
               </div>
             );
