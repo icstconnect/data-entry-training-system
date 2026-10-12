@@ -1,5 +1,7 @@
 import { Achievement, StageValidationSummary, StudentProgress } from '../types';
 import { BATCH_TITLES, LEVELS_INFO } from '../data/stagesConfig';
+import { EXCEL_ACHIEVEMENTS } from '../data/excelScenariosData';
+import { WINDOWS_ACHIEVEMENTS } from '../data/windowsCurriculumData';
 
 export const ALL_ACHIEVEMENTS: Achievement[] = [
   {
@@ -51,6 +53,12 @@ export const ALL_ACHIEVEMENTS: Achievement[] = [
     iconName: 'Trophy',
     badgeLevel: 5
   }
+];
+
+export const UNIFIED_SYSTEM_ACHIEVEMENTS: Achievement[] = [
+  ...ALL_ACHIEVEMENTS.map(a => ({ ...a, group: 'practice' as const, groupTitle: 'Foundation & Marksheets' })),
+  ...EXCEL_ACHIEVEMENTS.map(a => ({ ...a, group: 'excel' as const, groupTitle: 'Excel 365 Mass Data Lab' })),
+  ...WINDOWS_ACHIEVEMENTS.map(a => ({ ...a, group: 'windows' as const, groupTitle: 'Windows Organization Lab' }))
 ];
 
 /**

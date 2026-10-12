@@ -20,12 +20,18 @@ const TeacherDashboard = React.lazy(() => import('./components/teacher/TeacherDa
 const ShowcasePage = React.lazy(() => import('./components/showcase/ShowcasePage').then(m => ({ default: m.ShowcasePage })));
 const ExcelDashboard = React.lazy(() => import('./components/excel/ExcelDashboard').then(m => ({ default: m.ExcelDashboard })));
 const ExcelWorkbench = React.lazy(() => import('./components/excel/ExcelWorkbench').then(m => ({ default: m.ExcelWorkbench })));
+const WindowsDashboard = React.lazy(() => import('./components/windows/WindowsDashboard').then(m => ({ default: m.WindowsDashboard })));
+const WindowsWorkbench = React.lazy(() => import('./components/windows/WindowsWorkbench').then(m => ({ default: m.WindowsWorkbench })));
+import { WindowsSimulationMode } from './types/windows';
+import { setAppTitle } from './utils/dynamicTitle';
+import { awardTaskExp } from './services/expEngine';
 
 // Lazy-loaded modals (never loaded until explicitly triggered)
 const KeyboardShortcutsModal = React.lazy(() => import('./components/common/KeyboardShortcutsModal').then(m => ({ default: m.KeyboardShortcutsModal })));
 const TeacherPasswordModal = React.lazy(() => import('./components/common/TeacherPasswordModal').then(m => ({ default: m.TeacherPasswordModal })));
 const ClearDataConfirmModal = React.lazy(() => import('./components/common/ClearDataConfirmModal').then(m => ({ default: m.ClearDataConfirmModal })));
 const StudentSetupModal = React.lazy(() => import('./components/student/StudentSetupModal').then(m => ({ default: m.StudentSetupModal })));
+const AchievementShareModal = React.lazy(() => import('./components/common/AchievementShareModal').then(m => ({ default: m.AchievementShareModal })));
 
 // Inline lightweight view loader
 const ViewLoader: React.FC = () => (
@@ -50,8 +56,13 @@ const ViewLoader: React.FC = () => (
 
 export function App() {
   const [currentRole, setCurrentRole] = useState<UserRole>('student');
-  const [activeView, setActiveView] = useState<'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel'>('landing');
+  const [activeView, setActiveView] = useState<'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows'>('landing');
   const [excelLevel, setExcelLevel] = useState<number | null>(null);
+  const [windowsState, setWindowsState] = useState<{ inWorkbench: boolean; mode: WindowsSimulationMode; level: number }>({
+    inWorkbench: false,
+    mode: 'file_management',
+    level: 1
+  });
 
   // Active level and stage
   const [currentLevel, setCurrentLevel] = useState<number>(1);
@@ -75,7 +86,67 @@ export function App() {
   const [isTeacherPasswordOpen, setIsTeacherPasswordOpen] = useState<boolean>(false);
   const [isClearDataOpen, setIsClearDataOpen] = useState<boolean>(false);
   const [isStudentSetupOpen, setIsStudentSetupOpen] = useState<boolean>(false);
-  const [pendingPracticeStart, setPendingPracticeStart] = useState<boolean>(false);
+  const [isUniversalShareOpen, setIsUniversalShareOpen] = useState<boolean>(false);
+
+  // Universal Lab & Action Destination Gate
+  type PendingLabTarget = 
+    | { type: 'view'; view: 'practice' | 'excel' | 'windows' | 'showcase' }
+    | { type: 'excelLevel'; level: number }
+    | { type: 'windowsSimulation'; mode: WindowsSimulationMode; level: number }
+    | { type: 'shareModal' }
+    | null;
+
+  const [pendingLabTarget, setPendingLabTarget] = useState<PendingLabTarget>(null);
+
+  // Mandatory Student Identity Gatekeeper
+  const requireStudentIdentity = (target: PendingLabTarget): boolean => {
+    if (!studentProgress.studentIdentity || !studentProgress.studentIdentity.name?.trim()) {
+      setPendingLabTarget(target);
+      setIsStudentSetupOpen(true);
+      return false;
+    }
+    return true;
+  };
+
+  // Listen to identity changes from any module (e.g. Achievement modal inline editor)
+  useEffect(() => {
+    const handleIdentityUpdated = (e: CustomEvent<StudentIdentity>) => {
+      if (e.detail) {
+        setStudentProgress(prev => ({
+          ...prev,
+          studentIdentity: e.detail
+        }));
+      }
+    };
+    const handleOpenUniversalShare = () => {
+      if (!requireStudentIdentity({ type: 'shareModal' })) return;
+      setIsUniversalShareOpen(true);
+    };
+    window.addEventListener('icst_student_identity_updated' as any, handleIdentityUpdated);
+    window.addEventListener('icst_open_universal_share' as any, handleOpenUniversalShare);
+    return () => {
+      window.removeEventListener('icst_student_identity_updated' as any, handleIdentityUpdated);
+      window.removeEventListener('icst_open_universal_share' as any, handleOpenUniversalShare);
+    };
+  }, [studentProgress.studentIdentity]);
+
+  // Dynamic App Title Sync for every task, group, and page
+  useEffect(() => {
+    if (activeView === 'practice') {
+      setAppTitle('practice', `Level ${currentLevel} • Stage ${currentStage}`);
+    } else if (activeView === 'excel') {
+      setAppTitle('excel', excelLevel ? `Scenario ${excelLevel} Batch` : undefined);
+    } else if (activeView === 'windows') {
+      if (windowsState.inWorkbench) {
+        const modeText = windowsState.mode === 'folder_management' ? 'Folder Management' : 'File Organization';
+        setAppTitle('windows', `${modeText} • Level ${windowsState.level}`);
+      } else {
+        setAppTitle('windows');
+      }
+    } else {
+      setAppTitle(activeView);
+    }
+  }, [activeView, currentLevel, currentStage, excelLevel, windowsState]);
 
   // Route syncing: support /showcase, #showcase, #practice, etc.
   useEffect(() => {
@@ -89,6 +160,8 @@ export function App() {
         setActiveView('practice');
       } else if (hash === '#excel' || path.includes('excel')) {
         setActiveView('excel');
+      } else if (hash === '#windows' || hash === '#windows-org' || path.includes('windows')) {
+        setActiveView('windows');
       } else if (hash === '#dashboard') {
         setActiveView('student-dashboard');
       } else if (hash === '#teacher') {
@@ -106,12 +179,10 @@ export function App() {
     };
   }, []);
 
-  // Sync active view to window hash
-  const handleViewChange = (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel') => {
-    // If entering practice but no student identity is registered yet, gate with StudentSetupModal
-    if (view === 'practice' && !studentProgress.studentIdentity) {
-      setPendingPracticeStart(true);
-      setIsStudentSetupOpen(true);
+  // Sync active view to window hash with mandatory student identity check for all labs
+  const handleViewChange = (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows') => {
+    const isLab = view === 'practice' || view === 'excel' || view === 'windows';
+    if (isLab && !requireStudentIdentity({ type: 'view', view })) {
       return;
     }
 
@@ -122,6 +193,8 @@ export function App() {
       window.location.hash = 'practice';
     } else if (view === 'excel') {
       window.location.hash = 'excel';
+    } else if (view === 'windows') {
+      window.location.hash = 'windows';
     } else if (view === 'student-dashboard') {
       window.location.hash = 'dashboard';
     } else if (view === 'teacher-dashboard') {
@@ -140,6 +213,7 @@ export function App() {
         setIsShortcutsOpen(false);
         setIsTeacherPasswordOpen(false);
         setIsClearDataOpen(false);
+        setIsUniversalShareOpen(false);
       }
     };
 
@@ -147,12 +221,24 @@ export function App() {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
-  // EXP Awarded Micro-animation trigger
-  const handleExpAwarded = (amount: number) => {
+  // EXP Awarded Micro-animation trigger & unified profile synchronization
+  const handleExpAwarded = (amount: number, source: 'practice' | 'excel' | 'windows' = 'practice') => {
     setFloatingExp(amount);
     setTimeout(() => {
       setFloatingExp(null);
     }, 1800);
+
+    if (amount > 0) {
+      // Route through unified expEngine
+      const awardResult = awardTaskExp(amount, source, {
+        alreadyAddedToTotal: source === 'practice'
+      });
+      setStudentProgress(prev => ({
+        ...prev,
+        totalExp: awardResult.newTotalExp,
+        currentBatchTitle: awardResult.currentRank
+      }));
+    }
   };
 
   // Launch a specific stage
@@ -162,7 +248,7 @@ export function App() {
     handleViewChange('practice');
   };
 
-  // Save student identity from modal
+  // Save student identity from modal and fulfill any pending lab launch
   const handleSaveStudentIdentity = (identity: StudentIdentity) => {
     const updated = {
       ...studentProgress,
@@ -173,10 +259,27 @@ export function App() {
     saveStudentIdentity(identity);
     setIsStudentSetupOpen(false);
 
-    if (pendingPracticeStart) {
-      setPendingPracticeStart(false);
-      setActiveView('practice');
-      window.location.hash = 'practice';
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('icst_student_identity_updated', { detail: identity }));
+    }
+
+    if (pendingLabTarget) {
+      const target = pendingLabTarget;
+      setPendingLabTarget(null);
+      if (target.type === 'view') {
+        setActiveView(target.view);
+        window.location.hash = target.view;
+      } else if (target.type === 'excelLevel') {
+        setActiveView('excel');
+        setExcelLevel(target.level);
+        window.location.hash = 'excel';
+      } else if (target.type === 'windowsSimulation') {
+        setActiveView('windows');
+        setWindowsState({ inWorkbench: true, mode: target.mode, level: target.level });
+        window.location.hash = 'windows';
+      } else if (target.type === 'shareModal') {
+        setIsUniversalShareOpen(true);
+      }
     }
   };
 
@@ -226,6 +329,11 @@ export function App() {
             onOpenDashboard={() => handleViewChange('student-dashboard')}
             onOpenShowcase={() => handleViewChange('showcase')}
             onOpenExcel={() => handleViewChange('excel')}
+            onOpenWindows={() => handleViewChange('windows')}
+            onOpenAchievementShare={() => {
+              if (!requireStudentIdentity({ type: 'shareModal' })) return;
+              setIsUniversalShareOpen(true);
+            }}
           />
         )}
 
@@ -241,7 +349,7 @@ export function App() {
               studentProgress={studentProgress}
               setStudentProgress={setStudentProgress}
               isGuidedMode={isGuidedMode}
-              onExpAwarded={handleExpAwarded}
+              onExpAwarded={(amount) => handleExpAwarded(amount, 'practice')}
               onTimerTick={(elapsed, limit) => {
                 setTimerElapsedSeconds(elapsed);
                 setTimerLimitSeconds(limit);
@@ -266,12 +374,21 @@ export function App() {
           {activeView === 'showcase' && (
             <ShowcasePage
               onStartPractice={() => handleViewChange('practice')}
+              onOpenAchievementShare={() => {
+                if (!requireStudentIdentity({ type: 'shareModal' })) return;
+                setIsUniversalShareOpen(true);
+              }}
+              studentIdentity={studentProgress.studentIdentity}
+              onPromptStudentSetup={() => setIsStudentSetupOpen(true)}
             />
           )}
 
           {activeView === 'excel' && excelLevel === null && (
             <ExcelDashboard
-              onSelectLevel={(lvl) => setExcelLevel(lvl)}
+              onSelectLevel={(lvl) => {
+                if (!requireStudentIdentity({ type: 'excelLevel', level: lvl })) return;
+                setExcelLevel(lvl);
+              }}
               studentProgress={studentProgress}
             />
           )}
@@ -282,7 +399,26 @@ export function App() {
               onBackToDashboard={() => setExcelLevel(null)}
               onSelectLevel={(lvl) => setExcelLevel(lvl)}
               studentProgress={studentProgress}
-              onExpAwarded={handleExpAwarded}
+              onExpAwarded={(exp) => handleExpAwarded(exp, 'excel')}
+            />
+          )}
+
+          {activeView === 'windows' && !windowsState.inWorkbench && (
+            <WindowsDashboard
+              onStartSimulation={(simMode, simLevel) => {
+                if (!requireStudentIdentity({ type: 'windowsSimulation', mode: simMode, level: simLevel })) return;
+                setWindowsState({ inWorkbench: true, mode: simMode, level: simLevel });
+              }}
+              onBackToHome={() => handleViewChange('landing')}
+            />
+          )}
+
+          {activeView === 'windows' && windowsState.inWorkbench && (
+            <WindowsWorkbench
+              initialMode={windowsState.mode}
+              initialLevel={windowsState.level}
+              onExpAwarded={(exp) => handleExpAwarded(exp, 'windows')}
+              onBackToDashboard={() => setWindowsState(s => ({ ...s, inWorkbench: false }))}
             />
           )}
         </React.Suspense>
@@ -293,6 +429,13 @@ export function App() {
 
       {/* Modals wrapped in lightweight Suspense */}
       <React.Suspense fallback={null}>
+        {/* Universal Achievement Sharing & Certificate Modal */}
+        {isUniversalShareOpen && (
+          <AchievementShareModal
+            initialMode="select"
+            onClose={() => setIsUniversalShareOpen(false)}
+          />
+        )}
         {/* Student Setup Gate Modal */}
         {isStudentSetupOpen && (
           <StudentSetupModal
@@ -300,9 +443,9 @@ export function App() {
             onSave={handleSaveStudentIdentity}
             onCancel={() => {
               setIsStudentSetupOpen(false);
-              setPendingPracticeStart(false);
+              setPendingLabTarget(null);
             }}
-            canCancel={!pendingPracticeStart && !!studentProgress.studentIdentity}
+            canCancel={!pendingLabTarget && !!studentProgress.studentIdentity}
           />
         )}
 

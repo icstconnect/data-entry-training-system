@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { StudentProgress, LevelInfo, Achievement, StageValidationSummary } from '../../types';
 import { LEVELS_INFO, STAGES } from '../../data/stagesConfig';
 import { ALL_ACHIEVEMENTS } from '../../services/achievementEngine';
+import { WINDOWS_ACHIEVEMENTS } from '../../data/windowsCurriculumData';
+import { loadWindowsProgress } from '../../services/windowsStorageService';
 import { AchievementShareModal } from '../common/AchievementShareModal';
 import { TrophyGraphic } from '../common/TrophyGraphic';
 import { 
@@ -14,7 +16,8 @@ import {
   Sparkles,
   Lock,
   Target,
-  Share2
+  Share2,
+  Eye
 } from 'lucide-react';
 
 interface StudentDashboardProps {
@@ -27,6 +30,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   onSelectStage
 }) => {
   const [selectedAchievementForShare, setSelectedAchievementForShare] = useState<Achievement | null>(null);
+  const [winProgress] = useState(() => loadWindowsProgress());
 
   const totalStagesCount = STAGES.length; // 18 stages
   const completedStagesCount = Object.keys(progress.completedStages).length;
@@ -453,36 +457,197 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
                     {isUnlocked ? '✓ Certificate Ready' : '🔒 Requires task pass'}
                   </div>
 
-                  {/* Share button: default disabled when locked, active only when unlocked */}
-                  <button
-                    type="button"
-                    className={`btn btn-sm ${isUnlocked ? 'btn-primary' : 'btn-secondary'}`}
-                    disabled={!isUnlocked}
-                    onClick={() => {
-                      if (isUnlocked) {
-                        setSelectedAchievementForShare(ach);
-                      }
-                    }}
-                    style={{
-                      fontSize: '12px',
-                      padding: '6px 14px',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      borderRadius: 'var(--radius-md)',
-                      cursor: isUnlocked ? 'pointer' : 'not-allowed',
-                      opacity: isUnlocked ? 1 : 0.45,
-                      background: isUnlocked ? 'linear-gradient(135deg, #1c6aa7, #124d7b)' : 'var(--bg-subtle)',
-                      color: isUnlocked ? '#ffffff' : 'var(--text-muted)',
-                      border: isUnlocked ? '1px solid #124d7b' : '1px solid var(--border-medium)',
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setSelectedAchievementForShare(ach)}
+                      style={{
+                        fontSize: '11px',
+                        padding: '5px 10px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                      title={`View ${ach.title} certificate`}
+                    >
+                      <Eye size={12} />
+                      <span>View Achievement</span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn btn-sm ${isUnlocked ? 'btn-primary' : 'btn-secondary'}`}
+                      disabled={!isUnlocked}
+                      onClick={() => {
+                        if (isUnlocked) {
+                          setSelectedAchievementForShare(ach);
+                        }
+                      }}
+                      style={{
+                        fontSize: '11px',
+                        padding: '5px 12px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        borderRadius: 'var(--radius-md)',
+                        cursor: isUnlocked ? 'pointer' : 'not-allowed',
+                        opacity: isUnlocked ? 1 : 0.45,
+                        background: isUnlocked ? 'linear-gradient(135deg, #1c6aa7, #124d7b)' : 'var(--bg-subtle)',
+                        color: isUnlocked ? '#ffffff' : 'var(--text-muted)',
+                        border: isUnlocked ? '1px solid #124d7b' : '1px solid var(--border-medium)',
+                        fontWeight: 700,
+                        boxShadow: isUnlocked ? '0 2px 6px rgba(24, 114, 192, 0.25)' : 'none'
+                      }}
+                      title={isUnlocked ? `Share ${ach.title} achievement` : 'Complete task to unlock certificate sharing'}
+                    >
+                      {isUnlocked ? <Share2 size={12} /> : <Lock size={12} />}
+                      <span>{isUnlocked ? 'Share Achievement' : 'Share (Locked)'}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Windows Organization Lab Achievements Section */}
+      <div style={{ marginTop: '28px' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '14px',
+          flexWrap: 'wrap',
+          gap: '10px'
+        }}>
+          <div>
+            <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--icst-charcoal)', margin: 0 }}>
+              🪟 Windows Organization Badges (10 Badges)
+            </h3>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+              Mastery across File Management (5 Levels) and Folder Management (7 Levels)
+            </span>
+          </div>
+
+          <span style={{
+            fontSize: '12px',
+            fontWeight: 700,
+            color: '#0284c7',
+            background: '#e0f2fe',
+            padding: '4px 12px',
+            borderRadius: '20px'
+          }}>
+            {winProgress.unlockedAchievements.length} of {WINDOWS_ACHIEVEMENTS.length} Badges Unlocked • {winProgress.totalWindowsExp} EXP
+          </span>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+          gap: '12px'
+        }}>
+          {WINDOWS_ACHIEVEMENTS.map(ach => {
+            const isUnlocked = winProgress.unlockedAchievements.includes(ach.id);
+            const isFolderTrack = ach.id.includes('folder') || ach.id.includes('tree') || ach.id.includes('enterprise') || ach.id.includes('devops') || ach.id.includes('cloud');
+
+            return (
+              <div
+                key={ach.id}
+                style={{
+                  background: isUnlocked 
+                    ? (isFolderTrack ? '#f0fdf4' : '#eff6ff') 
+                    : 'var(--bg-card)',
+                  border: `1.5px solid ${isUnlocked ? (isFolderTrack ? '#34d399' : '#60a5fa') : 'var(--border-light)'}`,
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '14px',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '12px',
+                  opacity: isUnlocked ? 1 : 0.65
+                }}
+              >
+                <div style={{
+                  width: '46px',
+                  height: '46px',
+                  borderRadius: '10px',
+                  background: isUnlocked 
+                    ? (isFolderTrack ? 'linear-gradient(135deg, #059669, #047857)' : 'linear-gradient(135deg, #2563eb, #1d4ed8)') 
+                    : '#334155',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '22px',
+                  flexShrink: 0
+                }}>
+                  {isUnlocked ? (isFolderTrack ? '🏆' : '⭐') : '🔒'}
+                </div>
+
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+                    <h4 style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
+                      {ach.title}
+                    </h4>
+                    <span style={{
+                      fontSize: '10px',
                       fontWeight: 700,
-                      boxShadow: isUnlocked ? '0 2px 6px rgba(24, 114, 192, 0.25)' : 'none'
-                    }}
-                    title={isUnlocked ? `Share ${ach.title} certificate` : 'Complete task to unlock certificate sharing'}
-                  >
-                    {isUnlocked ? <Share2 size={13} /> : <Lock size={12} />}
-                    <span>{isUnlocked ? 'Share Certificate' : 'Share (Locked)'}</span>
-                  </button>
+                      color: isUnlocked ? '#15803d' : 'var(--text-muted)'
+                    }}>
+                      {isUnlocked ? '✓ EARNED' : 'LOCKED'}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: '3px 0 4px 0', lineHeight: 1.35 }}>
+                    {ach.description}
+                  </p>
+                  <div style={{ fontSize: '10px', fontWeight: 700, color: '#d97706', fontFamily: 'monospace' }}>
+                    +{ach.badgeLevel * 50} EXP REWARD
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setSelectedAchievementForShare(ach)}
+                      style={{
+                        fontSize: '11px',
+                        padding: '4px 8px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                      title={`View ${ach.title} certificate`}
+                    >
+                      <Eye size={12} />
+                      <span>View Achievement</span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn btn-sm ${isUnlocked ? 'btn-primary' : 'btn-secondary'}`}
+                      disabled={!isUnlocked}
+                      onClick={() => {
+                        if (isUnlocked) {
+                          setSelectedAchievementForShare(ach);
+                        }
+                      }}
+                      style={{
+                        fontSize: '11px',
+                        padding: '4px 10px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        borderRadius: 'var(--radius-md)',
+                        cursor: isUnlocked ? 'pointer' : 'not-allowed',
+                        opacity: isUnlocked ? 1 : 0.45,
+                        background: isUnlocked ? (isFolderTrack ? 'linear-gradient(135deg, #059669, #047857)' : 'linear-gradient(135deg, #1c6aa7, #124d7b)') : 'var(--bg-subtle)',
+                        color: isUnlocked ? '#ffffff' : 'var(--text-muted)',
+                        fontWeight: 700
+                      }}
+                      title={isUnlocked ? `Share ${ach.title} achievement` : 'Complete task to unlock'}
+                    >
+                      {isUnlocked ? <Share2 size={12} /> : <Lock size={12} />}
+                      <span>{isUnlocked ? 'Share Achievement' : 'Share (Locked)'}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             );

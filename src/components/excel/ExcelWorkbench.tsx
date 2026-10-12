@@ -32,7 +32,8 @@ import {
   HardDrive,
   Columns,
   Maximize2,
-  BookOpen
+  BookOpen,
+  X
 } from 'lucide-react';
 
 interface ExcelWorkbenchProps {
@@ -78,10 +79,12 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
   const [isEvalModalOpen, setIsEvalModalOpen] = useState<boolean>(false);
   const [shareAchievement, setShareAchievement] = useState<Achievement | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState<boolean>(false);
 
   const gridViewportRef = useRef<HTMLDivElement | null>(null);
   const inlineInputRef = useRef<HTMLInputElement | null>(null);
   const formulaInputRef = useRef<HTMLInputElement | null>(null);
+  const workbenchRootRef = useRef<HTMLDivElement | null>(null);
 
   // Load Saved Draft or Initialize Fresh Grid
   useEffect(() => {
@@ -98,6 +101,9 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
       setLastSavedTime('New Sheet');
     }
     setIsEditing(false);
+    setTimeout(() => {
+      workbenchRootRef.current?.focus();
+    }, 100);
   }, [level.levelNumber]);
 
   // Persistent Timer
@@ -178,37 +184,81 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
     setIsEditing(false);
   }, [activeCell]);
 
+  // Unified Tab navigation: moves to next cell, wrapping to next row 1st cell at the row end
+  const navigateTab = useCallback((shiftKey = false, currentEditValue?: string) => {
+    if (currentEditValue !== undefined) {
+      commitEdit(currentEditValue);
+    } else if (isEditing) {
+      commitEdit(cellEditVal);
+    }
+
+    const totalCols = level.columns.length;
+    const totalRows = level.sourceRecords.length;
+
+    setActiveCell(prev => {
+      if (shiftKey) {
+        if (prev.col > 0) {
+          return { row: prev.row, col: prev.col - 1 };
+        } else if (prev.row > 0) {
+          // Wrap backward to last column of previous row
+          return { row: prev.row - 1, col: totalCols - 1 };
+        }
+        return prev;
+      } else {
+        if (prev.col < totalCols - 1) {
+          return { row: prev.row, col: prev.col + 1 };
+        } else if (prev.row < totalRows - 1) {
+          // At the end of the row -> go to next row 1st cell!
+          return { row: prev.row + 1, col: 0 };
+        }
+        return prev;
+      }
+    });
+
+    setIsEditing(false);
+    setTimeout(() => {
+      workbenchRootRef.current?.focus();
+    }, 0);
+  }, [level.columns.length, level.sourceRecords.length, isEditing, cellEditVal, commitEdit]);
+
+  // Unified Enter navigation: moves down, or up if Shift+Enter
+  const navigateEnter = useCallback((shiftKey = false, currentEditValue?: string) => {
+    if (currentEditValue !== undefined) {
+      commitEdit(currentEditValue);
+    } else if (isEditing) {
+      commitEdit(cellEditVal);
+    }
+
+    const totalRows = level.sourceRecords.length;
+
+    setActiveCell(prev => {
+      if (shiftKey) {
+        return { row: Math.max(0, prev.row - 1), col: prev.col };
+      } else {
+        return { row: Math.min(totalRows - 1, prev.row + 1), col: prev.col };
+      }
+    });
+
+    setIsEditing(false);
+    setTimeout(() => {
+      workbenchRootRef.current?.focus();
+    }, 0);
+  }, [level.sourceRecords.length, isEditing, cellEditVal, commitEdit]);
+
   // Handle Tab, Enter, Arrows, F2, Esc in Grid
   const handleGridKeyDown = (e: React.KeyboardEvent) => {
     if (isEditing) {
       if (e.key === 'Enter') {
         e.preventDefault();
-        commitEdit(cellEditVal);
-        if (e.shiftKey) {
-          moveActiveCell(-1, 0);
-        } else {
-          moveActiveCell(1, 0);
-        }
+        navigateEnter(e.shiftKey, cellEditVal);
       } else if (e.key === 'Tab') {
         e.preventDefault();
-        commitEdit(cellEditVal);
-        if (e.shiftKey) {
-          moveActiveCell(0, -1);
-        } else {
-          if (activeCell.col >= level.columns.length - 1) {
-            // Wrap to next row
-            if (activeCell.row < level.sourceRecords.length - 1) {
-              setActiveCell({ row: activeCell.row + 1, col: 0 });
-              setIsEditing(false);
-            }
-          } else {
-            moveActiveCell(0, 1);
-          }
-        }
+        navigateTab(e.shiftKey, cellEditVal);
       } else if (e.key === 'Escape') {
         e.preventDefault();
         setCellEditVal(currentCellVal);
         setIsEditing(false);
+        workbenchRootRef.current?.focus();
       }
       return;
     }
@@ -216,24 +266,10 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
     // When NOT in inline edit mode
     if (e.key === 'Tab') {
       e.preventDefault();
-      if (e.shiftKey) {
-        moveActiveCell(0, -1);
-      } else {
-        if (activeCell.col >= level.columns.length - 1) {
-          if (activeCell.row < level.sourceRecords.length - 1) {
-            setActiveCell({ row: activeCell.row + 1, col: 0 });
-          }
-        } else {
-          moveActiveCell(0, 1);
-        }
-      }
+      navigateTab(e.shiftKey);
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (e.shiftKey) {
-        moveActiveCell(-1, 0);
-      } else {
-        moveActiveCell(1, 0);
-      }
+      navigateEnter(e.shiftKey);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       moveActiveCell(-1, 0);
@@ -281,13 +317,26 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
     }
   };
 
-  // Reset/Clear Grid
+  // Reset/Clear Grid In-App Dialog Handlers
   const handleResetGrid = () => {
-    if (window.confirm('Are you sure you want to clear all entered data in this Excel sheet?')) {
-      setGridData({});
-      setActiveCell({ row: 0, col: 0 });
-      setIsEditing(false);
-    }
+    setIsResetConfirmOpen(true);
+  };
+
+  const handleConfirmReset = () => {
+    setGridData({});
+    setActiveCell({ row: 0, col: 0 });
+    setIsEditing(false);
+    setIsResetConfirmOpen(false);
+    setTimeout(() => {
+      workbenchRootRef.current?.focus();
+    }, 50);
+  };
+
+  const handleCancelReset = () => {
+    setIsResetConfirmOpen(false);
+    setTimeout(() => {
+      workbenchRootRef.current?.focus();
+    }, 50);
   };
 
   // Export entered data as CSV file
@@ -330,8 +379,18 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
     setIsShareModalOpen(true);
   };
 
+  // Auto-scroll selected cell into view
+  useEffect(() => {
+    if (gridViewportRef.current) {
+      const activeEl = gridViewportRef.current.querySelector('.cell-selected');
+      if (activeEl) {
+        (activeEl as HTMLElement).scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
+    }
+  }, [activeCell]);
+
   return (
-    <div className="excel-workbench-root" onKeyDown={handleGridKeyDown} tabIndex={0}>
+    <div ref={workbenchRootRef} className="excel-workbench-root" onKeyDown={handleGridKeyDown} tabIndex={0}>
       {/* Excel Title Bar (Emerald Green) */}
       <div className="excel-title-bar">
         <div className="excel-title-left">
@@ -623,12 +682,16 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  commitEdit(e.currentTarget.value);
-                  moveActiveCell(1, 0);
+                  e.preventDefault();
+                  navigateEnter(e.shiftKey, e.currentTarget.value);
                 } else if (e.key === 'Tab') {
                   e.preventDefault();
-                  commitEdit(e.currentTarget.value);
-                  moveActiveCell(0, 1);
+                  navigateTab(e.shiftKey, e.currentTarget.value);
+                } else if (e.key === 'Escape') {
+                  e.preventDefault();
+                  setCellEditVal(currentCellVal);
+                  setIsEditing(false);
+                  workbenchRootRef.current?.focus();
                 }
               }}
               placeholder={`Enter value for cell ${activeCoordinate}...`}
@@ -700,6 +763,7 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
                                 commitEdit(cellEditVal);
                               }
                               setActiveCell({ row: rIdx, col: cIdx });
+                              workbenchRootRef.current?.focus();
                             }}
                             onDoubleClick={() => {
                               setActiveCell({ row: rIdx, col: cIdx });
@@ -715,6 +779,23 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
                                 value={cellEditVal}
                                 onChange={(e) => setCellEditVal(e.target.value)}
                                 onBlur={() => commitEdit(cellEditVal)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Tab') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    navigateTab(e.shiftKey, e.currentTarget.value);
+                                  } else if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    navigateEnter(e.shiftKey, e.currentTarget.value);
+                                  } else if (e.key === 'Escape') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setCellEditVal(currentCellVal);
+                                    setIsEditing(false);
+                                    workbenchRootRef.current?.focus();
+                                  }
+                                }}
                                 autoFocus
                               />
                             ) : (
@@ -797,6 +878,121 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
           achievement={shareAchievement || undefined}
           onClose={() => setIsShareModalOpen(false)}
         />
+      )}
+
+      {/* In-App Confirmation Modal: Clear Excel Draft */}
+      {isResetConfirmOpen && (
+        <div className="modal-overlay" style={{ zIndex: 1300 }} onClick={handleCancelReset}>
+          <div className="modal-card" style={{ maxWidth: '440px', padding: 0, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
+            <div style={{
+              background: 'linear-gradient(135deg, #107c41, #0b5a2f)',
+              color: '#ffffff',
+              padding: '16px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <RotateCcw size={18} color="#ffffff" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '15px', fontWeight: 800, margin: 0 }}>
+                    Clear Excel Draft?
+                  </h3>
+                  <span style={{ fontSize: '11px', opacity: 0.85 }}>
+                    {level.sheetName}.xlsx • Level {level.levelNumber}
+                  </span>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onClick={handleCancelReset}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  opacity: 0.8,
+                  padding: '4px'
+                }}
+                title="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="modal-body" style={{ padding: '20px', color: 'var(--text-primary)', fontSize: '13px', lineHeight: 1.5 }}>
+              <p style={{ margin: '0 0 12px 0' }}>
+                Are you sure you want to clear all entered data in this Excel worksheet?
+              </p>
+              <div style={{
+                background: '#fffbeb',
+                border: '1px solid #fde68a',
+                borderRadius: '8px',
+                padding: '10px 12px',
+                color: '#92400e',
+                fontSize: '12px',
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'flex-start'
+              }}>
+                <AlertCircle size={16} color="#d97706" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span>
+                  All {filledCellsCount} entered cells and local draft edits will be reset. The source ledger records will remain unchanged for you to re-type.
+                </span>
+              </div>
+            </div>
+
+            <div className="modal-footer" style={{
+              padding: '12px 20px',
+              background: 'var(--bg-card-header, #f8fafc)',
+              borderTop: '1px solid var(--border-light, #e2e8f0)',
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: '10px'
+            }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleCancelReset}
+                style={{ padding: '8px 16px', fontSize: '12px', fontWeight: 600 }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={handleConfirmReset}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  background: '#dc2626',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer'
+                }}
+                autoFocus
+              >
+                <RotateCcw size={14} />
+                <span>Clear All Cells</span>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -233,6 +233,8 @@ export interface Achievement {
   iconName: string;
   badgeLevel: number;
   unlockedAt?: string;
+  group?: 'practice' | 'excel' | 'windows';
+  groupTitle?: string;
 }
 
 export interface BatchTitle {

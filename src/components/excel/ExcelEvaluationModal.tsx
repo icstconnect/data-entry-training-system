@@ -292,7 +292,7 @@ export const ExcelEvaluationModal: React.FC<ExcelEvaluationModalProps> = ({
               style={{ gap: '6px' }}
             >
               <Share2 size={15} />
-              Share Report
+              Share Achievement
             </button>
 
             {summary.passed && onNextLevel && level.levelNumber < 5 && (
