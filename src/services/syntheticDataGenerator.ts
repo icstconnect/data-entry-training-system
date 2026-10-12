@@ -1,4 +1,4 @@
-import { SourceRecord, MarksheetSchema } from '../types';
+import { SourceRecord } from '../types';
 
 // Deterministic pseudo-random number generator using seed (Murmur-like simple hash)
 function hashString(str: string): number {
@@ -20,24 +20,27 @@ function createRng(seed: number) {
   };
 }
 
-const FIRST_NAMES_MALE = [
+export const FIRST_NAMES_MALE = [
   'Sourav', 'Debabrata', 'Subhajit', 'Aniket', 'Arijit', 'Rohan', 'Pranab', 'Bikash',
-  'Sayantan', 'Indranil', 'Tanmay', 'Arpan', 'Dipankar', 'Suman', 'Avik', 'Abhishek'
+  'Sayantan', 'Indranil', 'Tanmay', 'Arpan', 'Dipankar', 'Suman', 'Avik', 'Abhishek',
+  'Subham', 'Pritam', 'Siddhartha', 'Sandip', 'Debashis', 'Nilanjan', 'Kaushik', 'Somenath'
 ];
 
-const FIRST_NAMES_FEMALE = [
+export const FIRST_NAMES_FEMALE = [
   'Poulomi', 'Ananya', 'Sneha', 'Mousumi', 'Debolina', 'Riya', 'Shreya', 'Tanusree',
-  'Payel', 'Rumpa', 'Sarmistha', 'Madhurima', 'Priyanka', 'Soma', 'Barnali', 'Koyel'
+  'Payel', 'Rumpa', 'Sarmistha', 'Madhurima', 'Priyanka', 'Soma', 'Barnali', 'Koyel',
+  'Debasmita', 'Sangita', 'Rituparna', 'Moumita', 'Swagata', 'Archana', 'Monali', 'Shampa'
 ];
 
-const LAST_NAMES = [
+export const LAST_NAMES = [
   'Ghosh', 'Biswas', 'Roy', 'Mukherjee', 'Banerjee', 'Chakraborty', 'Mondal', 'Dutta',
-  'Saha', 'Bhowmick', 'Majumdar', 'Paul', 'Kundu', 'Chatterjee', 'Das', 'Sen'
+  'Saha', 'Bhowmick', 'Majumdar', 'Paul', 'Kundu', 'Chatterjee', 'Das', 'Sen',
+  'Adhikari', 'Karmakar', 'Sarkar', 'Bhattacharya', 'Baidya', 'Halder', 'Samanta', 'Pramanik'
 ];
 
-const GUARDIAN_PREFIXES = ['Shri', 'Late', 'Dr.'];
+export const GUARDIAN_PREFIXES = ['Shri', 'Late', 'Dr.', 'Mr.', 'Prof.'];
 
-const LOCALITIES_NADIA = [
+export const LOCALITIES_NADIA = [
   { premise: 'Vill & PO - Chowberia', street: 'Station Road', district: 'Nadia', state: 'West Bengal', pin: '741221' },
   { premise: 'Subhash Pally', street: 'College Road, Ranaghat', district: 'Nadia', state: 'West Bengal', pin: '741201' },
   { premise: 'Rabindra Sarani', street: 'Chakdaha Main Road', district: 'Nadia', state: 'West Bengal', pin: '741222' },
@@ -45,22 +48,90 @@ const LOCALITIES_NADIA = [
   { premise: 'Dakshinpara', street: 'Kalyani Ghoshpara Road', district: 'Nadia', state: 'West Bengal', pin: '741235' },
   { premise: 'Shantipur High School Lane', street: 'Post Office More', district: 'Nadia', state: 'West Bengal', pin: '741404' },
   { premise: 'Budge Budge Trunk Road', street: 'Diamond Harbour', district: 'South 24 Parganas', state: 'West Bengal', pin: '700137' },
-  { premise: 'Netaji Subhas Road', street: 'Barasat Sadar', district: 'North 24 Parganas', state: 'West Bengal', pin: '700124' }
+  { premise: 'Netaji Subhas Road', street: 'Barasat Sadar', district: 'North 24 Parganas', state: 'West Bengal', pin: '700124' },
+  { premise: 'Taherpur Notun Pally', street: 'Netaji Road', district: 'Nadia', state: 'West Bengal', pin: '741159' },
+  { premise: 'Karimpur Hospital More', street: 'Shikarpur Road', district: 'Nadia', state: 'West Bengal', pin: '741152' },
+  { premise: 'Bagula Rail Gate', street: 'Hanskhali Road', district: 'Nadia', state: 'West Bengal', pin: '741502' },
+  { premise: 'Birnagar Municipality Ward 2', street: 'Ula Main Road', district: 'Nadia', state: 'West Bengal', pin: '741127' }
 ];
 
-const SCHOOLS = [
+export const SCHOOLS = [
   { name: 'Chowberia High School (H.S.)', code: 'SCH-CHW-104', board: 'WBBSE', medium: 'Bengali' },
   { name: 'Ranaghat Bharati High School', code: 'SCH-RNG-208', board: 'WBBSE', medium: 'Bengali' },
   { name: 'Chakdaha Ramlal Academy', code: 'SCH-CKD-315', board: 'WBCHSE', medium: 'Bengali' },
   { name: 'Krishnanagar Collegiate School', code: 'SCH-KRN-402', board: 'WBBSE', medium: 'Bengali' },
   { name: 'Kalyani Public School', code: 'SCH-KLY-501', board: 'CBSE', medium: 'English' },
   { name: 'Bongaon High School', code: 'SCH-BNG-612', board: 'WBCHSE', medium: 'Bengali' },
-  { name: 'Nadia Model Academy', code: 'SCH-NMA-709', board: 'CBSE', medium: 'English' }
+  { name: 'Nadia Model Academy', code: 'SCH-NMA-709', board: 'CBSE', medium: 'English' },
+  { name: 'Shantipur Oriental Academy', code: 'SCH-STP-118', board: 'WBBSE', medium: 'Bengali' },
+  { name: 'Taherpur Netaji Vidyapith', code: 'SCH-THP-224', board: 'WBCHSE', medium: 'Bengali' },
+  { name: 'Karimpur Pannadevi High School', code: 'SCH-KMP-331', board: 'WBBSE', medium: 'Bengali' },
+  { name: 'Habibpur High School', code: 'SCH-HBP-447', board: 'WBBSE', medium: 'Bengali' },
+  { name: 'Bagula High School', code: 'SCH-BGL-552', board: 'WBCHSE', medium: 'Bengali' },
+  { name: 'Birnagar High School', code: 'SCH-BNR-663', board: 'WBBSE', medium: 'Bengali' },
+  { name: 'Bethuadahari J.C.M. High School', code: 'SCH-BTH-774', board: 'WBBSE', medium: 'Bengali' },
+  { name: 'Plassey High School', code: 'SCH-PLS-885', board: 'WBCHSE', medium: 'Bengali' },
+  { name: 'Santipur Municipal High School', code: 'SCH-SMH-992', board: 'WBBSE', medium: 'Bengali' },
+  { name: 'Nabadwip Bakultala High School', code: 'SCH-NBD-109', board: 'WBBSE', medium: 'Bengali' },
+  { name: 'Majhdia Rail Bazar High School', code: 'SCH-MJD-216', board: 'WBCHSE', medium: 'Bengali' },
+  { name: 'Ranaghat Brojobala Girls\' High School', code: 'SCH-RBG-328', board: 'WBBSE', medium: 'Bengali' },
+  { name: 'Krishnanagar Lady Carmichael Girls\' High School', code: 'SCH-KLC-439', board: 'WBCHSE', medium: 'Bengali' },
+  { name: 'Kalyani Central Model School', code: 'SCH-KCM-550', board: 'CBSE', medium: 'English' },
+  { name: 'Bongaon Kavi Keshablal Vidyapith', code: 'SCH-BKK-661', board: 'WBBSE', medium: 'Bengali' }
 ];
 
-const CATEGORIES = ['General', 'OBC-A', 'OBC-B', 'SC', 'ST', 'EWS'];
-const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
-const ACTIVITIES = ['NSS', 'NCC Cadet', 'Annual Athletics', 'Quiz & Debate', 'Computer Club', 'Science Exhibition', 'Cultural Drama', 'Art & Craft'];
+export const CATEGORIES = ['General', 'OBC-A', 'OBC-B', 'SC', 'ST', 'EWS'];
+export const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
+
+export const ACTIVITIES = [
+  'NSS (National Service Scheme)',
+  'NCC Cadet (Army Wing)',
+  'Annual Athletics & Sports',
+  'Quiz & Debate Club',
+  'Computer & Coding Club',
+  'Science Exhibition & Models',
+  'Cultural Drama & Theatre',
+  'Art & Craft Exhibition',
+  'Scouts & Guides Troop',
+  'Red Cross Youth Society',
+  'Music, Choir & Vocal',
+  'Yoga & Physical Wellness',
+  'Environmental & Eco Club',
+  'Football First XI',
+  'Cricket First XI',
+  'Badminton Championship',
+  'Table Tennis Squad',
+  'Volleyball Club',
+  'Chess & Mind Strategy',
+  'Photography & Media Club',
+  'Creative Writing & Magazine',
+  'Martial Arts & Self Defense',
+  'First Aid & Emergency Response',
+  'Community Social Service',
+  'Gardening & Green Campus',
+  'Folk Dance & Rabindra Sangeet',
+  'Recitation & Elocution',
+  'School Marching Band',
+  'Robotics & STEM Workshop',
+  'Disaster Management Volunteer'
+];
+
+export const TEACHER_REMARKS = [
+  'Consistent & Diligent',
+  'Good in Lab & Practical',
+  'Excellent Performance',
+  'Satisfactory Progress',
+  'Active Participant in Class',
+  'Well Behaved and Punctual',
+  'Hardworking and Sincere',
+  'Commendable Grasp of Concepts',
+  'Good Analytical Ability',
+  'Shows Steady Improvement',
+  'Capable of Higher Marks',
+  'Outstanding Work Ethic',
+  'Needs More Practice in Numericals',
+  'Regular & Attentive Trainee'
+];
 
 /**
  * Generates a consistent, realistic synthetic record based deterministically on UID string.
@@ -90,15 +161,15 @@ export function generateSyntheticRecord(uid: string): SourceRecord {
   const category = CATEGORIES[Math.floor(rng() * CATEGORIES.length)];
   const bloodGroup = BLOOD_GROUPS[Math.floor(rng() * BLOOD_GROUPS.length)];
 
-  // Phone number (realistic Indian mobile starting with 9, 8, 7, or 6)
-  const phonePrefix = ['9832', '9734', '8927', '9434', '7001', '8145'][Math.floor(rng() * 6)];
-  const phoneSuffix = String(Math.floor(100000 + rng() * 900000));
+  // Dummy test mobile number (Non-routable Indian fictitious sequence starting with 98000)
+  const phonePrefix = '98000';
+  const phoneSuffix = String(Math.floor(10000 + rng() * 90000));
   const phone = `${phonePrefix}${phoneSuffix}`;
 
   const emailUser = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${Math.floor(rng() * 90 + 10)}`;
   const email = `${emailUser}@gmail.com`;
 
-  // Aadhaar format: 12 digits (synthetic)
+  // Aadhaar format: 12 digits (synthetic dummy block)
   const a1 = String(Math.floor(2000 + rng() * 7000));
   const a2 = String(Math.floor(1000 + rng() * 9000));
   const a3 = String(Math.floor(1000 + rng() * 9000));
@@ -123,6 +194,9 @@ export function generateSyntheticRecord(uid: string): SourceRecord {
   const shuffledActs = [...ACTIVITIES].sort(() => rng() - 0.5);
   const selectedActivities = shuffledActs.slice(0, actCount);
 
+  // Teacher overall remark
+  const teacherRemark = TEACHER_REMARKS[Math.floor(rng() * TEACHER_REMARKS.length)];
+
   // Generate Table rows (for multi-row stages)
   const tableRows = [
     {
@@ -132,7 +206,7 @@ export function generateSyntheticRecord(uid: string): SourceRecord {
       maxMarks: 50,
       marksObtained: Math.floor(35 + rng() * 15),
       grade: 'A',
-      remarks: 'Consistent'
+      remarks: TEACHER_REMARKS[0] // 'Consistent & Diligent'
     },
     {
       id: 'row-2',
@@ -141,7 +215,7 @@ export function generateSyntheticRecord(uid: string): SourceRecord {
       maxMarks: 50,
       marksObtained: Math.floor(32 + rng() * 16),
       grade: 'A',
-      remarks: 'Good in Lab'
+      remarks: TEACHER_REMARKS[1] // 'Good in Lab & Practical'
     },
     {
       id: 'row-3',
@@ -150,7 +224,7 @@ export function generateSyntheticRecord(uid: string): SourceRecord {
       maxMarks: 50,
       marksObtained: Math.floor(36 + rng() * 14),
       grade: 'A+',
-      remarks: 'Excellent'
+      remarks: TEACHER_REMARKS[2] // 'Excellent Performance'
     },
     {
       id: 'row-4',
@@ -159,7 +233,7 @@ export function generateSyntheticRecord(uid: string): SourceRecord {
       maxMarks: 50,
       marksObtained: Math.floor(30 + rng() * 18),
       grade: 'B+',
-      remarks: 'Satisfactory'
+      remarks: TEACHER_REMARKS[3] // 'Satisfactory Progress'
     }
   ];
 
@@ -242,6 +316,7 @@ export function generateSyntheticRecord(uid: string): SourceRecord {
       examYear: '2026',
       previousPercentage: previousPct,
       conduct: 'Good',
+      teacherRemarks: teacherRemark,
       selectedSubjects: ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
       activities: selectedActivities
     },
@@ -257,33 +332,71 @@ export function generateSyntheticRecord(uid: string): SourceRecord {
 }
 
 /**
- * Pre-seeded sample UIDs for instant access across all 5 levels.
+ * Pre-seeded sample UIDs (minimum 25 trainees) for instant access across all levels.
  */
 export const SAMPLE_UIDS = [
+  'ICST-2026-001001',
+  'ICST-2026-001002',
+  'ICST-2026-001003',
+  'ICST-2026-001004',
+  'ICST-2026-001005',
+  'ICST-2026-001006',
+  'ICST-2026-001007',
+  'ICST-2026-001008',
+  'ICST-2026-001009',
   'ICST-2026-001010',
+  'ICST-2026-001011',
+  'ICST-2026-001012',
+  'ICST-2026-001013',
+  'ICST-2026-001014',
+  'ICST-2026-001015',
+  'ICST-2026-001016',
+  'ICST-2026-001017',
+  'ICST-2026-001018',
+  'ICST-2026-001019',
+  'ICST-2026-001020',
   'ICST-2026-001021',
-  'ICST-2026-001035',
-  'ICST-2026-001048',
-  'ICST-2026-001062',
-  'ICST-2026-001077',
-  'ICST-2026-001090',
-  'ICST-2026-001105',
-  'ICST-2026-001124',
-  'ICST-2026-001149',
-  'ICST-2026-001180',
-  'ICST-2026-001215',
-  'ICST-2026-001250',
-  'ICST-2026-001300',
-  'ICST-2026-001350',
-  'ICST-2026-001400',
-  'ICST-2026-001450',
-  'ICST-2026-001500'
+  'ICST-2026-001022',
+  'ICST-2026-001023',
+  'ICST-2026-001024',
+  'ICST-2026-001025'
 ];
 
+export interface PreloadedDummyPerson {
+  uid: string;
+  studentName: string;
+  schoolName: string;
+  category: string;
+  phone: string;
+  gender: string;
+}
+
 /**
- * Generate a random valid UID
+ * Returns a list of minimum 25 preloaded realistic dummy persons with details.
+ */
+export function getPreloadedDummyPersons(): PreloadedDummyPerson[] {
+  return SAMPLE_UIDS.map(uid => {
+    const rec = generateSyntheticRecord(uid);
+    return {
+      uid: rec.uid,
+      studentName: rec.studentName,
+      schoolName: rec.schoolInfo.schoolName,
+      category: rec.category,
+      phone: rec.phone,
+      gender: rec.gender
+    };
+  });
+}
+
+/**
+ * Generate a random valid UID from the sample roster or fresh sequence
  */
 export function generateRandomUid(): string {
+  // 60% chance to pick from preloaded roster, 40% fresh sequence
+  if (Math.random() < 0.6) {
+    const randomIdx = Math.floor(Math.random() * SAMPLE_UIDS.length);
+    return SAMPLE_UIDS[randomIdx];
+  }
   const num = Math.floor(1000 + Math.random() * 9000);
   return `ICST-2026-00${num}`;
 }

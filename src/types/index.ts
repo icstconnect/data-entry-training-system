@@ -158,6 +158,7 @@ export interface SourceRecord {
     examYear: string;
     previousPercentage?: number;
     conduct?: string;
+    teacherRemarks?: string;
     selectedSubjects?: string[];
     activities?: string[];
   };
@@ -186,7 +187,7 @@ export interface FieldValidationResult {
   sourceValue: any;
   enteredValue: any;
   status: 'correct' | 'incorrect' | 'missing' | 'format_warning';
-  errorType?: 'wrong_text' | 'wrong_number' | 'wrong_date' | 'wrong_selection' | 'missing_value' | 'format_error';
+  errorType?: 'wrong_text' | 'wrong_number' | 'wrong_date' | 'wrong_selection' | 'missing_value' | 'format_error' | 'spelling_mistake' | 'missing_word';
   errorMessage?: string;
   weight: number;
   section?: string;

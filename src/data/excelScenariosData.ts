@@ -68,14 +68,14 @@ export const EXCEL_LEVELS: ExcelScenarioLevel[] = [
       'Maintain exact case sensitivity for student and guardian names.'
     ],
     sourceRecords: [
-      { slNo: '1', studentName: 'Sourav Ghosh', rollNo: 'ICST-2026-001', guardianName: 'Prabir Ghosh', mobile: '9830124587', category: 'General' },
-      { slNo: '2', studentName: 'Ananya Mukherjee', rollNo: 'ICST-2026-002', guardianName: 'Debabrata Mukherjee', mobile: '9434871209', category: 'General' },
-      { slNo: '3', studentName: 'Subham Karmakar', rollNo: 'ICST-2026-003', guardianName: 'Uttam Karmakar', mobile: '8910452398', category: 'OBC-B' },
-      { slNo: '4', studentName: 'Priyanka Mondal', rollNo: 'ICST-2026-004', guardianName: 'Tarun Mondal', mobile: '7001923485', category: 'SC' },
-      { slNo: '5', studentName: 'Tanmoy Adhikari', rollNo: 'ICST-2026-005', guardianName: 'Swapan Adhikari', mobile: '9123847561', category: 'General' },
-      { slNo: '6', studentName: 'Sneha Sarkar', rollNo: 'ICST-2026-006', guardianName: 'Biswajit Sarkar', mobile: '9874102938', category: 'SC' },
-      { slNo: '7', studentName: 'Rohan Majumdar', rollNo: 'ICST-2026-007', guardianName: 'Ashok Majumdar', mobile: '8697230491', category: 'OBC-A' },
-      { slNo: '8', studentName: 'Debasmita Roy', rollNo: 'ICST-2026-008', guardianName: 'Subrata Roy', mobile: '9007182934', category: 'General' }
+      { slNo: '1', studentName: 'Sourav Ghosh', rollNo: 'ICST-2026-001', guardianName: 'Prabir Ghosh', mobile: '9800010001', category: 'General' },
+      { slNo: '2', studentName: 'Ananya Mukherjee', rollNo: 'ICST-2026-002', guardianName: 'Debabrata Mukherjee', mobile: '9800010002', category: 'General' },
+      { slNo: '3', studentName: 'Subham Karmakar', rollNo: 'ICST-2026-003', guardianName: 'Uttam Karmakar', mobile: '9800010003', category: 'OBC-B' },
+      { slNo: '4', studentName: 'Priyanka Mondal', rollNo: 'ICST-2026-004', guardianName: 'Tarun Mondal', mobile: '9800010004', category: 'SC' },
+      { slNo: '5', studentName: 'Tanmoy Adhikari', rollNo: 'ICST-2026-005', guardianName: 'Swapan Adhikari', mobile: '9800010005', category: 'General' },
+      { slNo: '6', studentName: 'Sneha Sarkar', rollNo: 'ICST-2026-006', guardianName: 'Biswajit Sarkar', mobile: '9800010006', category: 'SC' },
+      { slNo: '7', studentName: 'Rohan Majumdar', rollNo: 'ICST-2026-007', guardianName: 'Ashok Majumdar', mobile: '9800010007', category: 'OBC-A' },
+      { slNo: '8', studentName: 'Debasmita Roy', rollNo: 'ICST-2026-008', guardianName: 'Subrata Roy', mobile: '9800010008', category: 'General' }
     ]
   },
 

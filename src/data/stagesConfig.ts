@@ -1,4 +1,5 @@
 import { StageConfig, LevelInfo, BatchTitle } from '../types';
+import { SCHOOLS, CATEGORIES, ACTIVITIES, TEACHER_REMARKS } from '../services/syntheticDataGenerator';
 
 export const GUARDIAN_PREFIX_OPTIONS = [
   { label: 'Prefix', value: '' },
@@ -10,6 +11,51 @@ export const GUARDIAN_PREFIX_OPTIONS = [
   { label: 'Md.', value: 'Md.' },
   { label: 'Prof.', value: 'Prof.' }
 ];
+
+export const SCHOOL_OPTIONS = SCHOOLS.map(s => ({
+  label: s.name,
+  value: s.name
+}));
+
+export const SOCIAL_CATEGORY_OPTIONS = [
+  { label: '-- Select Social Category --', value: '' },
+  ...CATEGORIES.map(c => ({
+    label: c,
+    value: c
+  }))
+];
+
+export const BOARD_OPTIONS = [
+  { label: '-- Select Examination Board --', value: '' },
+  { label: 'WBBSE', value: 'WBBSE' },
+  { label: 'WBCHSE', value: 'WBCHSE' },
+  { label: 'CBSE', value: 'CBSE' },
+  { label: 'ICSE', value: 'ICSE' }
+];
+
+export const CONDUCT_OPTIONS = [
+  { label: '-- Select Conduct Assessment --', value: '' },
+  { label: 'Excellent', value: 'Excellent' },
+  { label: 'Good', value: 'Good' },
+  { label: 'Satisfactory', value: 'Satisfactory' }
+];
+
+export const STREAM_OPTIONS = [
+  { label: '-- Select Stream --', value: '' },
+  { label: 'Science', value: 'Science' },
+  { label: 'Commerce', value: 'Commerce' },
+  { label: 'Arts / Humanities', value: 'Arts / Humanities' }
+];
+
+export const CO_CURRICULAR_OPTIONS = ACTIVITIES.map(a => ({
+  label: a,
+  value: a
+}));
+
+export const TEACHER_REMARKS_OPTIONS = TEACHER_REMARKS.map(r => ({
+  label: r,
+  value: r
+}));
 
 export const LEVELS_INFO: LevelInfo[] = [
   {
@@ -228,15 +274,7 @@ export const STAGES: StageConfig[] = [
     fields: [
       { id: 'studentName', label: 'Student Name', type: 'text', required: true, weight: 1 },
       { id: 'schoolInfo.schoolName', label: 'School Name', type: 'searchable-select', required: true, weight: 1.5,
-        options: [
-          { label: 'Chowberia High School (H.S.)', value: 'Chowberia High School (H.S.)' },
-          { label: 'Ranaghat Bharati High School', value: 'Ranaghat Bharati High School' },
-          { label: 'Chakdaha Ramlal Academy', value: 'Chakdaha Ramlal Academy' },
-          { label: 'Krishnanagar Collegiate School', value: 'Krishnanagar Collegiate School' },
-          { label: 'Kalyani Public School', value: 'Kalyani Public School' },
-          { label: 'Bongaon High School', value: 'Bongaon High School' },
-          { label: 'Nadia Model Academy', value: 'Nadia Model Academy' }
-        ]
+        options: SCHOOL_OPTIONS
       },
       { id: 'schoolInfo.schoolCode', label: 'School Index / Center Code', type: 'text', required: true, weight: 1 },
       { 
@@ -245,12 +283,7 @@ export const STAGES: StageConfig[] = [
         type: 'select', 
         required: true, 
         weight: 1,
-        options: [
-          { label: 'Select Board', value: '' },
-          { label: 'WBBSE', value: 'WBBSE' },
-          { label: 'WBCHSE', value: 'WBCHSE' },
-          { label: 'CBSE', value: 'CBSE' }
-        ]
+        options: BOARD_OPTIONS
       },
       { 
         id: 'schoolInfo.medium', 
@@ -284,7 +317,7 @@ export const STAGES: StageConfig[] = [
       { id: 'studentName', label: 'Student Name', type: 'text', required: true, weight: 1 },
       { id: 'phone', label: 'Phone Number', type: 'tel', required: true, weight: 1 },
       { id: 'academic.previousPercentage', label: 'Previous Qualifying %', type: 'decimal', placeholder: 'e.g. 78.5', required: true, weight: 1 },
-      { id: 'academic.activities', label: 'Co-curricular Activities (Chips)', type: 'smart-chips', placeholder: 'Type activity and press Enter or select', required: true, weight: 1.5 }
+      { id: 'academic.activities', label: 'Co-curricular Activities (Chips)', type: 'smart-chips', placeholder: 'Type activity and press Enter or select', required: true, weight: 1.5, options: CO_CURRICULAR_OPTIONS }
     ],
     tableSchema: {
       tableName: 'Internal Term Assessment Records',
@@ -374,13 +407,7 @@ export const STAGES: StageConfig[] = [
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
       },
       { id: 'category', label: 'Social Category', type: 'select', required: true, weight: 1, section: 'Identity Details',
-        options: [
-          { label: 'General', value: 'General' },
-          { label: 'OBC-A', value: 'OBC-A' },
-          { label: 'OBC-B', value: 'OBC-B' },
-          { label: 'SC', value: 'SC' },
-          { label: 'ST', value: 'ST' }
-        ]
+        options: SOCIAL_CATEGORY_OPTIONS
       },
       // Section 2: Contact
       { id: 'phone', label: 'Mobile Number', type: 'tel', required: true, weight: 1, section: 'Contact & Domicile' },
@@ -389,12 +416,7 @@ export const STAGES: StageConfig[] = [
       { id: 'address.pinCode', label: 'PIN Code', type: 'text', required: true, weight: 1, section: 'Contact & Domicile' },
       // Section 3: School
       { id: 'schoolInfo.schoolName', label: 'Institution Name', type: 'searchable-select', required: true, weight: 1, section: 'Institution & Registration',
-        options: [
-          { label: 'Chowberia High School (H.S.)', value: 'Chowberia High School (H.S.)' },
-          { label: 'Ranaghat Bharati High School', value: 'Ranaghat Bharati High School' },
-          { label: 'Chakdaha Ramlal Academy', value: 'Chakdaha Ramlal Academy' },
-          { label: 'Krishnanagar Collegiate School', value: 'Krishnanagar Collegiate School' }
-        ]
+        options: SCHOOL_OPTIONS
       },
       { id: 'academic.registrationNumber', label: 'Registration Number', type: 'text', required: true, weight: 1.5, section: 'Institution & Registration' },
       { id: 'academic.rollNumber', label: 'Roll Number', type: 'text', required: true, weight: 1.5, section: 'Institution & Registration' }
@@ -470,13 +492,11 @@ export const STAGES: StageConfig[] = [
       { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1,
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
       },
+      { id: 'category', label: 'Social Category', type: 'select', required: true, weight: 1,
+        options: SOCIAL_CATEGORY_OPTIONS
+      },
       { id: 'schoolInfo.schoolName', label: 'Institution Name', type: 'searchable-select', required: true, weight: 1.5,
-        options: [
-          { label: 'Chowberia High School (H.S.)', value: 'Chowberia High School (H.S.)' },
-          { label: 'Ranaghat Bharati High School', value: 'Ranaghat Bharati High School' },
-          { label: 'Chakdaha Ramlal Academy', value: 'Chakdaha Ramlal Academy' },
-          { label: 'Krishnanagar Collegiate School', value: 'Krishnanagar Collegiate School' }
-        ]
+        options: SCHOOL_OPTIONS
       }
     ]
   },
@@ -500,19 +520,11 @@ export const STAGES: StageConfig[] = [
       { id: 'schoolInfo.admissionNumber', label: 'Enrollment / Admission Serial', type: 'text', required: true, weight: 1.5 },
       { id: 'schoolInfo.admissionDate', label: 'Date of Admission (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1 },
       { id: 'schoolInfo.board', label: 'Examination Board', type: 'select', required: true, weight: 1,
-        options: [
-          { label: 'WBBSE', value: 'WBBSE' },
-          { label: 'WBCHSE', value: 'WBCHSE' },
-          { label: 'CBSE', value: 'CBSE' }
-        ]
+        options: BOARD_OPTIONS
       },
       { id: 'academic.previousPercentage', label: 'Past Qualifying Percentage (%)', type: 'decimal', required: true, weight: 1.5 },
       { id: 'academic.conduct', label: 'Conduct Assessment Record', type: 'select', required: true, weight: 1,
-        options: [
-          { label: 'Excellent', value: 'Excellent' },
-          { label: 'Good', value: 'Good' },
-          { label: 'Satisfactory', value: 'Satisfactory' }
-        ]
+        options: CONDUCT_OPTIONS
       },
       { id: 'phone', label: 'Emergency Contact Phone', type: 'tel', required: true, weight: 1 }
     ]
@@ -571,7 +583,7 @@ export const STAGES: StageConfig[] = [
     ],
     fields: [
       { id: 'studentName', label: 'Student Name', type: 'text', required: true, weight: 1 },
-      { id: 'schoolInfo.schoolName', label: 'School Name', type: 'text', required: true, weight: 1 },
+      { id: 'schoolInfo.schoolName', label: 'School Name', type: 'searchable-select', required: true, weight: 1, options: SCHOOL_OPTIONS },
       { id: 'academic.rollNumber', label: 'Board Roll No', type: 'text', required: true, weight: 1.5 }
     ],
     marksheetSchema: {
@@ -751,7 +763,7 @@ export const STAGES: StageConfig[] = [
     fields: [
       { id: 'studentName', label: 'Student Name', type: 'text', required: true, weight: 2 },
       { id: 'academic.rollNumber', label: 'CBSE Roll Number', type: 'text', required: true, weight: 2 },
-      { id: 'schoolInfo.schoolName', label: 'Affiliated School Name', type: 'text', required: true, weight: 1.5 }
+      { id: 'schoolInfo.schoolName', label: 'Affiliated School Name', type: 'searchable-select', required: true, weight: 1.5, options: SCHOOL_OPTIONS }
     ],
     marksheetSchema: {
       boardType: 'CBSE',
@@ -800,13 +812,11 @@ export const STAGES: StageConfig[] = [
       { id: 'phone', label: 'Mobile Number', type: 'tel', required: true, weight: 2 },
       { id: 'email', label: 'Official Email', type: 'email', required: true, weight: 2 },
       { id: 'aadhaarNumber', label: 'Aadhaar Identification', type: 'text', placeholder: '12-digit number (spaces optional)', required: true, weight: 3 },
+      { id: 'category', label: 'Social Category', type: 'select', required: true, weight: 1.5,
+        options: SOCIAL_CATEGORY_OPTIONS
+      },
       { id: 'schoolInfo.schoolName', label: 'School Name', type: 'searchable-select', required: true, weight: 2,
-        options: [
-          { label: 'Chowberia High School (H.S.)', value: 'Chowberia High School (H.S.)' },
-          { label: 'Ranaghat Bharati High School', value: 'Ranaghat Bharati High School' },
-          { label: 'Chakdaha Ramlal Academy', value: 'Chakdaha Ramlal Academy' },
-          { label: 'Krishnanagar Collegiate School', value: 'Krishnanagar Collegiate School' }
-        ]
+        options: SCHOOL_OPTIONS
       },
       { id: 'academic.registrationNumber', label: 'Board Registration No.', type: 'text', required: true, weight: 3 },
       { id: 'academic.rollNumber', label: 'Roll Number', type: 'text', required: true, weight: 2 }

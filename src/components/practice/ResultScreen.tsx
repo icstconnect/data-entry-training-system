@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StageValidationSummary, StageConfig } from '../../types';
+import { StageValidationSummary, StageConfig, SourceRecord } from '../../types';
 import confetti from 'canvas-confetti';
 import { 
   Trophy, 
@@ -15,14 +15,20 @@ import {
   Award,
   ShieldCheck,
   Share2,
-  User
+  User,
+  Eye
 } from 'lucide-react';
 import { playFeedbackSound } from '../../services/storageService';
 import { AchievementShareModal } from '../common/AchievementShareModal';
+import { ReviewModal } from './ReviewModal';
 
 interface ResultScreenProps {
   summary: StageValidationSummary;
   stage: StageConfig;
+  sourceRecord?: SourceRecord;
+  formValues?: Record<string, any>;
+  tableRows?: Record<string, any>[];
+  marksheetValues?: Record<string, any>;
   onNextStage?: () => void;
   onRetry: () => void;
   hasNextStage: boolean;
@@ -31,12 +37,17 @@ interface ResultScreenProps {
 export const ResultScreen: React.FC<ResultScreenProps> = ({
   summary,
   stage,
+  sourceRecord,
+  formValues,
+  tableRows,
+  marksheetValues,
   onNextStage,
   onRetry,
   hasNextStage
 }) => {
   const [showDetailedReport, setShowDetailedReport] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [showMistakesModal, setShowMistakesModal] = useState(false);
 
   const timeLimit = summary.timeLimitSeconds || stage.timeLimitSeconds || 600;
   const isOvertime = summary.timeTakenSeconds > timeLimit;
@@ -84,6 +95,19 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
           summary={summary}
           achievement={summary.unlockedAchievements[0]}
           onClose={() => setIsShareModalOpen(false)}
+        />
+      )}
+
+      {/* Exact Form Layout Mistakes Modal */}
+      {showMistakesModal && sourceRecord && (
+        <ReviewModal
+          stage={stage}
+          sourceRecord={sourceRecord}
+          formValues={formValues || {}}
+          tableRows={tableRows}
+          marksheetValues={marksheetValues}
+          isPostSubmission={true}
+          onClose={() => setShowMistakesModal(false)}
         />
       )}
 
@@ -274,6 +298,48 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
           </div>
         )}
 
+        {/* Prominent Callout to Inspect Mistakes in Exact Form Layout */}
+        {sourceRecord && (
+          <div style={{ marginBottom: '20px' }}>
+            <button
+              type="button"
+              id="btn-show-mistakes-modal"
+              className="btn btn-primary"
+              style={{
+                width: '100%',
+                padding: '14px 20px',
+                fontSize: '15px',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+                background: 'linear-gradient(135deg, #0284c7, #0369a1)',
+                boxShadow: '0 4px 14px rgba(2, 132, 199, 0.3)',
+                borderRadius: 'var(--radius-md)',
+                cursor: 'pointer'
+              }}
+              onClick={() => setShowMistakesModal(true)}
+            >
+              <Eye size={18} />
+              <span>SHOW MISTAKES IN EXACT FORM LAYOUT</span>
+              <span style={{
+                background: 'rgba(255, 255, 255, 0.25)',
+                padding: '3px 9px',
+                borderRadius: '12px',
+                fontSize: '11px',
+                fontWeight: 800,
+                letterSpacing: '0.4px'
+              }}>
+                {summary.incorrectUnits + summary.missingUnits} MISTAKES
+              </span>
+            </button>
+            <div style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-muted)', marginTop: '5px' }}>
+              Inspect what you entered vs what will be correct in the exact form design
+            </div>
+          </div>
+        )}
+
         {/* Detailed Error Report Toggle */}
         <div style={{ marginBottom: '24px' }}>
           <button
@@ -309,40 +375,52 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
                   {summary.fieldResults.filter(f => f.status !== 'correct').map(f => (
                     <div key={f.fieldId} style={{
                       display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
+                      flexDirection: 'column',
+                      gap: '4px',
                       fontSize: '12px',
-                      padding: '6px 10px',
+                      padding: '8px 10px',
                       background: '#ffffff',
                       border: '1px solid #fee2e2',
                       borderRadius: '4px'
                     }}>
-                      <div>
-                        <strong>{f.label}:</strong> {f.errorMessage || 'Value mismatch'}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                          <strong>{f.label}:</strong> <span style={{ color: 'var(--error-red)', marginLeft: '4px' }}>{f.errorMessage || 'Value mismatch'}</span>
+                        </div>
+                        <span style={{ color: 'var(--error-red)', fontWeight: 700, fontSize: '11px' }}>
+                          {f.status === 'missing' ? 'MISSING' : (f.errorType === 'spelling_mistake' ? 'SPELLING MISTAKE' : (f.errorType === 'missing_word' ? 'MISSING WORD' : 'INCORRECT'))}
+                        </span>
                       </div>
-                      <span style={{ color: 'var(--error-red)', fontWeight: 700 }}>
-                        {f.status === 'missing' ? 'MISSING' : 'INCORRECT'}
-                      </span>
+                      <div style={{ display: 'flex', gap: '14px', fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                        <span>Entered: <strong style={{ color: '#0f172a' }}>{String(f.enteredValue || '(blank)')}</strong></span>
+                        <span>Expected: <strong style={{ color: '#0f172a' }}>{String(f.sourceValue)}</strong></span>
+                      </div>
                     </div>
                   ))}
 
                   {summary.cellResults.filter(c => c.status !== 'correct').map((c, i) => (
                     <div key={i} style={{
                       display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
+                      flexDirection: 'column',
+                      gap: '4px',
                       fontSize: '12px',
-                      padding: '6px 10px',
+                      padding: '8px 10px',
                       background: '#ffffff',
                       border: '1px solid #fee2e2',
                       borderRadius: '4px'
                     }}>
-                      <div>
-                        <strong>{c.columnLabel}:</strong> {c.errorMessage}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                          <strong>{c.columnLabel}:</strong> <span style={{ color: 'var(--error-red)', marginLeft: '4px' }}>{c.errorMessage}</span>
+                        </div>
+                        <span style={{ color: 'var(--error-red)', fontWeight: 700, fontSize: '11px' }}>
+                          {c.status === 'missing' ? 'EMPTY CELL' : 'INCORRECT CELL'}
+                        </span>
                       </div>
-                      <span style={{ color: 'var(--error-red)', fontWeight: 700 }}>
-                        {c.status === 'missing' ? 'EMPTY CELL' : 'WRONG VALUE'}
-                      </span>
+                      <div style={{ display: 'flex', gap: '14px', fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                        <span>Entered: <strong style={{ color: '#0f172a' }}>{String(c.enteredValue || '(empty)')}</strong></span>
+                        <span>Expected: <strong style={{ color: '#0f172a' }}>{String(c.sourceValue)}</strong></span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -353,6 +431,18 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
 
         {/* Action Controls */}
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+          {sourceRecord && (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setShowMistakesModal(true)}
+              style={{ borderColor: 'var(--icst-blue-primary)', color: 'var(--icst-blue-dark)', fontWeight: 600 }}
+            >
+              <Eye size={15} />
+              <span>Inspect Form Mistakes</span>
+            </button>
+          )}
+
           <button
             type="button"
             className="btn btn-secondary"

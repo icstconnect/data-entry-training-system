@@ -12,7 +12,8 @@ import {
   AlertCircle, 
   Sliders,
   FileSpreadsheet,
-  Download
+  Download,
+  Table
 } from 'lucide-react';
 
 interface TeacherDashboardProps {
@@ -421,7 +422,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                 </div>
 
                 <h4 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '8px' }}>
-                  Field-by-Field Breakdown
+                  Field-by-Field Breakdown ({selectedAttempt.fieldResults.length} fields)
                 </h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {selectedAttempt.fieldResults.map((f, i) => (
@@ -438,6 +439,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                           {f.status.toUpperCase()}
                         </span>
                       </div>
+                      {f.status !== 'correct' && f.errorMessage && (
+                        <div style={{ fontSize: '11px', color: 'var(--error-red)', marginTop: '3px', fontWeight: 600 }}>
+                          ⚠️ {f.errorMessage}
+                        </div>
+                      )}
                       <div style={{ marginTop: '4px', display: 'flex', gap: '16px', fontFamily: 'var(--font-mono)' }}>
                         <div>Entered: <span style={{ color: 'var(--text-primary)' }}>{String(f.enteredValue || '(blank)')}</span></div>
                         <div>Expected: <span style={{ color: 'var(--text-muted)' }}>{String(f.sourceValue)}</span></div>
@@ -445,6 +451,43 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
                     </div>
                   ))}
                 </div>
+
+                {/* Table & Marksheet Cells Breakdown */}
+                {selectedAttempt.cellResults && selectedAttempt.cellResults.length > 0 && (
+                  <div style={{ marginTop: '20px' }}>
+                    <h4 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '8px', color: 'var(--icst-charcoal)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Table size={15} color="var(--icst-blue)" />
+                      <span>Table & Marksheet Cells Breakdown ({selectedAttempt.cellResults.length} cells)</span>
+                    </h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {selectedAttempt.cellResults.map((c, i) => (
+                        <div key={i} style={{
+                          padding: '8px 12px',
+                          background: c.status === 'correct' ? '#f8fafc' : '#fef2f2',
+                          border: `1px solid ${c.status === 'correct' ? '#e2e8f0' : '#fecaca'}`,
+                          borderRadius: '6px',
+                          fontSize: '12px'
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600 }}>
+                            <span>{c.columnLabel}</span>
+                            <span style={{ color: c.status === 'correct' ? 'var(--success-green)' : 'var(--error-red)' }}>
+                              {c.status === 'missing' ? 'EMPTY CELL' : c.status.toUpperCase()}
+                            </span>
+                          </div>
+                          {c.status !== 'correct' && c.errorMessage && (
+                            <div style={{ fontSize: '11px', color: 'var(--error-red)', marginTop: '3px', fontWeight: 600 }}>
+                              ⚠️ {c.errorMessage}
+                            </div>
+                          )}
+                          <div style={{ marginTop: '4px', display: 'flex', gap: '16px', fontFamily: 'var(--font-mono)' }}>
+                            <div>Entered: <span style={{ color: 'var(--text-primary)' }}>{String(c.enteredValue || '(empty cell)')}</span></div>
+                            <div>Expected: <span style={{ color: 'var(--text-muted)' }}>{String(c.sourceValue)}</span></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="modal-footer">

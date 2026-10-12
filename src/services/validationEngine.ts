@@ -35,6 +35,187 @@ function normalizeString(val: any, mode: ValidationMode = 'NORMAL'): string {
 }
 
 /**
+ * Calculates Levenshtein edit distance between two strings
+ */
+export function levenshteinDistance(a: string, b: string): number {
+  const m = a.length;
+  const n = b.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (a[i - 1].toLowerCase() === b[j - 1].toLowerCase()) {
+        dp[i][j] = dp[i - 1][j - 1];
+      } else {
+        dp[i][j] = 1 + Math.min(
+          dp[i - 1][j],
+          dp[i][j - 1],
+          dp[i - 1][j - 1]
+        );
+      }
+    }
+  }
+  return dp[m][n];
+}
+
+/**
+ * Intelligent discrepancy detector that pinpoints:
+ * - Missing words or names (e.g. entered "Sourav", expected "Sourav Ghosh")
+ * - Extra words
+ * - Spelling mistakes in words (e.g. entered "Consistant", expected "Consistent")
+ * - Digit errors in codes or phones (e.g. entered "9800010002", expected "9800010001")
+ * - Transposed characters or dropped letters
+ */
+export function analyzeTextDiscrepancy(
+  expected: any,
+  entered: any,
+  fieldLabel: string = 'Field'
+): { errorType: 'wrong_text' | 'spelling_mistake' | 'missing_word' | 'missing_value' | 'format_error'; errorMessage: string } {
+  const expStr = String(expected ?? '').trim();
+  const entStr = String(entered ?? '').trim();
+
+  if (!entStr) {
+    return {
+      errorType: 'missing_value',
+      errorMessage: `${fieldLabel} is empty / missing`
+    };
+  }
+
+  // Exact match
+  if (expStr.toLowerCase() === entStr.toLowerCase()) {
+    if (expStr !== entStr) {
+      return {
+        errorType: 'format_error',
+        errorMessage: `Letter casing mismatch: expected "${expStr}", entered "${entStr}"`
+      };
+    }
+    return {
+      errorType: 'wrong_text',
+      errorMessage: 'Value matches'
+    };
+  }
+
+  // If both look like numeric/alphanumeric codes or phone numbers
+  if (/^[\w-]+$/.test(expStr) && /^[\w-]+$/.test(entStr)) {
+    if (expStr.length === entStr.length) {
+      const diffPositions: number[] = [];
+      for (let i = 0; i < expStr.length; i++) {
+        if (expStr[i].toLowerCase() !== entStr[i].toLowerCase()) {
+          diffPositions.push(i + 1);
+        }
+      }
+      if (diffPositions.length <= 2) {
+        return {
+          errorType: 'spelling_mistake',
+          errorMessage: `Character mismatch at position ${diffPositions.join(', ')}: expected "${expStr}", typed "${entStr}"`
+        };
+      }
+    }
+  }
+
+  // Word-by-word token analysis
+  const expWords = expStr.split(/\s+/).filter(Boolean);
+  const entWords = entStr.split(/\s+/).filter(Boolean);
+
+  const expWordsLower = expWords.map(w => w.toLowerCase());
+  const entWordsLower = entWords.map(w => w.toLowerCase());
+
+  // Check for missing words/name parts
+  const missingWords = expWords.filter(w => !entWordsLower.includes(w.toLowerCase()));
+  const extraWords = entWords.filter(w => !expWordsLower.includes(w.toLowerCase()));
+
+  // Scenario 1: Words are completely present except some are missing (e.g. name "Sourav Ghosh" typed as "Sourav")
+  if (missingWords.length > 0 && extraWords.length === 0) {
+    const isName = fieldLabel.toLowerCase().includes('name');
+    return {
+      errorType: 'missing_word',
+      errorMessage: isName 
+        ? `Missing name component: "${missingWords.join(' ')}" is missing` 
+        : `Missing word(s): expected "${missingWords.join(' ')}"`
+    };
+  }
+
+  // Scenario 2: Extra words added that are not in source
+  if (missingWords.length === 0 && extraWords.length > 0) {
+    return {
+      errorType: 'wrong_text',
+      errorMessage: `Extra word(s) entered: "${extraWords.join(' ')}" not in source`
+    };
+  }
+
+  // Scenario 3: Same number of words, check for word-level spelling mistakes
+  if (expWords.length === entWords.length) {
+    const misspelledPairs: { exp: string; ent: string }[] = [];
+    for (let i = 0; i < expWords.length; i++) {
+      if (expWordsLower[i] !== entWordsLower[i]) {
+        misspelledPairs.push({ exp: expWords[i], ent: entWords[i] });
+      }
+    }
+
+    if (misspelledPairs.length === 1) {
+      const pair = misspelledPairs[0];
+      const dist = levenshteinDistance(pair.exp, pair.ent);
+      if (dist <= 3) {
+        return {
+          errorType: 'spelling_mistake',
+          errorMessage: `Spelling mistake: expected "${pair.exp}", typed "${pair.ent}"`
+        };
+      } else {
+        return {
+          errorType: 'wrong_text',
+          errorMessage: `Word mismatch: expected "${pair.exp}", typed "${pair.ent}"`
+        };
+      }
+    } else if (misspelledPairs.length > 1) {
+      const allClose = misspelledPairs.every(p => levenshteinDistance(p.exp, p.ent) <= 2);
+      if (allClose) {
+        const details = misspelledPairs.map(p => `"${p.ent}" -> "${p.exp}"`).join(', ');
+        return {
+          errorType: 'spelling_mistake',
+          errorMessage: `Spelling mistakes detected: ${details}`
+        };
+      }
+    }
+  }
+
+  // Scenario 4: Missing word AND spelling mistake
+  if (missingWords.length > 0 && extraWords.length > 0) {
+    for (const mw of missingWords) {
+      for (const ew of extraWords) {
+        if (levenshteinDistance(mw, ew) <= 2) {
+          return {
+            errorType: 'spelling_mistake',
+            errorMessage: `Spelling mistake in "${ew}": expected "${mw}"`
+          };
+        }
+      }
+    }
+
+    return {
+      errorType: 'missing_word',
+      errorMessage: `Missing or incorrect words: expected "${missingWords.join(' ')}"`
+    };
+  }
+
+  // Scenario 5: General Levenshtein distance on overall string
+  const overallDist = levenshteinDistance(expStr, entStr);
+  if (overallDist <= 3) {
+    return {
+      errorType: 'spelling_mistake',
+      errorMessage: `Spelling mistake: expected "${expStr}", typed "${entStr}"`
+    };
+  }
+
+  return {
+    errorType: 'wrong_text',
+    errorMessage: `Mismatch: expected "${expStr}", received "${entStr}"`
+  };
+}
+
+/**
  * Validates an individual field
  */
 export function validateField(
@@ -341,14 +522,15 @@ export function validateField(
         const cleanSource = normalizeString(sourceValue, mode).replace(/^(shri|late|dr\.?|mr\.?|mrs\.?|md\.?|prof\.?|smt\.?)\s+/i, '').trim();
 
         if (cleanEntered !== cleanSource) {
+          const discrepancy = analyzeTextDiscrepancy(cleanSource, cleanEntered, field.label);
           return {
             fieldId: field.id,
             label: field.label,
             sourceValue,
             enteredValue,
             status: 'incorrect',
-            errorType: 'wrong_text',
-            errorMessage: 'Name does not match source record (enter first and last name only)',
+            errorType: discrepancy.errorType,
+            errorMessage: discrepancy.errorMessage,
             weight,
             section: field.section
           };
@@ -369,14 +551,15 @@ export function validateField(
       const normSource = normalizeString(sourceValue, mode);
 
       if (normEntered !== normSource) {
+        const discrepancy = analyzeTextDiscrepancy(sourceValue, enteredValue, field.label);
         return {
           fieldId: field.id,
           label: field.label,
           sourceValue,
           enteredValue,
           status: 'incorrect',
-          errorType: 'wrong_text',
-          errorMessage: 'Text does not match the source record',
+          errorType: discrepancy.errorType,
+          errorMessage: discrepancy.errorMessage,
           weight,
           section: field.section
         };
@@ -552,6 +735,7 @@ export function validateTableRows(
           errorMessage: 'Cell is empty'
         });
       } else if (String(srcVal).trim().toLowerCase() !== String(usrVal).trim().toLowerCase()) {
+        const discrepancy = analyzeTextDiscrepancy(srcVal, usrVal, col.label);
         results.push({
           rowId: rowIndex + 1,
           columnId: col.id,
@@ -559,7 +743,7 @@ export function validateTableRows(
           sourceValue: srcVal,
           enteredValue: usrVal,
           status: 'incorrect',
-          errorMessage: 'Cell value does not match source'
+          errorMessage: discrepancy.errorMessage
         });
       } else {
         results.push({

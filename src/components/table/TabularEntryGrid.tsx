@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { TableColumn } from '../../types';
+import { TEACHER_REMARKS } from '../../services/syntheticDataGenerator';
 
 interface TabularEntryGridProps {
   columns: TableColumn[];
@@ -105,6 +106,7 @@ export const TabularEntryGrid: React.FC<TabularEntryGridProps> = ({
                           className={`table-cell-input ${isCellWrong ? 'cell-guided-error' : ''}`}
                           placeholder={col.type === 'number' ? '0' : '...'}
                           value={cellVal}
+                          list={col.id.toLowerCase().includes('remark') ? 'teacher-remarks-datalist' : undefined}
                           onChange={e => handleCellChange(rowIndex, col.id, e.target.value)}
                           onKeyDown={e => handleKeyDown(e, rowIndex, colIndex)}
                           title={isCellWrong ? `Expected: ${srcVal}` : undefined}
@@ -118,6 +120,12 @@ export const TabularEntryGrid: React.FC<TabularEntryGridProps> = ({
           </tbody>
         </table>
       </div>
+
+      <datalist id="teacher-remarks-datalist">
+        {TEACHER_REMARKS.map((rem, i) => (
+          <option key={i} value={rem} />
+        ))}
+      </datalist>
     </div>
   );
 };

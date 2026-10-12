@@ -1191,6 +1191,164 @@ select#field-guardianPrefix {
 }
 
 /* ========================================================
+   EXACT-FORM MISTAKES INSPECTION MODAL
+   ======================================================== */
+.review-modal-card {
+  max-width: 960px;
+  width: 96vw;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.review-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-surface);
+}
+
+.review-stat-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.review-stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+}
+
+.review-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border-medium);
+  background: #ffffff;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.review-filter-btn:hover {
+  border-color: var(--icst-blue-primary);
+  color: var(--icst-blue-dark);
+}
+
+.review-filter-btn.active {
+  background: var(--icst-blue-primary);
+  color: #ffffff;
+  border-color: var(--icst-blue-primary);
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+
+.review-field-card {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.review-field-card.is-correct {
+  border-color: #86efac;
+  background: #fcfdfc;
+}
+
+.review-field-card.is-incorrect {
+  border: 1.5px solid #f87171;
+  background: #fffafa;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.08);
+}
+
+.review-field-card.is-missing {
+  border: 1.5px solid #fcd34d;
+  background: #fffdf5;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);
+}
+
+.review-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.review-field-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.review-comparison-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.review-entered-row {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 10px;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius-sm);
+  color: #991b1b;
+}
+
+.review-correct-row {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 10px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: var(--radius-sm);
+  color: #14532d;
+}
+
+.review-explanation-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  color: #92400e;
+  line-height: 1.35;
+}
+
+.review-table-cell-incorrect {
+  background: #fef2f2 !important;
+  border: 1.5px solid #ef4444 !important;
+}
+
+.review-table-cell-correct {
+  background: #f0fdf4 !important;
+  border: 1px solid #bbf7d0 !important;
+  color: #166534 !important;
+}
+
+/* ========================================================
    BRAND FOOTER
    ======================================================== */
 .app-footer {

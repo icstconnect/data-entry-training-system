@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Shuffle, FileSearch, AlertCircle } from 'lucide-react';
-import { generateRandomUid } from '../../services/syntheticDataGenerator';
+import { Search, Shuffle, FileSearch, AlertCircle, Users } from 'lucide-react';
+import { generateRandomUid, getPreloadedDummyPersons, SAMPLE_UIDS } from '../../services/syntheticDataGenerator';
 
 interface UidSearchSectionProps {
   currentUid: string;
@@ -13,10 +13,11 @@ export const UidSearchSection: React.FC<UidSearchSectionProps> = ({
   currentUid,
   onLoadUid,
   isLoading = false,
-  sampleUid = 'ICST-2026-001010'
+  sampleUid = 'ICST-2026-001001'
 }) => {
   const [inputVal, setInputVal] = useState(currentUid || sampleUid);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const dummyPersons = getPreloadedDummyPersons();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,10 +31,19 @@ export const UidSearchSection: React.FC<UidSearchSectionProps> = ({
   };
 
   const handleRandomize = () => {
-    const randomUid = generateRandomUid();
-    setInputVal(randomUid);
+    // Randomly pick one of the 25 preloaded dummy persons or generate a random one
+    const randomPerson = dummyPersons[Math.floor(Math.random() * dummyPersons.length)];
+    const chosenUid = randomPerson ? randomPerson.uid : generateRandomUid();
+    setInputVal(chosenUid);
     setErrorMessage(null);
-    onLoadUid(randomUid);
+    onLoadUid(chosenUid);
+  };
+
+  const handleSelectFromRoster = (selectedUid: string) => {
+    if (!selectedUid) return;
+    setInputVal(selectedUid);
+    setErrorMessage(null);
+    onLoadUid(selectedUid);
   };
 
   return (
@@ -46,24 +56,42 @@ export const UidSearchSection: React.FC<UidSearchSectionProps> = ({
       boxShadow: 'var(--shadow-sm)'
     }}>
       <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '180px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '170px' }}>
           <FileSearch size={18} color="var(--icst-blue)" />
           <div>
             <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--icst-charcoal)' }}>
               LOAD SOURCE RECORD
             </div>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-              Enter assigned UID or generate
+              Pick from 25 profiles or enter UID
             </div>
           </div>
         </div>
 
-        <div style={{ flex: 1, minWidth: '220px', display: 'flex', gap: '8px' }}>
+        {/* 25 Student Roster Selector */}
+        <div style={{ minWidth: '220px', flex: '1 1 240px' }}>
+          <select
+            className="field-input"
+            style={{ fontSize: '12px', fontWeight: 500 }}
+            value={dummyPersons.some(p => p.uid === inputVal) ? inputVal : ''}
+            onChange={e => handleSelectFromRoster(e.target.value)}
+            title="Quickly select any candidate from the 25 pre-generated student roster"
+          >
+            <option value="">📋 Select Candidate (25 Trainee Roster)...</option>
+            {dummyPersons.map((p, idx) => (
+              <option key={p.uid} value={p.uid}>
+                #{idx + 1}: {p.studentName} ({p.uid}) — {p.schoolName.substring(0, 24)}...
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div style={{ flex: '1 1 180px', display: 'flex', gap: '6px' }}>
           <input
             type="text"
             className="field-input"
-            style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, textTransform: 'uppercase' }}
-            placeholder="e.g. ICST-2026-001010"
+            style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, textTransform: 'uppercase', minWidth: '120px' }}
+            placeholder="e.g. ICST-2026-001001"
             value={inputVal}
             onChange={e => {
               setInputVal(e.target.value);
@@ -76,11 +104,11 @@ export const UidSearchSection: React.FC<UidSearchSectionProps> = ({
             disabled={isLoading}
           >
             <Search size={14} />
-            <span>LOAD DATA</span>
+            <span>LOAD</span>
           </button>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '6px' }}>
           <button
             type="button"
             className="btn btn-secondary btn-sm"
@@ -97,10 +125,10 @@ export const UidSearchSection: React.FC<UidSearchSectionProps> = ({
             type="button"
             className="btn btn-secondary btn-sm"
             onClick={handleRandomize}
-            title="Generate a fresh randomized UID record"
+            title="Randomly select one of the 25 candidate profiles"
           >
             <Shuffle size={13} />
-            <span>New Record</span>
+            <span>Random Student</span>
           </button>
         </div>
       </form>

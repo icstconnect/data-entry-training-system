@@ -438,6 +438,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
       {showReviewModal && (
         <ReviewModal
           stage={stage}
+          sourceRecord={sourceRecord}
           formValues={formValues}
           tableRows={tableRows}
           marksheetValues={marksheetValues}
@@ -462,6 +463,10 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
         <ResultScreen
           summary={validationSummary}
           stage={stage}
+          sourceRecord={sourceRecord}
+          formValues={formValues}
+          tableRows={tableRows}
+          marksheetValues={marksheetValues}
           onNextStage={nextStageConfig ? handleNextStageFromResult : undefined}
           onRetry={() => resetToNewStage(stage)}
           hasNextStage={!!nextStageConfig}
@@ -611,6 +616,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <button
                     type="button"
+                    id="btn-review-modal"
                     className="btn btn-secondary"
                     onClick={() => setShowReviewModal(true)}
                   >

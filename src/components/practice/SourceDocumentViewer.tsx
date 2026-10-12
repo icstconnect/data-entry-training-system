@@ -273,6 +273,12 @@ export const SourceDocumentViewer: React.FC<SourceDocumentViewerProps> = ({
                   <span className="source-val">{sourceRecord.academic.conduct}</span>
                 </div>
               )}
+              {sourceRecord.academic.teacherRemarks && (
+                <div className="source-item full-width">
+                  <span className="source-key">Teacher Remarks</span>
+                  <span className="source-val" style={{ fontStyle: 'italic' }}>{sourceRecord.academic.teacherRemarks}</span>
+                </div>
+              )}
               {sourceRecord.academic.activities && sourceRecord.academic.activities.length > 0 && (
                 <div className="source-item full-width">
                   <span className="source-key">Co-curricular Activities</span>
@@ -303,6 +309,7 @@ export const SourceDocumentViewer: React.FC<SourceDocumentViewerProps> = ({
                       <th style={{ padding: '4px 6px', textAlign: 'center' }}>Full</th>
                       <th style={{ padding: '4px 6px', textAlign: 'center' }}>Scored</th>
                       <th style={{ padding: '4px 6px', textAlign: 'center' }}>Grade</th>
+                      <th style={{ padding: '4px 6px', textAlign: 'left' }}>Teacher Remarks</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -312,6 +319,7 @@ export const SourceDocumentViewer: React.FC<SourceDocumentViewerProps> = ({
                         <td style={{ padding: '4px 6px', textAlign: 'center' }}>{r.maxMarks}</td>
                         <td style={{ padding: '4px 6px', textAlign: 'center', fontWeight: 700, color: 'var(--icst-blue-dark)' }}>{r.marksObtained}</td>
                         <td style={{ padding: '4px 6px', textAlign: 'center' }}>{r.grade}</td>
+                        <td style={{ padding: '4px 6px', fontStyle: 'italic', color: '#334155' }}>{r.remarks || '-'}</td>
                       </tr>
                     ))}
                   </tbody>
