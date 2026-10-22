@@ -1,4 +1,4 @@
-import { SourceRecord } from '../types';
+import { SourceRecord, MarksheetSchema } from '../types';
 
 // Deterministic pseudo-random number generator using seed (Murmur-like simple hash)
 function hashString(str: string): number {
@@ -136,7 +136,7 @@ export const TEACHER_REMARKS = [
 /**
  * Generates a consistent, realistic synthetic record based deterministically on UID string.
  */
-export function generateSyntheticRecord(uid: string): SourceRecord {
+export function generateSyntheticRecord(uid: string, marksheetSchema?: MarksheetSchema): SourceRecord {
   const seed = hashString(uid);
   const rng = createRng(seed);
 
@@ -237,38 +237,79 @@ export function generateSyntheticRecord(uid: string): SourceRecord {
     }
   ];
 
-  // Marksheet generation (WBBSE/General)
-  const subjectsData = [
-    { code: 'BNGA', name: 'First Language (Bengali)', theory: Math.floor(65 + rng() * 25), oral: Math.floor(8 + rng() * 3), maxTotal: 100 },
-    { code: 'ENGB', name: 'Second Language (English)', theory: Math.floor(60 + rng() * 28), oral: Math.floor(7 + rng() * 4), maxTotal: 100 },
-    { code: 'MATH', name: 'Mathematics', theory: Math.floor(58 + rng() * 38), oral: Math.floor(8 + rng() * 3), maxTotal: 100 },
-    { code: 'PSCI', name: 'Physical Science', theory: Math.floor(62 + rng() * 30), oral: Math.floor(7 + rng() * 4), maxTotal: 100 },
-    { code: 'LSCI', name: 'Life Science', theory: Math.floor(68 + rng() * 26), oral: Math.floor(8 + rng() * 3), maxTotal: 100 },
-    { code: 'HIST', name: 'History', theory: Math.floor(55 + rng() * 35), oral: Math.floor(8 + rng() * 3), maxTotal: 100 },
-    { code: 'GEOG', name: 'Geography', theory: Math.floor(64 + rng() * 30), oral: Math.floor(8 + rng() * 3), maxTotal: 100 }
-  ].map(s => {
-    const total = (s.theory || 0) + (s.oral || 0);
+  // Marksheet generation (supports stage-specific marksheetSchema if provided, or default 7-subject WBBSE)
+  const defaultSubjects = [
+    { code: 'BNGA', name: 'First Language (Bengali)', maxTheory: 90, maxOral: 10, maxTotal: 100 },
+    { code: 'ENGB', name: 'Second Language (English)', maxTheory: 90, maxOral: 10, maxTotal: 100 },
+    { code: 'MATH', name: 'Mathematics', maxTheory: 90, maxOral: 10, maxTotal: 100 },
+    { code: 'PSCI', name: 'Physical Science', maxTheory: 90, maxOral: 10, maxTotal: 100 },
+    { code: 'LSCI', name: 'Life Science', maxTheory: 90, maxOral: 10, maxTotal: 100 },
+    { code: 'HIST', name: 'History', maxTheory: 90, maxOral: 10, maxTotal: 100 },
+    { code: 'GEOG', name: 'Geography', maxTheory: 90, maxOral: 10, maxTotal: 100 }
+  ];
+
+  const targetSubjects = (marksheetSchema?.subjects && marksheetSchema.subjects.length > 0)
+    ? marksheetSchema.subjects
+    : defaultSubjects;
+
+  const hasTheoryPractical = marksheetSchema ? marksheetSchema.hasTheoryPractical : true;
+
+  const subjectsData = targetSubjects.map(s => {
+    const maxTh = s.maxTheory ?? 90;
+    const maxOr = s.maxOral ?? 10;
+    const maxTot = s.maxTotal ?? 100;
+
+    let theory: number | undefined = undefined;
+    let oral: number | undefined = undefined;
+    let total = 0;
+
+    if (hasTheoryPractical) {
+      // Deterministic realistic mark distribution within bounds
+      const theoryRatio = 0.65 + rng() * 0.32;
+      const oralRatio = 0.70 + rng() * 0.28;
+      theory = Math.min(maxTh, Math.floor(maxTh * theoryRatio));
+      oral = Math.min(maxOr, Math.floor(maxOr * oralRatio));
+      total = theory + oral;
+    } else {
+      const totRatio = 0.65 + rng() * 0.32;
+      total = Math.min(maxTot, Math.floor(maxTot * totRatio));
+    }
+
+    const pct = maxTot > 0 ? (total / maxTot) * 100 : total;
     let grade = 'B';
-    if (total >= 90) grade = 'AA';
-    else if (total >= 80) grade = 'A+';
-    else if (total >= 70) grade = 'A';
-    else if (total >= 60) grade = 'B+';
-    else if (total >= 45) grade = 'B';
-    else if (total >= 34) grade = 'C';
-    else grade = 'D';
+    if (marksheetSchema?.boardType === 'CBSE') {
+      if (pct >= 91) grade = 'A1';
+      else if (pct >= 81) grade = 'A2';
+      else if (pct >= 71) grade = 'B1';
+      else if (pct >= 61) grade = 'B2';
+      else if (pct >= 51) grade = 'C1';
+      else if (pct >= 41) grade = 'C2';
+      else if (pct >= 33) grade = 'D';
+      else grade = 'E';
+    } else {
+      if (pct >= 90) grade = 'AA';
+      else if (pct >= 80) grade = 'A+';
+      else if (pct >= 70) grade = 'A';
+      else if (pct >= 60) grade = 'B+';
+      else if (pct >= 45) grade = 'B';
+      else if (pct >= 34) grade = 'C';
+      else grade = 'D';
+    }
 
     return {
       code: s.code,
       name: s.name,
-      theory: s.theory,
-      oral: s.oral,
+      theory,
+      oral,
       total,
       grade
     };
   });
 
   const grandTotal = subjectsData.reduce((acc, curr) => acc + curr.total, 0);
-  const avg = grandTotal / subjectsData.length;
+  const maxPossibleTotal = targetSubjects.reduce((acc, curr) => acc + (curr.maxTotal ?? 100), 0);
+  const avg = maxPossibleTotal > 0 ? (grandTotal / maxPossibleTotal) * 100 : 0;
+
   let division = 'Second Division';
   let overallGrade = 'B+';
   if (avg >= 75) {

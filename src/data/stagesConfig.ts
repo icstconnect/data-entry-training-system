@@ -591,11 +591,13 @@ export const STAGES: StageConfig[] = [
       hasTheoryPractical: true,
       hasGrades: true,
       subjects: [
-        { code: 'BNGA', name: 'Bengali A', maxTheory: 90, maxOral: 10, maxTotal: 100 },
-        { code: 'ENGB', name: 'English B', maxTheory: 90, maxOral: 10, maxTotal: 100 },
+        { code: 'BNGA', name: 'First Language (Bengali)', maxTheory: 90, maxOral: 10, maxTotal: 100 },
+        { code: 'ENGB', name: 'Second Language (English)', maxTheory: 90, maxOral: 10, maxTotal: 100 },
         { code: 'MATH', name: 'Mathematics', maxTheory: 90, maxOral: 10, maxTotal: 100 },
         { code: 'PSCI', name: 'Physical Science', maxTheory: 90, maxOral: 10, maxTotal: 100 },
-        { code: 'LSCI', name: 'Life Science', maxTheory: 90, maxOral: 10, maxTotal: 100 }
+        { code: 'LSCI', name: 'Life Science', maxTheory: 90, maxOral: 10, maxTotal: 100 },
+        { code: 'HIST', name: 'History', maxTheory: 90, maxOral: 10, maxTotal: 100 },
+        { code: 'GEOG', name: 'Geography', maxTheory: 90, maxOral: 10, maxTotal: 100 }
       ]
     }
   },

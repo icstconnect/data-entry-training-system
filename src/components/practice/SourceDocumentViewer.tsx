@@ -10,7 +10,8 @@ import {
   Building, 
   Award,
   X,
-  Lock
+  Lock,
+  ZoomIn
 } from 'lucide-react';
 
 interface SourceDocumentViewerProps {
@@ -82,7 +83,30 @@ export const SourceDocumentViewer: React.FC<SourceDocumentViewerProps> = ({
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span className="source-badge">{sourceRecord.uid}</span>
-          
+
+          <button
+            type="button"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('icst_toggle_magnifier'));
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              background: 'rgba(2, 132, 199, 0.12)',
+              border: '1px solid rgba(2, 132, 199, 0.3)',
+              color: 'var(--icst-blue)',
+              padding: '2px 8px',
+              borderRadius: '12px',
+              fontSize: '11px',
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
+            title="Inspect slip with Govt Magnifier (Alt+M)"
+          >
+            <ZoomIn size={12} />
+            <span>Magnify</span>
+          </button>
           {isMobileDrawer && onClose ? (
             <button
               type="button"

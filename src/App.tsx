@@ -12,6 +12,13 @@ import { Header } from './components/common/Header';
 import { Footer } from './components/common/Footer';
 import { OfflineNotice } from './components/common/OfflineNotice';
 import { LandingPage } from './components/landing/LandingPage';
+import { 
+  GovtAccessibilityBar, 
+  GovtFontSize, 
+  GovtZoomLevel, 
+  GovtContrastMode 
+} from './components/common/GovtAccessibilityBar';
+import { ScreenMagnifier } from './components/common/ScreenMagnifier';
 
 // Lazy-loaded routes for lightning-fast initial page load
 const PracticeWorkbench = React.lazy(() => import('./components/practice/PracticeWorkbench').then(m => ({ default: m.PracticeWorkbench })));
@@ -88,6 +95,20 @@ export function App() {
   const [isStudentSetupOpen, setIsStudentSetupOpen] = useState<boolean>(false);
   const [isUniversalShareOpen, setIsUniversalShareOpen] = useState<boolean>(false);
 
+  // Government Accessibility Bar & Screen Magnifier States
+  const [govtFontSize, setGovtFontSize] = useState<GovtFontSize>(() => {
+    return (localStorage.getItem('icst_govt_font_size') as GovtFontSize) || 'normal';
+  });
+  const [govtZoomLevel, setGovtZoomLevel] = useState<GovtZoomLevel>(() => {
+    const raw = localStorage.getItem('icst_govt_zoom_level');
+    return raw ? (Number(raw) as GovtZoomLevel) : 100;
+  });
+  const [govtContrastMode, setGovtContrastMode] = useState<GovtContrastMode>(() => {
+    return (localStorage.getItem('icst_govt_contrast_mode') as GovtContrastMode) || 'standard';
+  });
+  const [isMagnifierActive, setIsMagnifierActive] = useState<boolean>(false);
+  const [isSpeechActive, setIsSpeechActive] = useState<boolean>(false);
+
   // Universal Lab & Action Destination Gate
   type PendingLabTarget = 
     | { type: 'view'; view: 'practice' | 'excel' | 'windows' | 'showcase' }
@@ -147,6 +168,49 @@ export function App() {
       setAppTitle(activeView);
     }
   }, [activeView, currentLevel, currentStage, excelLevel, windowsState]);
+
+  // Sync Government Accessibility attributes with documentElement & localStorage
+  useEffect(() => {
+    document.documentElement.setAttribute('data-font-size', govtFontSize);
+    localStorage.setItem('icst_govt_font_size', govtFontSize);
+  }, [govtFontSize]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-zoom', govtZoomLevel.toString());
+    localStorage.setItem('icst_govt_zoom_level', govtZoomLevel.toString());
+  }, [govtZoomLevel]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-contrast', govtContrastMode);
+    localStorage.setItem('icst_govt_contrast_mode', govtContrastMode);
+  }, [govtContrastMode]);
+
+  // Global listeners for Alt+M and icst_toggle_magnifier
+  useEffect(() => {
+    const handleToggleMagnifier = () => {
+      setIsMagnifierActive(prev => !prev);
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey && e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        setIsMagnifierActive(prev => !prev);
+      }
+    };
+    window.addEventListener('icst_toggle_magnifier', handleToggleMagnifier);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('icst_toggle_magnifier', handleToggleMagnifier);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  const handleResetAccessibility = () => {
+    setGovtFontSize('normal');
+    setGovtZoomLevel(100);
+    setGovtContrastMode('standard');
+    setIsMagnifierActive(false);
+    setIsSpeechActive(false);
+  };
 
   // Route syncing: support /showcase, #showcase, #practice, etc.
   useEffect(() => {
@@ -299,6 +363,21 @@ export function App() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Government Website Accessibility & Screen Magnifier Bar (GIGW Compliant) */}
+      <GovtAccessibilityBar
+        fontSize={govtFontSize}
+        setFontSize={setGovtFontSize}
+        zoomLevel={govtZoomLevel}
+        setZoomLevel={setGovtZoomLevel}
+        contrastMode={govtContrastMode}
+        setContrastMode={setGovtContrastMode}
+        isMagnifierActive={isMagnifierActive}
+        setIsMagnifierActive={setIsMagnifierActive}
+        isSpeechActive={isSpeechActive}
+        setIsSpeechActive={setIsSpeechActive}
+        onReset={handleResetAccessibility}
+      />
+
       {/* Top Persistent Header */}
       <Header
         currentRole={currentRole}
@@ -321,7 +400,7 @@ export function App() {
       />
 
       {/* Main Views */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <main id="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {activeView === 'landing' && (
           <LandingPage
             onStartPractice={() => handleViewChange('practice')}
@@ -478,6 +557,13 @@ export function App() {
 
       {/* Offline Status Popup (unobtrusive pill) */}
       <OfflineNotice />
+
+      {/* Interactive Screen Magnifier Tool (Loupe & Docked modes) */}
+      <ScreenMagnifier
+        active={isMagnifierActive}
+        onClose={() => setIsMagnifierActive(false)}
+        isSpeechActive={isSpeechActive}
+      />
     </div>
   );
 }

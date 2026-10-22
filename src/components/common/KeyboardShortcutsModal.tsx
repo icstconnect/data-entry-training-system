@@ -13,7 +13,8 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ 
     { key: 'Arrow Keys', desc: 'Navigate between spreadsheet and marksheet cells' },
     { key: 'Ctrl + S / ⌘ + S', desc: 'Manually save current practice draft' },
     { key: 'Alt + R', desc: 'Open Review screen' },
-    { key: 'Escape', desc: 'Close any active popup or inspection modal' }
+    { key: 'Alt + M', desc: 'Toggle Government Screen Magnifier (Loupe / Docked)' },
+    { key: 'Escape', desc: 'Close any active popup, inspection modal, or magnifier' }
   ];
 
   return (

@@ -5,7 +5,8 @@ import {
   CellValidationResult,
   StageConfig,
   StageValidationSummary,
-  ValidationMode
+  ValidationMode,
+  MarksheetSchema
 } from '../types';
 
 /**
@@ -582,25 +583,35 @@ export function validateField(
  */
 export function validateMarksheet(
   sourceRecord: SourceRecord,
-  userMarksheet: Record<string, { theory?: number; oral?: number; total?: number; grade?: string }>
+  userMarksheet: Record<string, { theory?: number | string; oral?: number | string; total?: number | string; grade?: string }>,
+  schema?: MarksheetSchema
 ): CellValidationResult[] {
   const results: CellValidationResult[] = [];
   if (!sourceRecord.marksheet?.subjects) return results;
 
-  for (const subj of sourceRecord.marksheet.subjects) {
-    const userSubj = userMarksheet[subj.code] || {};
+  const subjectsToValidate = schema?.subjects && schema.subjects.length > 0
+    ? schema.subjects
+    : sourceRecord.marksheet.subjects;
+
+  const hasTheoryPractical = schema !== undefined ? schema.hasTheoryPractical : true;
+  const hasGrades = schema !== undefined ? schema.hasGrades : true;
+
+  for (const schemaSubj of subjectsToValidate) {
+    const subj = sourceRecord.marksheet.subjects.find(s => s.code === schemaSubj.code);
+    if (!subj) continue;
+    const userSubj = userMarksheet[schemaSubj.code] || {};
 
     // Validate Theory
-    if (subj.theory !== undefined) {
-      const enteredTheory = userSubj.theory !== undefined && userSubj.theory !== null && String(userSubj.theory) !== ''
+    if (hasTheoryPractical && subj.theory !== undefined) {
+      const enteredTheory = userSubj.theory !== undefined && userSubj.theory !== null && String(userSubj.theory).trim() !== ''
         ? Number(userSubj.theory)
         : undefined;
 
       if (enteredTheory === undefined) {
         results.push({
-          rowId: subj.code,
+          rowId: schemaSubj.code,
           columnId: 'theory',
-          columnLabel: `${subj.name} - Theory`,
+          columnLabel: `${schemaSubj.name} - Theory`,
           sourceValue: subj.theory,
           enteredValue: '',
           status: 'missing',
@@ -608,9 +619,9 @@ export function validateMarksheet(
         });
       } else if (enteredTheory !== subj.theory) {
         results.push({
-          rowId: subj.code,
+          rowId: schemaSubj.code,
           columnId: 'theory',
-          columnLabel: `${subj.name} - Theory`,
+          columnLabel: `${schemaSubj.name} - Theory`,
           sourceValue: subj.theory,
           enteredValue: enteredTheory,
           status: 'incorrect',
@@ -618,9 +629,9 @@ export function validateMarksheet(
         });
       } else {
         results.push({
-          rowId: subj.code,
+          rowId: schemaSubj.code,
           columnId: 'theory',
-          columnLabel: `${subj.name} - Theory`,
+          columnLabel: `${schemaSubj.name} - Theory`,
           sourceValue: subj.theory,
           enteredValue: enteredTheory,
           status: 'correct'
@@ -629,16 +640,16 @@ export function validateMarksheet(
     }
 
     // Validate Oral/Practical
-    if (subj.oral !== undefined) {
-      const enteredOral = userSubj.oral !== undefined && userSubj.oral !== null && String(userSubj.oral) !== ''
+    if (hasTheoryPractical && subj.oral !== undefined) {
+      const enteredOral = userSubj.oral !== undefined && userSubj.oral !== null && String(userSubj.oral).trim() !== ''
         ? Number(userSubj.oral)
         : undefined;
 
       if (enteredOral === undefined) {
         results.push({
-          rowId: subj.code,
+          rowId: schemaSubj.code,
           columnId: 'oral',
-          columnLabel: `${subj.name} - Oral/Practical`,
+          columnLabel: `${schemaSubj.name} - Oral/Practical`,
           sourceValue: subj.oral,
           enteredValue: '',
           status: 'missing',
@@ -646,9 +657,9 @@ export function validateMarksheet(
         });
       } else if (enteredOral !== subj.oral) {
         results.push({
-          rowId: subj.code,
+          rowId: schemaSubj.code,
           columnId: 'oral',
-          columnLabel: `${subj.name} - Oral/Practical`,
+          columnLabel: `${schemaSubj.name} - Oral/Practical`,
           sourceValue: subj.oral,
           enteredValue: enteredOral,
           status: 'incorrect',
@@ -656,9 +667,9 @@ export function validateMarksheet(
         });
       } else {
         results.push({
-          rowId: subj.code,
+          rowId: schemaSubj.code,
           columnId: 'oral',
-          columnLabel: `${subj.name} - Oral/Practical`,
+          columnLabel: `${schemaSubj.name} - Oral/Practical`,
           sourceValue: subj.oral,
           enteredValue: enteredOral,
           status: 'correct'
@@ -667,15 +678,15 @@ export function validateMarksheet(
     }
 
     // Validate Total
-    const enteredTotal = userSubj.total !== undefined && userSubj.total !== null && String(userSubj.total) !== ''
+    const enteredTotal = userSubj.total !== undefined && userSubj.total !== null && String(userSubj.total).trim() !== ''
       ? Number(userSubj.total)
       : undefined;
 
     if (enteredTotal === undefined) {
       results.push({
-        rowId: subj.code,
+        rowId: schemaSubj.code,
         columnId: 'total',
-        columnLabel: `${subj.name} - Total`,
+        columnLabel: `${schemaSubj.name} - Total`,
         sourceValue: subj.total,
         enteredValue: '',
         status: 'missing',
@@ -683,9 +694,9 @@ export function validateMarksheet(
       });
     } else if (enteredTotal !== subj.total) {
       results.push({
-        rowId: subj.code,
+        rowId: schemaSubj.code,
         columnId: 'total',
-        columnLabel: `${subj.name} - Total`,
+        columnLabel: `${schemaSubj.name} - Total`,
         sourceValue: subj.total,
         enteredValue: enteredTotal,
         status: 'incorrect',
@@ -693,13 +704,51 @@ export function validateMarksheet(
       });
     } else {
       results.push({
-        rowId: subj.code,
+        rowId: schemaSubj.code,
         columnId: 'total',
-        columnLabel: `${subj.name} - Total`,
+        columnLabel: `${schemaSubj.name} - Total`,
         sourceValue: subj.total,
         enteredValue: enteredTotal,
         status: 'correct'
       });
+    }
+
+    // Validate Grade
+    if (hasGrades && subj.grade !== undefined) {
+      const enteredGrade = userSubj.grade !== undefined && userSubj.grade !== null && String(userSubj.grade).trim() !== ''
+        ? String(userSubj.grade).trim().toUpperCase()
+        : undefined;
+
+      if (!enteredGrade) {
+        results.push({
+          rowId: schemaSubj.code,
+          columnId: 'grade',
+          columnLabel: `${schemaSubj.name} - Grade`,
+          sourceValue: subj.grade,
+          enteredValue: '',
+          status: 'missing',
+          errorMessage: 'Grade is missing'
+        });
+      } else if (enteredGrade !== String(subj.grade).trim().toUpperCase()) {
+        results.push({
+          rowId: schemaSubj.code,
+          columnId: 'grade',
+          columnLabel: `${schemaSubj.name} - Grade`,
+          sourceValue: subj.grade,
+          enteredValue: enteredGrade,
+          status: 'incorrect',
+          errorMessage: `Expected grade ${subj.grade}, received ${enteredGrade}`
+        });
+      } else {
+        results.push({
+          rowId: schemaSubj.code,
+          columnId: 'grade',
+          columnLabel: `${schemaSubj.name} - Grade`,
+          sourceValue: subj.grade,
+          enteredValue: enteredGrade,
+          status: 'correct'
+        });
+      }
     }
   }
 
@@ -794,7 +843,7 @@ export function evaluateStageSubmission(
   // 3. Evaluate marksheet if present
   if (stage.marksheetSchema && sourceRecord.marksheet && userMarksheet) {
     cellResults = cellResults.concat(
-      validateMarksheet(sourceRecord, userMarksheet)
+      validateMarksheet(sourceRecord, userMarksheet, stage.marksheetSchema)
     );
   }
 

@@ -60,7 +60,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   // Evaluate marksheet table if present
   const marksheetCellResults: CellValidationResult[] = useMemo(() => {
     if (!stage.marksheetSchema) return [];
-    return validateMarksheet(sourceRecord, marksheetValues || {});
+    return validateMarksheet(sourceRecord, marksheetValues || {}, stage.marksheetSchema);
   }, [stage, sourceRecord, marksheetValues]);
 
   // Aggregate accuracy metrics
@@ -552,6 +552,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                       const theoryRes = marksheetCellResults.find(c => c.rowId === s.code && c.columnId === 'theory');
                       const oralRes = marksheetCellResults.find(c => c.rowId === s.code && c.columnId === 'oral');
                       const totalRes = marksheetCellResults.find(c => c.rowId === s.code && c.columnId === 'total');
+                      const gradeRes = marksheetCellResults.find(c => c.rowId === s.code && c.columnId === 'grade');
 
                       const renderMarkCell = (val: any, res: CellValidationResult | undefined) => {
                         if (!res) return <span>{val !== undefined && val !== '' ? val : '-'}</span>;
@@ -600,8 +601,11 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                             {renderMarkCell(entry.total, totalRes)}
                           </td>
                           {stage.marksheetSchema?.hasGrades && (
-                            <td style={{ textAlign: 'center', fontWeight: 700 }}>
-                              {entry.grade || '-'}
+                            <td 
+                              className={gradeRes && gradeRes.status !== 'correct' ? 'review-table-cell-incorrect' : gradeRes?.status === 'correct' ? 'review-table-cell-correct' : ''}
+                              style={{ textAlign: 'center', fontWeight: 700 }}
+                            >
+                              {renderMarkCell(entry.grade, gradeRes)}
                             </td>
                           )}
                         </tr>

@@ -73,7 +73,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
   const timeLimitSeconds = stage.timeLimitSeconds || APP_CONFIG.DEFAULT_TIME_LIMIT_SECONDS;
 
   const [uid, setUid] = useState<string>(stage.sampleUid);
-  const [sourceRecord, setSourceRecord] = useState<SourceRecord>(() => generateSyntheticRecord(stage.sampleUid));
+  const [sourceRecord, setSourceRecord] = useState<SourceRecord>(() => generateSyntheticRecord(stage.sampleUid, stage.marksheetSchema));
   const [formValues, setFormValues] = useState<Record<string, any>>({});
   const [tableRows, setTableRows] = useState<Record<string, any>[]>([]);
   const [marksheetValues, setMarksheetValues] = useState<Record<string, any>>({});
@@ -97,7 +97,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
     const draft = loadStageDraft(stage.levelNumber, stage.stageNumber);
     if (draft && (Object.keys(draft.formValues || {}).length > 0 || (draft.tableRows && draft.tableRows.length > 0) || (draft.marksheetValues && Object.keys(draft.marksheetValues).length > 0))) {
       setUid(draft.uid);
-      setSourceRecord(generateSyntheticRecord(draft.uid));
+      setSourceRecord(generateSyntheticRecord(draft.uid, stage.marksheetSchema));
       setFormValues(draft.formValues || {});
       setTableRows(draft.tableRows || []);
       setMarksheetValues(draft.marksheetValues || {});
@@ -144,7 +144,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
   const resetToNewStage = (st: StageConfig, targetUid?: string) => {
     const activeUid = targetUid || st.sampleUid;
     setUid(activeUid);
-    const src = generateSyntheticRecord(activeUid);
+    const src = generateSyntheticRecord(activeUid, st.marksheetSchema);
     setSourceRecord(src);
 
     // Initialize default blank form values
@@ -190,7 +190,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
   const handleResumeDraft = () => {
     if (!pendingDraft) return;
     setUid(pendingDraft.uid);
-    setSourceRecord(generateSyntheticRecord(pendingDraft.uid));
+    setSourceRecord(generateSyntheticRecord(pendingDraft.uid, stage.marksheetSchema));
     setFormValues(pendingDraft.formValues || {});
     setTableRows(pendingDraft.tableRows || []);
     setMarksheetValues(pendingDraft.marksheetValues || {});
@@ -207,12 +207,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
 
   // Handle UID load
   const handleLoadUid = (newUid: string) => {
-    setUid(newUid);
-    const newRecord = generateSyntheticRecord(newUid);
-    setSourceRecord(newRecord);
-    setFormValues({});
-    setTableRows([]);
-    setMarksheetValues({});
+    resetToNewStage(stage, newUid);
     saveStageDraft({
       levelNumber: stage.levelNumber,
       stageNumber: stage.stageNumber,
