@@ -400,7 +400,16 @@ export function App() {
       />
 
       {/* Main Views */}
-      <main id="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <main 
+        id="main-content" 
+        style={{ 
+          flex: 1, 
+          display: 'flex', 
+          flexDirection: 'column',
+          overflow: (activeView === 'windows' && windowsState.inWorkbench) ? 'hidden' : undefined,
+          height: (activeView === 'windows' && windowsState.inWorkbench) ? 'calc(100vh - 58px)' : undefined
+        }}
+      >
         {activeView === 'landing' && (
           <LandingPage
             onStartPractice={() => handleViewChange('practice')}
@@ -503,8 +512,8 @@ export function App() {
         </React.Suspense>
       </main>
 
-      {/* Brand Footer */}
-      <Footer />
+      {/* Brand Footer (hidden in Windows simulation workbench to fit full window without scrolling) */}
+      {!(activeView === 'windows' && windowsState.inWorkbench) && <Footer />}
 
       {/* Modals wrapped in lightweight Suspense */}
       <React.Suspense fallback={null}>

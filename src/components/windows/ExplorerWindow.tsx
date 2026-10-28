@@ -272,8 +272,8 @@ export const ExplorerWindow: React.FC<ExplorerWindowProps> = ({
       style={{
         left: isMaximized ? '0px' : `${pos.x}px`,
         top: isMaximized ? '0px' : `${pos.y}px`,
-        width: isMaximized ? '100vw' : '880px',
-        height: isMaximized ? 'calc(100vh - 48px)' : '580px',
+        width: isMaximized ? '100%' : 'min(900px, calc(100% - 110px))',
+        height: isMaximized ? '100%' : 'min(580px, calc(100% - 20px))',
         borderRadius: isMaximized ? '0px' : '12px'
       }}
       onClick={() => onContextMenu({ clientX: 0, clientY: 0 } as any, null)}

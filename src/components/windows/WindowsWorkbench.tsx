@@ -13,7 +13,8 @@ import {
 } from '../../data/windowsCurriculumData';
 import { 
   loadWindowsProgress, 
-  recordLevelCompletion 
+  recordLevelCompletion,
+  saveWindowsActiveLevel
 } from '../../services/windowsStorageService';
 import { soundEffects } from '../../services/soundEffects';
 
@@ -59,21 +60,34 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
     return p;
   });
 
-  // Keep mode & level synced if launched from dashboard with specific mode/level
+  // Fullscreen container ref & state
+  const workbenchRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      if (workbenchRef.current?.requestFullscreen) {
+        workbenchRef.current.requestFullscreen().catch(() => {
+          setIsFullscreen(f => !f);
+        });
+      } else {
+        setIsFullscreen(f => !f);
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+      setIsFullscreen(false);
+    }
+  }, []);
+
   useEffect(() => {
-    if (initialMode && initialMode !== mode) {
-      setMode(initialMode);
-    }
-    if (initialLevel) {
-      setWindowsProgress(prev => {
-        const key = initialMode === 'file_management' ? 'fileManagementCurrentLevel' : 'folderManagementCurrentLevel';
-        if (prev[key] !== initialLevel) {
-          return { ...prev, [key]: initialLevel };
-        }
-        return prev;
-      });
-    }
-  }, [initialMode, initialLevel]);
+    const handleFsChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, []);
   
   const currentLevel = mode === 'file_management' 
     ? windowsProgress.fileManagementCurrentLevel 
@@ -127,12 +141,16 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
   }, []);
 
   // Initialize Level State
-  const initLevel = useCallback((targetMode: WindowsSimulationMode, lvl: number) => {
+  const initLevel = useCallback((targetMode: WindowsSimulationMode, lvl: number, forceReset = false) => {
     setCurrentFolderId('root');
     setSelectedItemIds(new Set());
     setClipboard({ action: null, itemIds: [] });
     setNavHistory(['root']);
     setNavIndex(0);
+
+    const isAlreadyCleared = !forceReset && (targetMode === 'file_management'
+      ? (windowsProgress.fileManagementCompleted[lvl]?.score === 100)
+      : (windowsProgress.folderManagementCompleted[lvl]?.score === 100));
 
     if (targetMode === 'file_management') {
       const data = FILE_MANAGEMENT_LEVELS[lvl] || FILE_MANAGEMENT_LEVELS[1];
@@ -151,7 +169,7 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
       const initialFiles: VirtualFile[] = data.files.map(f => ({
         ...f,
         type: 'file',
-        parentId: 'root'
+        parentId: isAlreadyCleared && f.targetFolderId ? f.targetFolderId : 'root'
       }));
 
       setFolders(initialFolders);
@@ -159,21 +177,62 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
       setRecycleBin([]);
     } else {
       const data = FOLDER_MANAGEMENT_LEVELS[lvl] || FOLDER_MANAGEMENT_LEVELS[1];
-      const initialFolders: VirtualFolder[] = data.initialFolders.map(inf => ({
-        id: inf.id,
-        name: inf.name,
-        type: 'folder',
-        parentId: inf.parentId,
-        infoTitle: inf.infoTitle,
-        infoEn: inf.infoEn,
-        infoBn: inf.infoBn
-      }));
+      
+      if (isAlreadyCleared) {
+        // Preserve the completed folder tree for cleared stage
+        const newFolders: VirtualFolder[] = [];
+        const createNodes = (node: ExpectedFolderNode, parentId: string) => {
+          const id = 'folder_cleared_' + Math.random().toString(36).substring(2, 7);
+          newFolders.push({
+            id,
+            name: node.name,
+            type: 'folder',
+            parentId,
+            icon: '📁',
+            infoTitle: node.infoTitle,
+            infoEn: node.infoEn,
+            infoBn: node.infoBn
+          });
+          if (node.children) {
+            node.children.forEach(ch => createNodes(ch, id));
+          }
+        };
 
-      setFolders(initialFolders);
-      setFiles([]);
-      setRecycleBin([]);
+        data.expectedTree.forEach(rootNode => createNodes(rootNode, 'root'));
+
+        const junkList: VirtualItem[] = [];
+        if (data.junkFolderNamesToDelete) {
+          data.junkFolderNamesToDelete.forEach(junkName => {
+            junkList.push({
+              id: 'junk_' + Math.random().toString(36).substring(2, 6),
+              name: junkName,
+              type: 'folder',
+              parentId: 'recycle_bin',
+              originalParentId: 'root'
+            });
+          });
+        }
+
+        setFolders(newFolders);
+        setFiles([]);
+        setRecycleBin(junkList);
+      } else {
+        const initialFolders: VirtualFolder[] = data.initialFolders.map(inf => ({
+          id: inf.id,
+          name: inf.name,
+          type: 'folder',
+          parentId: inf.parentId,
+          infoTitle: inf.infoTitle,
+          infoEn: inf.infoEn,
+          infoBn: inf.infoBn
+        }));
+
+        setFolders(initialFolders);
+        setFiles([]);
+        setRecycleBin([]);
+      }
     }
-  }, []);
+  }, [windowsProgress.fileManagementCompleted, windowsProgress.folderManagementCompleted]);
 
   // Sync level on mount or mode change
   useEffect(() => {
@@ -200,6 +259,7 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
       return;
     }
     soundEffects.playTone('click');
+    saveWindowsActiveLevel(mode, lvl);
     setWindowsProgress(prev => {
       const updated = {
         ...prev,
@@ -576,13 +636,32 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
   // Check 100% completion & unlock
   const completedLevelsRef = useRef<Set<string>>(new Set());
 
+  // Seed with previously cleared stages so achievements/toasts don't repeat
+  useEffect(() => {
+    Object.keys(windowsProgress.fileManagementCompleted || {}).forEach(k => {
+      if (windowsProgress.fileManagementCompleted[Number(k)]?.score === 100) {
+        completedLevelsRef.current.add(`file_management_L${k}`);
+      }
+    });
+    Object.keys(windowsProgress.folderManagementCompleted || {}).forEach(k => {
+      if (windowsProgress.folderManagementCompleted[Number(k)]?.score === 100) {
+        completedLevelsRef.current.add(`folder_management_L${k}`);
+      }
+    });
+  }, []);
+
   useEffect(() => {
     if (auditEvaluation.percentage === 100) {
       const key = `${mode}_L${currentLevel}`;
       if (!completedLevelsRef.current.has(key)) {
         completedLevelsRef.current.add(key);
         const result = recordLevelCompletion(mode, currentLevel, 100);
-        setWindowsProgress(result.updatedProgress);
+        // Preserve active current level on completed stage
+        setWindowsProgress(prev => ({
+          ...result.updatedProgress,
+          fileManagementCurrentLevel: mode === 'file_management' ? currentLevel : prev.fileManagementCurrentLevel,
+          folderManagementCurrentLevel: mode === 'folder_management' ? currentLevel : prev.folderManagementCurrentLevel
+        }));
         if (result.expEarned > 0 && onExpAwarded) {
           onExpAwarded(result.expEarned);
         }
@@ -598,8 +677,10 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
   const handleAdvanceNextStage = () => {
     const totalLevels = mode === 'file_management' ? 5 : 7;
     if (currentLevel < totalLevels) {
-      handleSelectLevel(currentLevel + 1);
+      const nextLvl = currentLevel + 1;
+      handleSelectLevel(nextLvl);
       soundEffects.playTone('success');
+      showToast('🚀', `Advanced to Stage ${nextLvl}!`);
     } else {
       soundEffects.playTone('success');
       showToast('🎉', `You have mastered all ${totalLevels} stages of this curriculum!`);
@@ -723,7 +804,11 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
     : (FOLDER_MANAGEMENT_LEVELS[currentLevel]?.badge || `Level ${currentLevel}`);
 
   return (
-    <div className="win-desktop-root" onClick={() => setContextMenu(c => ({ ...c, isOpen: false }))}>
+    <div 
+      ref={workbenchRef}
+      className={`win-desktop-root ${isFullscreen ? 'is-fullscreen' : ''}`}
+      onClick={() => setContextMenu(c => ({ ...c, isOpen: false }))}
+    >
       {/* Desktop Surface */}
       <div className="win-desktop-surface">
         {/* Desktop Icons Column */}
@@ -819,6 +904,28 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
             <span className="win-desktop-icon-label">Badges</span>
           </div>
 
+          {/* Full Screen Desktop Button */}
+          <div 
+            className="win-desktop-icon"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? 'Exit Full Screen' : 'Enter Full Screen Window Mode'}
+          >
+            <div style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '22px',
+              boxShadow: '0 4px 12px rgba(14, 165, 233, 0.4)'
+            }}>
+              {isFullscreen ? '🗗' : '⛶'}
+            </div>
+            <span className="win-desktop-icon-label">{isFullscreen ? 'Exit Full' : 'Full Screen'}</span>
+          </div>
+
           {/* Back to Lab Hub */}
           {onBackToDashboard && (
             <div 
@@ -901,7 +1008,7 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
           onAdvanceNextStage={handleAdvanceNextStage}
           hasNextStage={currentLevel < (mode === 'file_management' ? 5 : 7)}
           onGiveHint={handleGiveHint}
-          onResetLevel={() => initLevel(mode, currentLevel)}
+          onResetLevel={() => initLevel(mode, currentLevel, true)}
         />
       </div>
 
@@ -913,6 +1020,8 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
         onNewFolder={() => setIsNewFolderOpen(true)}
         mode={mode}
         onSwitchMode={handleSwitchMode}
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={toggleFullscreen}
       />
 
       {/* Context Menu */}

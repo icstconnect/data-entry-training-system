@@ -32,18 +32,49 @@ export function calculateTotalWindowsExp(progress: WindowsProgress): number {
   return total;
 }
 
+export function calculateMaxUnlocked(
+  completed: Record<number, { score: number; completedAt: string }>,
+  maxLevels: number,
+  existingMax: number = 1
+): number {
+  let maxUnlocked = Math.max(1, existingMax);
+  Object.keys(completed || {}).forEach(k => {
+    const lvl = Number(k);
+    if (completed[lvl] && completed[lvl].score === 100) {
+      maxUnlocked = Math.max(maxUnlocked, Math.min(maxLevels, lvl + 1));
+    }
+  });
+  return Math.min(maxLevels, maxUnlocked);
+}
+
 export function loadWindowsProgress(): WindowsProgress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return { ...DEFAULT_WINDOWS_PROGRESS };
     const parsed = JSON.parse(raw);
+    const fileCompleted = parsed.fileManagementCompleted || {};
+    const folderCompleted = parsed.folderManagementCompleted || {};
+    
+    // Always preserve old cleared stage states and unlocked levels
+    const existingFileMax = Math.max(1, Number(parsed.fileManagementMaxUnlocked) || 1);
+    const existingFolderMax = Math.max(1, Number(parsed.folderManagementMaxUnlocked) || 1);
+
+    const trueFileMaxUnlocked = calculateMaxUnlocked(fileCompleted, 5, existingFileMax);
+    const trueFolderMaxUnlocked = calculateMaxUnlocked(folderCompleted, 7, existingFolderMax);
+
     const progress: WindowsProgress = {
-      fileManagementCurrentLevel: parsed.fileManagementCurrentLevel || 1,
-      fileManagementMaxUnlocked: parsed.fileManagementMaxUnlocked || 1,
-      fileManagementCompleted: parsed.fileManagementCompleted || {},
-      folderManagementCurrentLevel: parsed.folderManagementCurrentLevel || 1,
-      folderManagementMaxUnlocked: parsed.folderManagementMaxUnlocked || 1,
-      folderManagementCompleted: parsed.folderManagementCompleted || {},
+      fileManagementCurrentLevel: Math.min(
+        Math.max(1, parsed.fileManagementCurrentLevel || 1),
+        trueFileMaxUnlocked
+      ),
+      fileManagementMaxUnlocked: trueFileMaxUnlocked,
+      fileManagementCompleted: fileCompleted,
+      folderManagementCurrentLevel: Math.min(
+        Math.max(1, parsed.folderManagementCurrentLevel || 1),
+        trueFolderMaxUnlocked
+      ),
+      folderManagementMaxUnlocked: trueFolderMaxUnlocked,
+      folderManagementCompleted: folderCompleted,
       unlockedAchievements: Array.isArray(parsed.unlockedAchievements) ? parsed.unlockedAchievements : [],
       totalWindowsExp: 0
     };
@@ -59,6 +90,28 @@ export function saveWindowsProgress(progress: WindowsProgress): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
   } catch (err) {
     console.warn('Failed to save Windows progress to localStorage:', err);
+  }
+}
+
+export function saveWindowsActiveLevel(mode: 'file_management' | 'folder_management', level: number): void {
+  try {
+    const current = loadWindowsProgress();
+    if (mode === 'file_management') {
+      current.fileManagementCurrentLevel = level;
+    } else {
+      current.folderManagementCurrentLevel = level;
+    }
+    saveWindowsProgress(current);
+  } catch (err) {
+    console.warn('Failed to save active Windows level:', err);
+  }
+}
+
+export function clearWindowsProgress(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (err) {
+    console.warn('Failed to clear Windows progress:', err);
   }
 }
 
@@ -111,14 +164,17 @@ export function recordLevelCompletion(
       completedAt: new Date().toISOString()
     };
 
-    if (score === 100) {
-      if (levelNumber === current.fileManagementMaxUnlocked && current.fileManagementMaxUnlocked < 5) {
-        current.fileManagementMaxUnlocked = levelNumber + 1;
-      }
-      if (prevScore < 100) {
-        expEarned += levelNumber * 50;
-      }
+    if (score === 100 && prevScore < 100) {
+      expEarned += levelNumber * 50;
     }
+
+    current.fileManagementMaxUnlocked = calculateMaxUnlocked(
+      current.fileManagementCompleted, 
+      5, 
+      Math.max(current.fileManagementMaxUnlocked, score === 100 ? levelNumber + 1 : 1)
+    );
+    // Preserve current level on the completed level (never reset to 1)
+    current.fileManagementCurrentLevel = levelNumber;
   } else {
     const existing = current.folderManagementCompleted[levelNumber];
     const prevScore = existing?.score || 0;
@@ -128,14 +184,17 @@ export function recordLevelCompletion(
       completedAt: new Date().toISOString()
     };
 
-    if (score === 100) {
-      if (levelNumber === current.folderManagementMaxUnlocked && current.folderManagementMaxUnlocked < 7) {
-        current.folderManagementMaxUnlocked = levelNumber + 1;
-      }
-      if (prevScore < 100) {
-        expEarned += levelNumber * 50;
-      }
+    if (score === 100 && prevScore < 100) {
+      expEarned += levelNumber * 50;
     }
+
+    current.folderManagementMaxUnlocked = calculateMaxUnlocked(
+      current.folderManagementCompleted, 
+      7, 
+      Math.max(current.folderManagementMaxUnlocked, score === 100 ? levelNumber + 1 : 1)
+    );
+    // Preserve current level on the completed level (never reset to 1)
+    current.folderManagementCurrentLevel = levelNumber;
   }
 
   current.totalWindowsExp = calculateTotalWindowsExp(current);

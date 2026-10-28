@@ -8,6 +8,8 @@ interface WindowsTaskbarProps {
   onNewFolder: () => void;
   mode: WindowsSimulationMode;
   onSwitchMode: (mode: WindowsSimulationMode) => void;
+  isFullscreen?: boolean;
+  onToggleFullscreen?: () => void;
 }
 
 export const WindowsTaskbar: React.FC<WindowsTaskbarProps> = ({
@@ -16,7 +18,9 @@ export const WindowsTaskbar: React.FC<WindowsTaskbarProps> = ({
   onToggleCopilot,
   onNewFolder,
   mode,
-  onSwitchMode
+  onSwitchMode,
+  isFullscreen,
+  onToggleFullscreen
 }) => {
   const [timeStr, setTimeStr] = useState('');
   const [dateStr, setDateStr] = useState('');
@@ -153,8 +157,33 @@ export const WindowsTaskbar: React.FC<WindowsTaskbarProps> = ({
         </div>
       </div>
 
-      {/* Right: System Tray & Clock */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: '#cbd5e1' }}>
+      {/* Right: System Tray & Clock & Fullscreen */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', color: '#cbd5e1' }}>
+        {onToggleFullscreen && (
+          <button
+            onClick={onToggleFullscreen}
+            className="win-taskbar-btn"
+            style={{
+              width: 'auto',
+              padding: '0 8px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '11px',
+              fontWeight: 600,
+              background: isFullscreen ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.08)',
+              border: `1px solid ${isFullscreen ? 'rgba(96, 165, 250, 0.5)' : 'rgba(255, 255, 255, 0.15)'}`,
+              borderRadius: '6px',
+              color: isFullscreen ? '#93c5fd' : '#f1f5f9'
+            }}
+            title={isFullscreen ? 'Exit Full Screen (Esc)' : 'Enter Full Screen Window Mode'}
+          >
+            <span style={{ fontSize: '13px' }}>{isFullscreen ? '🗗' : '⛶'}</span>
+            <span>{isFullscreen ? 'Exit Fullscreen' : 'Full Screen'}</span>
+          </button>
+        )}
+
         <span style={{
           fontSize: '11px',
           background: 'rgba(59, 130, 246, 0.2)',

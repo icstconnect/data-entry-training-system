@@ -22,12 +22,24 @@
   position: relative;
   width: 100%;
   height: calc(100vh - 58px);
-  min-height: 600px;
+  max-height: calc(100vh - 58px);
+  min-height: 0;
   overflow: hidden;
   user-select: none;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.win-desktop-root.is-fullscreen,
+.win-desktop-root:fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  z-index: 999999;
 }
 
 .win-desktop-surface {
