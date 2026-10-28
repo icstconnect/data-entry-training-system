@@ -106,6 +106,20 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
     }, 100);
   }, [level.levelNumber]);
 
+  // Handle global data cleared event
+  useEffect(() => {
+    const handleDataCleared = () => {
+      setGridData({});
+      setElapsedSeconds(0);
+      setActiveCell({ row: 0, col: 0 });
+      setLastSavedTime('New Sheet');
+      setIsEditing(false);
+      setEvalSummary(null);
+    };
+    window.addEventListener('icst_data_cleared', handleDataCleared);
+    return () => window.removeEventListener('icst_data_cleared', handleDataCleared);
+  }, []);
+
   // Persistent Timer
   useEffect(() => {
     const timer = setInterval(() => {

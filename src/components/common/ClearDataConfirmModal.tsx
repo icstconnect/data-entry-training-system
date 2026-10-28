@@ -30,15 +30,15 @@ export const ClearDataConfirmModal: React.FC<ClearDataConfirmModalProps> = ({
             This will permanently remove your stored local training session data from this browser:
           </p>
           <ul style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '14px', color: 'var(--text-primary)' }}>
-            <li>Current student name and trainee roll identity</li>
-            <li>In-progress practice drafts and active entries</li>
-            <li>Local stage progress, high scores, and best times</li>
-            <li>Accumulated practice EXP</li>
-            <li>Unlocked operator achievements & badges</li>
-            <li>Cached student evaluation logs</li>
+            <li>Current student trainee identity and roll number</li>
+            <li><strong>Practice Lab:</strong> all completed stages (1–18), high accuracy scores, and drafts</li>
+            <li><strong>Excel Lab:</strong> all 5 scenario completions, benchmark times, and grid drafts</li>
+            <li><strong>Windows Lab:</strong> File & Folder track unlocked levels (reset to Level 1) and tree states</li>
+            <li><strong>Total EXP:</strong> all accumulated experience points across Practice, Excel, and Windows labs</li>
+            <li>All unlocked operator badges, honors, and formal certificate statuses</li>
           </ul>
           <div style={{ background: '#fef2f2', border: '1px solid #fecaca', padding: '10px 12px', borderRadius: '6px', color: '#991b1b', fontSize: '12px' }}>
-            <strong>Note:</strong> The application will return to a clean initial state ready for a new student registration.
+            <strong>Note:</strong> Every training lab will return to an initial Level 1 unlocked state ready for a clean start.
           </div>
         </div>
 

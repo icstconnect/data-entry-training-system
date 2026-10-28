@@ -36,6 +36,14 @@ export const ExcelDashboard: React.FC<ExcelDashboardProps> = ({
 
   useEffect(() => {
     setExcelProgress(loadExcelProgress());
+  }, [studentProgress]);
+
+  useEffect(() => {
+    const handleDataCleared = () => {
+      setExcelProgress(loadExcelProgress());
+    };
+    window.addEventListener('icst_data_cleared', handleDataCleared);
+    return () => window.removeEventListener('icst_data_cleared', handleDataCleared);
   }, []);
 
   const totalCompleted = Object.keys(excelProgress.completedLevels).length;

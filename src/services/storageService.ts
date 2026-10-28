@@ -1,5 +1,7 @@
 import { StudentProgress, StageValidationSummary, TeacherTestConfig, StudentIdentity } from '../types';
 import { syncProgressAchievements } from './achievementEngine';
+import { clearExcelProgress } from './excelStorageService';
+import { clearWindowsProgress } from './windowsStorageService';
 
 const PROGRESS_KEY = 'icst_data_entry_progress_v1';
 const STUDENT_IDENTITY_KEY = 'icst_student_identity_v1';
@@ -82,22 +84,46 @@ export function saveStudentProgress(progress: StudentProgress): void {
 }
 
 /**
- * Completely resets local student practice state:
- * Removes student identity, drafts, progress, cached attempts, session data
+ * Completely resets local student practice and simulation state across all labs:
+ * - Practice Lab: stage progress, high scores, drafts, and recent evaluations
+ * - Excel Lab: scenario completions, benchmark scores, cell drafts, and Excel EXP
+ * - Windows Lab: file & folder track completions, unlocked levels, and directory states
+ * - Global Operator Identity, EXP, ranks, and unlocked achievements
  */
 export function clearAllPracticeData(): void {
   try {
+    // 1. Remove Student Identity and Main Data Entry Progress
     localStorage.removeItem(PROGRESS_KEY);
     localStorage.removeItem(STUDENT_IDENTITY_KEY);
-    // Remove all draft keys
+
+    // 2. Remove Excel simulation lab data and drafts
+    clearExcelProgress();
+
+    // 3. Remove Windows simulation lab data
+    clearWindowsProgress();
+
+    // 4. Sweep any leftover draft, session, or simulation keys
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key && key.startsWith(DRAFT_KEY_PREFIX)) {
+      if (
+        key &&
+        (key.startsWith(DRAFT_KEY_PREFIX) ||
+         key.startsWith('icst_excel_') ||
+         key.startsWith('icst_windows_') ||
+         key === PROGRESS_KEY ||
+         key === STUDENT_IDENTITY_KEY)
+      ) {
         keysToRemove.push(key);
       }
     }
     keysToRemove.forEach(k => localStorage.removeItem(k));
+
+    // 5. Broadcast global events so all mounted components immediately synchronize
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('icst_data_cleared'));
+      window.dispatchEvent(new CustomEvent('icst_student_identity_updated', { detail: null }));
+    }
   } catch (e) {
     console.error('Failed to clear practice data', e);
   }

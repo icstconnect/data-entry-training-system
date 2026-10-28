@@ -108,6 +108,19 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
     }
   }, [stage.levelNumber, stage.stageNumber]);
 
+  // Handle global data cleared event
+  useEffect(() => {
+    const handleDataCleared = () => {
+      resetToNewStage(stage);
+      setTimerElapsedSeconds(0);
+      setValidationSummary(null);
+      setStageTransitionData(null);
+      setShowReviewModal(false);
+    };
+    window.addEventListener('icst_data_cleared', handleDataCleared);
+    return () => window.removeEventListener('icst_data_cleared', handleDataCleared);
+  }, [stage]);
+
   // Timer loop - counts upward (Time Elapsed)
   useEffect(() => {
     if (showInstructions || validationSummary || stageTransitionData) return;

@@ -638,6 +638,7 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
 
   // Seed with previously cleared stages so achievements/toasts don't repeat
   useEffect(() => {
+    completedLevelsRef.current.clear();
     Object.keys(windowsProgress.fileManagementCompleted || {}).forEach(k => {
       if (windowsProgress.fileManagementCompleted[Number(k)]?.score === 100) {
         completedLevelsRef.current.add(`file_management_L${k}`);
@@ -648,7 +649,20 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
         completedLevelsRef.current.add(`folder_management_L${k}`);
       }
     });
-  }, []);
+  }, [windowsProgress.fileManagementCompleted, windowsProgress.folderManagementCompleted]);
+
+  // Handle global data cleared event
+  useEffect(() => {
+    const handleDataCleared = () => {
+      const fresh = loadWindowsProgress();
+      setWindowsProgress(fresh);
+      completedLevelsRef.current.clear();
+      setMode('file_management');
+      initLevel('file_management', 1);
+    };
+    window.addEventListener('icst_data_cleared', handleDataCleared);
+    return () => window.removeEventListener('icst_data_cleared', handleDataCleared);
+  }, [initLevel]);
 
   useEffect(() => {
     if (auditEvaluation.percentage === 100) {

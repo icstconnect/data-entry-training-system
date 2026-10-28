@@ -52,6 +52,30 @@ export function saveExcelDraft(draft: ExcelDraftData): void {
   }
 }
 
+export function clearExcelDraft(levelNumber: number): void {
+  try {
+    localStorage.removeItem(`${EXCEL_DRAFT_PREFIX}${levelNumber}`);
+  } catch (e) {
+    console.error('Failed to clear excel draft', e);
+  }
+}
+
+export function clearExcelProgress(): void {
+  try {
+    localStorage.removeItem(EXCEL_PROGRESS_KEY);
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith(EXCEL_DRAFT_PREFIX) || key.startsWith('icst_excel_draft_'))) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+  } catch (e) {
+    console.error('Failed to clear excel progress', e);
+  }
+}
+
 /**
  * Normalizes values for comparison (case-insensitive, trims trailing spaces, standardizes decimals)
  */

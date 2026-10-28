@@ -355,7 +355,12 @@ export function App() {
     setCurrentLevel(1);
     setCurrentStage(1);
     setExcelLevel(null);
+    setWindowsState({ inWorkbench: false, mode: 'file_management', level: 1 });
     setTimerElapsedSeconds(0);
+    setTimerLimitSeconds(APP_CONFIG.DEFAULT_TIME_LIMIT_SECONDS);
+    setFloatingExp(null);
+    setIsGuidedMode(false);
+    setPendingLabTarget(null);
     setIsClearDataOpen(false);
     setActiveView('landing');
     window.location.hash = 'home';
@@ -498,6 +503,7 @@ export function App() {
                 setWindowsState({ inWorkbench: true, mode: simMode, level: simLevel });
               }}
               onBackToHome={() => handleViewChange('landing')}
+              studentProgress={studentProgress}
             />
           )}
 

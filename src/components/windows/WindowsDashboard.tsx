@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { WindowsProgress, WindowsSimulationMode } from '../../types/windows';
+import { StudentProgress } from '../../types';
 import { FILE_MANAGEMENT_LEVELS, FOLDER_MANAGEMENT_LEVELS, WINDOWS_ACHIEVEMENTS } from '../../data/windowsCurriculumData';
 import { loadWindowsProgress } from '../../services/windowsStorageService';
 import { AchievementsModal } from './modals/AchievementsModal';
@@ -8,15 +9,29 @@ import { CurriculumModal } from './modals/CurriculumModal';
 interface WindowsDashboardProps {
   onStartSimulation: (mode: WindowsSimulationMode, level: number) => void;
   onBackToHome?: () => void;
+  studentProgress?: StudentProgress;
 }
 
 export const WindowsDashboard: React.FC<WindowsDashboardProps> = ({
   onStartSimulation,
-  onBackToHome
+  onBackToHome,
+  studentProgress
 }) => {
-  const [progress] = useState<WindowsProgress>(() => loadWindowsProgress());
+  const [progress, setProgress] = useState<WindowsProgress>(() => loadWindowsProgress());
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
   const [isCurriculumOpen, setIsCurriculumOpen] = useState(false);
+
+  useEffect(() => {
+    setProgress(loadWindowsProgress());
+  }, [studentProgress]);
+
+  useEffect(() => {
+    const handleDataCleared = () => {
+      setProgress(loadWindowsProgress());
+    };
+    window.addEventListener('icst_data_cleared', handleDataCleared);
+    return () => window.removeEventListener('icst_data_cleared', handleDataCleared);
+  }, []);
 
   // File management stats
   const fileCompletedCount = Object.keys(progress.fileManagementCompleted).filter(
