@@ -5,8 +5,7 @@ import { EXCEL_LEVELS, EXCEL_ACHIEVEMENTS } from '../../data/excelScenariosData'
 import { 
   loadExcelDraft, 
   saveExcelDraft, 
-  evaluateExcelBatch, 
-  loadExcelProgress 
+  evaluateExcelBatch 
 } from '../../services/excelStorageService';
 import { ExcelEvaluationModal } from './ExcelEvaluationModal';
 import { AchievementShareModal } from '../common/AchievementShareModal';
@@ -29,11 +28,15 @@ import {
   ZoomOut, 
   Eye, 
   AlertCircle,
-  HardDrive,
-  Columns,
-  Maximize2,
-  BookOpen,
-  X
+  HardDrive, 
+  Columns, 
+  Rows, 
+  PanelBottom, 
+  Maximize, 
+  Minimize, 
+  Maximize2, 
+  BookOpen, 
+  X 
 } from 'lucide-react';
 
 interface ExcelWorkbenchProps {
@@ -53,8 +56,11 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
 }) => {
   const level: ExcelScenarioLevel = EXCEL_LEVELS.find(l => l.levelNumber === levelNumber) || EXCEL_LEVELS[0];
 
-  // Responsive View Mode: 'split' | 'ledger' | 'grid'
-  const [viewMode, setViewMode] = useState<'split' | 'ledger' | 'grid'>('split');
+  // Responsive View Mode: 'top' (default/recommended) | 'bottom' | 'left' | 'grid' | 'ledger'
+  const [viewMode, setViewMode] = useState<'top' | 'bottom' | 'left' | 'grid' | 'ledger'>('top');
+
+  // Full Screen State
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   // Grid Data State: key is "r_c", e.g. "0_0" = value
   const [gridData, setGridData] = useState<Record<string, string>>({});
@@ -82,6 +88,7 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState<boolean>(false);
 
   const gridViewportRef = useRef<HTMLDivElement | null>(null);
+  const sourceScrollRef = useRef<HTMLDivElement | null>(null);
   const inlineInputRef = useRef<HTMLInputElement | null>(null);
   const formulaInputRef = useRef<HTMLInputElement | null>(null);
   const workbenchRootRef = useRef<HTMLDivElement | null>(null);
@@ -120,6 +127,31 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
     return () => window.removeEventListener('icst_data_cleared', handleDataCleared);
   }, []);
 
+  // Full Screen API Synchronizer
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      workbenchRootRef.current?.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+      }).catch(err => {
+        console.error("Fullscreen error:", err);
+      });
+    } else {
+      document.exitFullscreen().then(() => {
+        setIsFullscreen(false);
+      }).catch(err => {
+        console.error("Exit fullscreen error:", err);
+      });
+    }
+  };
+
   // Persistent Timer
   useEffect(() => {
     const timer = setInterval(() => {
@@ -154,6 +186,11 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
   const currentColDef = level.columns[activeCell.col];
   const activeCoordinate = `${currentColDef ? currentColDef.colLetter : 'A'}${activeCell.row + 1}`;
 
+  // Current source target value for helper indicator
+  const currentSourceVal = level.sourceRecords[activeCell.row]?.[currentColDef?.id] !== undefined
+    ? String(level.sourceRecords[activeCell.row][currentColDef.id])
+    : '';
+
   // Keep cell edit value in sync when selection changes and not editing
   useEffect(() => {
     if (!isEditing) {
@@ -161,12 +198,30 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
     }
   }, [activeCell, currentCellVal, isEditing]);
 
-  // Focus input when editing starts
+  // Focus input and move caret to end when editing starts
   useEffect(() => {
     if (isEditing && inlineInputRef.current) {
       inlineInputRef.current.focus();
+      const len = inlineInputRef.current.value.length;
+      inlineInputRef.current.setSelectionRange(len, len);
     }
   }, [isEditing]);
+
+  // Auto-scroll selected cell into view in both Excel grid and Source Ledger
+  useEffect(() => {
+    if (gridViewportRef.current) {
+      const activeEl = gridViewportRef.current.querySelector('.cell-selected');
+      if (activeEl) {
+        (activeEl as HTMLElement).scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
+    }
+    if (sourceScrollRef.current) {
+      const activeSourceEl = sourceScrollRef.current.querySelector('.active-source-cell');
+      if (activeSourceEl) {
+        (activeSourceEl as HTMLElement).scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
+    }
+  }, [activeCell]);
 
   // Format Timer String
   const formatTime = (secs: number) => {
@@ -177,134 +232,103 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
 
   const isOvertime = elapsedSeconds > level.timeLimitSeconds;
 
-  // Move active cell
-  const moveActiveCell = useCallback((dRow: number, dCol: number) => {
-    setActiveCell(prev => {
-      const totalRows = level.sourceRecords.length;
-      const totalCols = level.columns.length;
-      const newRow = Math.max(0, Math.min(totalRows - 1, prev.row + dRow));
-      const newCol = Math.max(0, Math.min(totalCols - 1, prev.col + dCol));
-      return { row: newRow, col: newCol };
+  // Commit value to a specific cell
+  const commitCell = useCallback((row: number, col: number, val: string) => {
+    setGridData(prev => {
+      const key = `${row}_${col}`;
+      if (prev[key] === val) return prev;
+      return { ...prev, [key]: val };
     });
     setIsEditing(false);
-  }, [level.sourceRecords.length, level.columns.length]);
+  }, []);
 
-  // Save current edit value into grid
-  const commitEdit = useCallback((val: string) => {
-    setGridData(prev => ({
-      ...prev,
-      [`${activeCell.row}_${activeCell.col}`]: val
-    }));
-    setIsEditing(false);
-  }, [activeCell]);
-
-  // Unified Tab navigation: moves to next cell, wrapping to next row 1st cell at the row end
-  const navigateTab = useCallback((shiftKey = false, currentEditValue?: string) => {
-    if (currentEditValue !== undefined) {
-      commitEdit(currentEditValue);
-    } else if (isEditing) {
-      commitEdit(cellEditVal);
-    }
-
+  // Unified commit and move function: handles arrow keys, Tab, Enter with optional wrapping
+  const commitAndMove = useCallback((
+    dRow: number, 
+    dCol: number, 
+    currentVal?: string, 
+    wrap = false
+  ) => {
+    const valToCommit = currentVal !== undefined ? currentVal : cellEditVal;
+    const curRow = activeCell.row;
+    const curCol = activeCell.col;
+    const totalRows = level.sourceRecords.length;
     const totalCols = level.columns.length;
-    const totalRows = level.sourceRecords.length;
 
-    setActiveCell(prev => {
-      if (shiftKey) {
-        if (prev.col > 0) {
-          return { row: prev.row, col: prev.col - 1 };
-        } else if (prev.row > 0) {
-          // Wrap backward to last column of previous row
-          return { row: prev.row - 1, col: totalCols - 1 };
-        }
-        return prev;
-      } else {
-        if (prev.col < totalCols - 1) {
-          return { row: prev.row, col: prev.col + 1 };
-        } else if (prev.row < totalRows - 1) {
-          // At the end of the row -> go to next row 1st cell!
-          return { row: prev.row + 1, col: 0 };
-        }
-        return prev;
-      }
+    // Save current cell value
+    setGridData(prev => {
+      const key = `${curRow}_${curCol}`;
+      if (prev[key] === valToCommit) return prev;
+      return { ...prev, [key]: valToCommit };
     });
-
     setIsEditing(false);
-    setTimeout(() => {
-      workbenchRootRef.current?.focus();
-    }, 0);
-  }, [level.columns.length, level.sourceRecords.length, isEditing, cellEditVal, commitEdit]);
 
-  // Unified Enter navigation: moves down, or up if Shift+Enter
-  const navigateEnter = useCallback((shiftKey = false, currentEditValue?: string) => {
-    if (currentEditValue !== undefined) {
-      commitEdit(currentEditValue);
-    } else if (isEditing) {
-      commitEdit(cellEditVal);
+    // Compute target coordinates
+    let targetRow = curRow;
+    let targetCol = curCol;
+
+    if (wrap && dCol > 0 && curCol === totalCols - 1) {
+      // Wrap to next line
+      if (curRow < totalRows - 1) {
+        targetRow = curRow + 1;
+        targetCol = 0;
+      }
+    } else if (wrap && dCol < 0 && curCol === 0) {
+      // Wrap backward to previous line
+      if (curRow > 0) {
+        targetRow = curRow - 1;
+        targetCol = totalCols - 1;
+      }
+    } else {
+      targetRow = Math.max(0, Math.min(totalRows - 1, curRow + dRow));
+      targetCol = Math.max(0, Math.min(totalCols - 1, curCol + dCol));
     }
 
-    const totalRows = level.sourceRecords.length;
+    setActiveCell({ row: targetRow, col: targetCol });
 
-    setActiveCell(prev => {
-      if (shiftKey) {
-        return { row: Math.max(0, prev.row - 1), col: prev.col };
-      } else {
-        return { row: Math.min(totalRows - 1, prev.row + 1), col: prev.col };
-      }
-    });
-
-    setIsEditing(false);
-    setTimeout(() => {
+    // Ensure keyboard focus returns to the workbench root
+    requestAnimationFrame(() => {
       workbenchRootRef.current?.focus();
-    }, 0);
-  }, [level.sourceRecords.length, isEditing, cellEditVal, commitEdit]);
+    });
+  }, [activeCell, cellEditVal, level.sourceRecords.length, level.columns.length]);
 
-  // Handle Tab, Enter, Arrows, F2, Esc in Grid
+  // Handle Tab, Enter, Arrows, F2, Backspace, Esc on workbench root
   const handleGridKeyDown = (e: React.KeyboardEvent) => {
-    if (isEditing) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        navigateEnter(e.shiftKey, cellEditVal);
-      } else if (e.key === 'Tab') {
-        e.preventDefault();
-        navigateTab(e.shiftKey, cellEditVal);
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
-        setCellEditVal(currentCellVal);
-        setIsEditing(false);
-        workbenchRootRef.current?.focus();
-      }
+    // If typing inside an input element, let that input handle its own events
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
       return;
     }
 
-    // When NOT in inline edit mode
     if (e.key === 'Tab') {
       e.preventDefault();
-      navigateTab(e.shiftKey);
+      commitAndMove(0, e.shiftKey ? -1 : 1, undefined, true);
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      navigateEnter(e.shiftKey);
+      commitAndMove(e.shiftKey ? -1 : 1, 0);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      moveActiveCell(-1, 0);
+      commitAndMove(-1, 0);
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
-      moveActiveCell(1, 0);
+      commitAndMove(1, 0);
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      moveActiveCell(0, -1);
+      commitAndMove(0, -1);
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
-      moveActiveCell(0, 1);
+      commitAndMove(0, 1);
     } else if (e.key === 'F2') {
       e.preventDefault();
       setIsEditing(true);
       setCellEditVal(currentCellVal);
     } else if (e.key === 'Delete' || e.key === 'Backspace') {
       e.preventDefault();
-      commitEdit('');
+      commitCell(activeCell.row, activeCell.col, '');
+      setCellEditVal('');
     } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      // Direct typing into selected cell enters edit mode with that initial char
+      // Direct typing into selected cell:
+      // PREVENT DEFAULT is essential to prevent browser from inserting the character a second time!
+      e.preventDefault();
       setIsEditing(true);
       setCellEditVal(e.key);
     }
@@ -313,7 +337,7 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
   // Submit and Audit Batch
   const handleSubmitBatch = () => {
     if (isEditing) {
-      commitEdit(cellEditVal);
+      commitCell(activeCell.row, activeCell.col, cellEditVal);
     }
 
     const summary = evaluateExcelBatch(
@@ -379,7 +403,6 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
 
   // Trigger Share Modal
   const handleOpenShare = (sum: ExcelEvaluationSummary) => {
-    // If summary has unlocked achievements, use the first one, or pick the level achievement
     let ach = sum.unlockedAchievements[0];
     if (!ach) {
       const matchId = level.levelNumber === 1 ? 'excel_novice_grid'
@@ -393,19 +416,14 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
     setIsShareModalOpen(true);
   };
 
-  // Auto-scroll selected cell into view
-  useEffect(() => {
-    if (gridViewportRef.current) {
-      const activeEl = gridViewportRef.current.querySelector('.cell-selected');
-      if (activeEl) {
-        (activeEl as HTMLElement).scrollIntoView({ block: 'nearest', inline: 'nearest' });
-      }
-    }
-  }, [activeCell]);
-
   return (
-    <div ref={workbenchRootRef} className="excel-workbench-root" onKeyDown={handleGridKeyDown} tabIndex={0}>
-      {/* Excel Title Bar (Emerald Green) */}
+    <div 
+      ref={workbenchRootRef} 
+      className={`excel-workbench-root ${isFullscreen ? 'is-fullscreen' : ''}`} 
+      onKeyDown={handleGridKeyDown} 
+      tabIndex={0}
+    >
+      {/* Excel Title Bar (Office Green) */}
       <div className="excel-title-bar">
         <div className="excel-title-left">
           <button 
@@ -440,18 +458,36 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
         <div className="excel-view-mode-cluster">
           <button 
             type="button" 
-            className={`excel-mode-pill ${viewMode === 'split' ? 'active' : ''}`}
-            onClick={() => setViewMode('split')}
-            title="Dual View: Reference Ledger + Excel Spreadsheet"
+            className={`excel-mode-pill ${viewMode === 'top' ? 'active' : ''}`}
+            onClick={() => setViewMode('top')}
+            title="Top/Bottom: Reference Ledger on Top, Excel on Bottom (Recommended)"
+          >
+            <Rows size={12} />
+            <span className="mode-pill-text">Top Ledger</span>
+          </button>
+          <button 
+            type="button" 
+            className={`excel-mode-pill ${viewMode === 'bottom' ? 'active' : ''}`}
+            onClick={() => setViewMode('bottom')}
+            title="Bottom Split: Excel on Top, Reference Ledger on Bottom"
+          >
+            <PanelBottom size={12} />
+            <span className="mode-pill-text">Bottom Ledger</span>
+          </button>
+          <button 
+            type="button" 
+            className={`excel-mode-pill ${viewMode === 'left' ? 'active' : ''}`}
+            onClick={() => setViewMode('left')}
+            title="Side-by-Side: Reference Ledger on Left, Excel on Right"
           >
             <Columns size={12} />
-            <span className="mode-pill-text">Split View</span>
+            <span className="mode-pill-text">Side Split</span>
           </button>
           <button 
             type="button" 
             className={`excel-mode-pill ${viewMode === 'grid' ? 'active' : ''}`}
             onClick={() => setViewMode('grid')}
-            title="Full Width: Focus Excel Spreadsheet"
+            title="Full Window: Focus Excel Spreadsheet"
           >
             <Maximize2 size={12} />
             <span className="mode-pill-text">Excel Only</span>
@@ -460,14 +496,25 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
             type="button" 
             className={`excel-mode-pill ${viewMode === 'ledger' ? 'active' : ''}`}
             onClick={() => setViewMode('ledger')}
-            title="Full Width: Inspect Reference Ledger"
+            title="Full Window: Inspect Reference Ledger"
           >
             <BookOpen size={12} />
             <span className="mode-pill-text">Ledger Only</span>
           </button>
         </div>
 
+        {/* Right: Fullscreen Toggle, Timer, EXP Reward */}
         <div className="excel-title-right">
+          <button
+            type="button"
+            className={`excel-fullscreen-btn ${isFullscreen ? 'active' : ''}`}
+            onClick={toggleFullscreen}
+            title={isFullscreen ? "Exit Full Screen Mode (Esc)" : "Enter Full Screen Mode"}
+          >
+            {isFullscreen ? <Minimize size={13} /> : <Maximize size={13} />}
+            <span>{isFullscreen ? "Exit Fullscreen" : "Full Screen"}</span>
+          </button>
+
           <div className={`excel-timer-chip ${isOvertime ? 'overtime' : ''}`} title={`Benchmark: ${formatTime(level.timeLimitSeconds)}`}>
             <Clock size={13} />
             <span>{formatTime(elapsedSeconds)}</span>
@@ -481,9 +528,9 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
         </div>
       </div>
 
-      {/* Main Split Workspace */}
+      {/* Main Split Workspace: Mode handles top/bottom/left/grid/ledger */}
       <div className={`excel-split-workspace split-mode-${viewMode}`}>
-        {/* Left Side: Physical Ledger Reference Document */}
+        {/* Source Reference Document Pane (Master Ledger) */}
         <section 
           className={`excel-source-pane ${viewMode === 'grid' ? 'mode-hidden' : viewMode === 'ledger' ? 'mode-fullscreen' : ''}`}
           aria-label="Official Source Register Document"
@@ -492,6 +539,7 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
             alert('Anti-Cheating Policy: Copy-paste from the official source ledger is disabled. Type directly into the Excel spreadsheet cells.');
           }}
         >
+          {/* Compact, Informative Source Header */}
           <div className="excel-source-header">
             <div className="excel-source-title-group">
               <span className="excel-source-title">
@@ -499,55 +547,130 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
                 Physical Master Ledger
               </span>
               <span className="excel-source-badge">{level.domain}</span>
+              <span className="excel-source-level-title" title={level.scenarioName}>
+                {level.scenarioName}
+              </span>
             </div>
 
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-              <input 
-                type="checkbox" 
-                checked={highlightSourceRow} 
-                onChange={(e) => setHighlightSourceRow(e.target.checked)} 
-              />
-              <span>Focus Active Row</span>
-            </label>
+            {/* Target Field Assistant: Highlights exactly what cell corresponds to active cursor */}
+            <div className="excel-active-source-badge" title="Active Cell corresponding to cursor in Excel">
+              <span className="active-field-lbl">Target Cell:</span>
+              <span className="active-field-coord">{activeCoordinate}</span>
+              <span className="active-field-col">{currentColDef?.header || ''}</span>
+              <span className="active-field-arrow">➔</span>
+              <strong className="active-field-val">
+                {currentSourceVal !== '' ? `"${currentSourceVal}"` : '<empty>'}
+              </strong>
+            </div>
+
+            <div className="excel-source-controls">
+              <label className="excel-source-checkbox" title="Highlight the entire active row in the ledger">
+                <input 
+                  type="checkbox" 
+                  checked={highlightSourceRow} 
+                  onChange={(e) => setHighlightSourceRow(e.target.checked)} 
+                />
+                <span>Focus Active Row</span>
+              </label>
+
+              <div className="excel-source-layout-pills">
+                <button 
+                  type="button" 
+                  className={`layout-pill ${viewMode === 'top' ? 'active' : ''}`}
+                  onClick={() => setViewMode('top')}
+                  title="Position Source Ledger on TOP"
+                >
+                  <Rows size={11} />
+                  <span>Top</span>
+                </button>
+                <button 
+                  type="button" 
+                  className={`layout-pill ${viewMode === 'bottom' ? 'active' : ''}`}
+                  onClick={() => setViewMode('bottom')}
+                  title="Position Source Ledger at BOTTOM"
+                >
+                  <PanelBottom size={11} />
+                  <span>Bottom</span>
+                </button>
+                <button 
+                  type="button" 
+                  className={`layout-pill ${viewMode === 'left' ? 'active' : ''}`}
+                  onClick={() => setViewMode('left')}
+                  title="Position Source Ledger on LEFT side"
+                >
+                  <Columns size={11} />
+                  <span>Side</span>
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="excel-source-content-scroll">
+          <div ref={sourceScrollRef} className="excel-source-content-scroll">
             <div className="ledger-sheet">
-              {/* Watermark / Department Header */}
+              {/* Document Header Line */}
               <div className="ledger-heading">
                 <div className="ledger-dept-name">{level.scenarioSubtitle}</div>
                 <div className="ledger-doc-title">{level.scenarioName}</div>
                 <div className="ledger-subtitle">
-                  Official Verification Ledger • Strict Typing Standard Required
+                  Official Verification Ledger • Strict Typing Standard Required ({level.sourceRecords.length} records)
                 </div>
               </div>
 
-              {/* Source Records Table */}
+              {/* Source Records Table with Cell-Level Selection Highlight */}
               <div className="ledger-table-wrap">
                 <table className="ledger-table">
                   <thead>
                     <tr>
                       <th style={{ width: '38px', textAlign: 'center' }}>#</th>
-                      {level.columns.map(col => (
-                        <th key={col.id} style={{ minWidth: col.width ? `${col.width * 0.9}px` : 'auto' }}>
-                          {col.header}
-                        </th>
-                      ))}
+                      {level.columns.map((col, cIdx) => {
+                        const isColActive = activeCell.col === cIdx;
+                        return (
+                          <th 
+                            key={col.id} 
+                            style={{ minWidth: col.width ? `${col.width * 0.9}px` : 'auto' }}
+                            className={isColActive ? 'source-th-active' : ''}
+                          >
+                            <span className="source-col-letter">{col.colLetter}</span>
+                            <span className="source-col-title">{col.header}</span>
+                          </th>
+                        );
+                      })}
                     </tr>
                   </thead>
                   <tbody>
                     {level.sourceRecords.map((row, rIdx) => {
-                      const isActiveRow = highlightSourceRow && activeCell.row === rIdx;
+                      const isActiveRow = activeCell.row === rIdx;
                       return (
-                        <tr key={rIdx} className={isActiveRow ? 'active-source-row' : ''}>
+                        <tr key={rIdx} className={isActiveRow && highlightSourceRow ? 'active-source-row' : ''}>
                           <td style={{ textAlign: 'center', fontWeight: 700, color: '#78350f' }}>
                             {isActiveRow ? <span className="ledger-row-pin">{rIdx + 1}</span> : rIdx + 1}
                           </td>
-                          {level.columns.map(col => (
-                            <td key={col.id} style={{ textAlign: col.align || 'left' }}>
-                              {String(row[col.id] ?? '')}
-                            </td>
-                          ))}
+                          {level.columns.map((col, cIdx) => {
+                            const isSelectedCell = activeCell.row === rIdx && activeCell.col === cIdx;
+                            return (
+                              <td 
+                                key={col.id} 
+                                className={`ledger-cell ${isSelectedCell ? 'active-source-cell' : ''}`}
+                                style={{ textAlign: col.align || 'left' }}
+                                title={`Record #${rIdx + 1} • ${col.header}: Click to select in Excel`}
+                                onClick={() => {
+                                  if (isEditing) {
+                                    commitCell(activeCell.row, activeCell.col, cellEditVal);
+                                  }
+                                  setActiveCell({ row: rIdx, col: cIdx });
+                                  workbenchRootRef.current?.focus();
+                                }}
+                              >
+                                {isSelectedCell ? (
+                                  <span className="source-cell-highlight-badge">
+                                    {String(row[col.id] ?? '')}
+                                  </span>
+                                ) : (
+                                  String(row[col.id] ?? '')
+                                )}
+                              </td>
+                            );
+                          })}
                         </tr>
                       );
                     })}
@@ -555,21 +678,21 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
                 </table>
               </div>
 
-              {/* Ledger Footer Tips */}
-              <div style={{ marginTop: '14px', padding: '10px 12px', background: '#f5eedf', borderRadius: '4px', fontSize: '11px', color: '#574833', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {/* Compact Auditor Typing Guidelines */}
+              <div className="ledger-guidelines-strip">
                 <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <AlertCircle size={13} color="#b45309" />
-                  <span>Auditor Typing Guidelines:</span>
+                  <span>Auditor Guidelines:</span>
                 </div>
                 {level.tips.map((tip, idx) => (
-                  <div key={idx}>• {tip}</div>
+                  <span key={idx} className="guideline-item">• {tip}</span>
                 ))}
               </div>
             </div>
           </div>
         </section>
 
-        {/* Right Side: Authentic Microsoft Excel Grid Simulation */}
+        {/* Interactive Microsoft Excel Spreadsheet Grid */}
         <section 
           className={`excel-grid-pane ${viewMode === 'ledger' ? 'mode-hidden' : viewMode === 'grid' ? 'mode-fullscreen' : ''}`} 
           aria-label="Interactive Excel Spreadsheet"
@@ -695,12 +818,13 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
                 setCellEditVal(e.target.value);
               }}
               onKeyDown={(e) => {
+                e.stopPropagation();
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  navigateEnter(e.shiftKey, e.currentTarget.value);
+                  commitAndMove(e.shiftKey ? -1 : 1, 0, e.currentTarget.value);
                 } else if (e.key === 'Tab') {
                   e.preventDefault();
-                  navigateTab(e.shiftKey, e.currentTarget.value);
+                  commitAndMove(0, e.shiftKey ? -1 : 1, e.currentTarget.value, true);
                 } else if (e.key === 'Escape') {
                   e.preventDefault();
                   setCellEditVal(currentCellVal);
@@ -773,8 +897,8 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
                               textAlign: cellAlign !== 'left' ? cellAlign : (col.align || 'left')
                             }}
                             onClick={() => {
-                              if (isEditing && !isSelected) {
-                                commitEdit(cellEditVal);
+                              if (isEditing) {
+                                commitCell(activeCell.row, activeCell.col, cellEditVal);
                               }
                               setActiveCell({ row: rIdx, col: cIdx });
                               workbenchRootRef.current?.focus();
@@ -792,16 +916,46 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
                                 className="excel-cell-input"
                                 value={cellEditVal}
                                 onChange={(e) => setCellEditVal(e.target.value)}
-                                onBlur={() => commitEdit(cellEditVal)}
+                                onBlur={() => {
+                                  if (isEditing) {
+                                    commitCell(activeCell.row, activeCell.col, cellEditVal);
+                                  }
+                                }}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Tab') {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    navigateTab(e.shiftKey, e.currentTarget.value);
+                                    commitAndMove(0, e.shiftKey ? -1 : 1, e.currentTarget.value, true);
                                   } else if (e.key === 'Enter') {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    navigateEnter(e.shiftKey, e.currentTarget.value);
+                                    commitAndMove(e.shiftKey ? -1 : 1, 0, e.currentTarget.value);
+                                  } else if (e.key === 'ArrowDown') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    commitAndMove(1, 0, e.currentTarget.value);
+                                  } else if (e.key === 'ArrowUp') {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    commitAndMove(-1, 0, e.currentTarget.value);
+                                  } else if (e.key === 'ArrowRight') {
+                                    const inputEl = e.currentTarget;
+                                    const isAtEnd = inputEl.selectionEnd === inputEl.value.length;
+                                    const isAllSelected = inputEl.selectionStart === 0 && inputEl.selectionEnd === inputEl.value.length;
+                                    if (isAtEnd || isAllSelected) {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      commitAndMove(0, 1, e.currentTarget.value, true);
+                                    }
+                                  } else if (e.key === 'ArrowLeft') {
+                                    const inputEl = e.currentTarget;
+                                    const isAtStart = inputEl.selectionStart === 0;
+                                    const isAllSelected = inputEl.selectionStart === 0 && inputEl.selectionEnd === inputEl.value.length;
+                                    if (isAtStart || isAllSelected) {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      commitAndMove(0, -1, e.currentTarget.value, true);
+                                    }
                                   } else if (e.key === 'Escape') {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -810,7 +964,6 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
                                     workbenchRootRef.current?.focus();
                                   }
                                 }}
-                                autoFocus
                               />
                             ) : (
                               <span>{cellVal}</span>
@@ -842,7 +995,7 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
               <span>
                 Progress: {filledCellsCount} / {totalCells} ({completionPercentage}%)
               </span>
-              <span>Navigation: Tab / Enter / Arrows</span>
+              <span>Navigation: Tab / Enter / Arrow Keys</span>
             </div>
           </div>
         </section>

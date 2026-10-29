@@ -3,15 +3,30 @@
    Authentic Microsoft Excel UI Simulation with Warm Eye-Care Tones
    ========================================================================== */
 
-/* Main Container */
+/* Main Container - non-scrollable desktop simulation */
 .excel-workbench-root {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 58px);
-  min-height: 520px;
+  height: 100%;
+  max-height: calc(100vh - 58px);
+  flex: 1;
   background-color: var(--bg-main);
   overflow: hidden;
   position: relative;
+  box-sizing: border-box;
+}
+
+.excel-workbench-root.is-fullscreen,
+.excel-workbench-root:fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  z-index: 999999 !important;
+  border-radius: 0 !important;
 }
 
 /* Excel Top App Bar (Office Green) */
@@ -121,8 +136,35 @@
 .excel-title-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-shrink: 0;
+}
+
+.excel-fullscreen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.excel-fullscreen-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.excel-fullscreen-btn.active {
+  background: #ffffff;
+  color: #0c5e31;
+  font-weight: 700;
 }
 
 .excel-timer-chip {
@@ -148,7 +190,7 @@
   50% { opacity: 0.75; }
 }
 
-/* Two-Panel Split Workspace */
+/* Multi-Panel Split Workspace */
 .excel-split-workspace {
   display: flex;
   flex: 1;
@@ -158,31 +200,94 @@
   position: relative;
 }
 
-/* Left Pane: Authentic Physical Document / Ledger */
-.excel-source-pane {
+/* Mode Top: Reference Ledger on TOP, Excel Grid on BOTTOM (Recommended & Default) */
+.excel-split-workspace.split-mode-top {
+  flex-direction: column;
+}
+
+.excel-split-workspace.split-mode-top .excel-source-pane {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 100% !important;
+  height: 42%;
+  min-height: 175px;
+  max-height: 50%;
+  border-right: none;
+  border-bottom: 2px solid var(--border-medium);
+}
+
+.excel-split-workspace.split-mode-top .excel-grid-pane {
+  width: 100% !important;
+  min-width: 100% !important;
+  height: 58%;
+  flex: 1 1 0%;
+}
+
+/* Mode Bottom: Excel Grid on TOP, Reference Ledger on BOTTOM */
+.excel-split-workspace.split-mode-bottom {
+  flex-direction: column-reverse;
+}
+
+.excel-split-workspace.split-mode-bottom .excel-source-pane {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 100% !important;
+  height: 40%;
+  min-height: 165px;
+  max-height: 48%;
+  border-right: none;
+  border-top: 2px solid var(--border-medium);
+}
+
+.excel-split-workspace.split-mode-bottom .excel-grid-pane {
+  width: 100% !important;
+  min-width: 100% !important;
+  height: 60%;
+  flex: 1 1 0%;
+}
+
+/* Mode Left (Side-by-Side): Reference Ledger on LEFT, Excel Grid on RIGHT */
+.excel-split-workspace.split-mode-left,
+.excel-split-workspace.split-mode-split {
+  flex-direction: row;
+}
+
+.excel-split-workspace.split-mode-left .excel-source-pane,
+.excel-split-workspace.split-mode-split .excel-source-pane {
   width: 44%;
   min-width: 300px;
   max-width: 580px;
-  display: flex;
-  flex-direction: column;
-  background: #fdfbf7;
+  height: 100%;
   border-right: 2px solid var(--border-medium);
-  overflow: hidden;
-  user-select: none;
-  -webkit-user-select: none;
-  transition: width 0.2s ease;
+  border-bottom: none;
 }
 
-.excel-grid-pane {
+.excel-split-workspace.split-mode-left .excel-grid-pane,
+.excel-split-workspace.split-mode-split .excel-grid-pane {
   flex: 1 1 0%;
   min-width: 0;
   width: 0;
+  height: 100%;
+}
+
+/* Pane Base Styles */
+.excel-source-pane {
+  display: flex;
+  flex-direction: column;
+  background: #fdfbf7;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: all 0.2s ease;
+}
+
+.excel-grid-pane {
   display: flex;
   flex-direction: column;
   background: #ffffff;
   overflow: hidden;
   position: relative;
-  transition: width 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 /* Fullscreen / Hidden View Modes */
@@ -196,27 +301,34 @@
   width: 100% !important;
   max-width: 100% !important;
   min-width: 100% !important;
+  height: 100% !important;
   flex: 1 1 100% !important;
   border-right: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
 }
 
+/* Refined, High-Density Source Header */
 .excel-source-header {
-  padding: 10px 14px;
+  padding: 6px 14px;
   background: #f5eedf;
   border-bottom: 1px solid var(--border-medium);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .excel-source-title-group {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .excel-source-title {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--text-primary);
   display: flex;
@@ -226,7 +338,7 @@
 
 .excel-source-badge {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   background: #e2d7c5;
   color: #4a3e2d;
   padding: 1px 6px;
@@ -235,11 +347,122 @@
   letter-spacing: 0.5px;
 }
 
+.excel-source-level-title {
+  font-size: 11px;
+  color: #6c5840;
+  font-weight: 500;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Active Source Badge (Target field assistant) */
+.excel-active-source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff8e1;
+  border: 1px solid #f6d365;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  color: #78350f;
+  box-shadow: 0 1px 3px rgba(180, 83, 9, 0.08);
+}
+
+.active-field-lbl {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.active-field-coord {
+  background: #b45309;
+  color: #ffffff;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 10.5px;
+}
+
+.active-field-col {
+  color: #574833;
+  font-weight: 600;
+}
+
+.active-field-arrow {
+  color: #d97706;
+  font-weight: 800;
+}
+
+.active-field-val {
+  color: #78350f;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.excel-source-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.excel-source-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.excel-source-layout-pills {
+  display: inline-flex;
+  align-items: center;
+  background: #e5dac9;
+  padding: 2px;
+  border-radius: 4px;
+  gap: 2px;
+}
+
+.layout-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border: none;
+  background: transparent;
+  color: #574833;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.layout-pill:hover {
+  background: rgba(255, 255, 255, 0.4);
+  color: #2b251e;
+}
+
+.layout-pill.active {
+  background: #ffffff;
+  color: #78350f;
+  font-weight: 700;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
 .excel-source-content-scroll {
   flex: 1;
   overflow-y: auto;
   overflow-x: auto;
-  padding: 14px;
+  padding: 8px 12px;
   background: #fbf8f1;
 }
 
@@ -247,47 +470,47 @@
 .ledger-sheet {
   background: #fffdf9;
   border: 1px solid #d8cdba;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border-radius: 4px;
-  padding: 14px;
+  padding: 8px 12px;
   position: relative;
 }
 
 .ledger-seal-stamp {
   position: absolute;
-  top: 12px;
-  right: 14px;
-  opacity: 0.15;
+  top: 8px;
+  right: 12px;
+  opacity: 0.12;
   pointer-events: none;
   filter: grayscale(1);
 }
 
 .ledger-heading {
   text-align: center;
-  border-bottom: 2px solid #8c7e6c;
-  padding-bottom: 8px;
-  margin-bottom: 12px;
+  border-bottom: 1.5px solid #8c7e6c;
+  padding-bottom: 5px;
+  margin-bottom: 8px;
 }
 
 .ledger-dept-name {
-  font-size: 10px;
+  font-size: 9.5px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   color: #706352;
   font-weight: 700;
 }
 
 .ledger-doc-title {
-  font-size: 15px;
+  font-size: 13.5px;
   font-weight: 800;
   color: #2b251e;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .ledger-subtitle {
-  font-size: 11px;
+  font-size: 10.5px;
   color: #7a6e5d;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 /* Ledger Data Table */
@@ -301,26 +524,49 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 11.5px;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 .ledger-table th {
   background: #eedfc7;
   color: #3f3527;
   font-weight: 700;
-  padding: 6px 8px;
+  padding: 5px 7px;
   text-align: left;
   border: 1px solid #d2c2a9;
   white-space: nowrap;
   font-size: 11px;
 }
 
+.source-th-active {
+  background: #e0cca7 !important;
+  color: #78350f !important;
+  border-bottom: 2px solid #b45309 !important;
+}
+
+.source-col-letter {
+  display: inline-block;
+  background: #c9b48c;
+  color: #2e2315;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 0 4px;
+  border-radius: 2px;
+  margin-right: 4px;
+}
+
+.source-th-active .source-col-letter {
+  background: #b45309;
+  color: #ffffff;
+}
+
 .ledger-table td {
-  padding: 6px 8px;
+  padding: 4px 7px;
   border: 1px solid #e5dac9;
   color: #27221b;
   white-space: nowrap;
   font-family: var(--font-sans);
+  transition: background 0.1s ease;
 }
 
 .ledger-table tr:nth-child(even) td {
@@ -329,24 +575,59 @@
 
 /* Active Row Indicator on Source Ledger */
 .ledger-table tr.active-source-row td {
-  background: #fef08a !important;
+  background: #fef9c3 !important;
   color: #1c1917 !important;
-  font-weight: 700;
-  border-top: 2px solid #ca8a04;
-  border-bottom: 2px solid #ca8a04;
+}
+
+/* EXACT ACTIVE CELL IN SOURCE LEDGER */
+.ledger-table td.active-source-cell {
+  background: #fde047 !important;
+  color: #78350f !important;
+  font-weight: 800 !important;
+  outline: 2px solid #b45309 !important;
+  outline-offset: -2px;
+  box-shadow: inset 0 0 0 1px #d97706, 0 0 8px rgba(217, 119, 6, 0.4) !important;
+  position: relative;
+  z-index: 5;
+}
+
+.source-cell-highlight-badge {
+  display: inline-block;
+  padding: 1px 4px;
+  background: #fef08a;
+  border-radius: 3px;
+  font-weight: 800;
+  color: #78350f;
 }
 
 .ledger-row-pin {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background: #ca8a04;
   color: #ffffff;
-  font-size: 9px;
+  font-size: 8.5px;
   margin-right: 4px;
+}
+
+.ledger-guidelines-strip {
+  margin-top: 8px;
+  padding: 5px 10px;
+  background: #f5eedf;
+  border-radius: 4px;
+  font-size: 10.5px;
+  color: #574833;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.guideline-item {
+  color: #574833;
 }
 
 
@@ -974,11 +1255,13 @@
 
 @media (max-width: 900px) {
   /* In split mode on narrower devices, stack vertically: Reference ledger on top, Excel sheet on bottom */
-  .excel-split-workspace.split-mode-split {
+  .excel-split-workspace.split-mode-split,
+  .excel-split-workspace.split-mode-left {
     flex-direction: column;
   }
 
-  .excel-split-workspace.split-mode-split .excel-source-pane {
+  .excel-split-workspace.split-mode-split .excel-source-pane,
+  .excel-split-workspace.split-mode-left .excel-source-pane {
     width: 100%;
     max-width: 100%;
     min-width: 0;
@@ -989,7 +1272,8 @@
     border-bottom: 2px solid var(--border-medium);
   }
 
-  .excel-split-workspace.split-mode-split .excel-grid-pane {
+  .excel-split-workspace.split-mode-split .excel-grid-pane,
+  .excel-split-workspace.split-mode-left .excel-grid-pane {
     width: 100%;
     min-width: 0;
     height: 58%;

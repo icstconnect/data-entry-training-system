@@ -411,8 +411,8 @@ export function App() {
           flex: 1, 
           display: 'flex', 
           flexDirection: 'column',
-          overflow: (activeView === 'windows' && windowsState.inWorkbench) ? 'hidden' : undefined,
-          height: (activeView === 'windows' && windowsState.inWorkbench) ? 'calc(100vh - 58px)' : undefined
+          overflow: ((activeView === 'windows' && windowsState.inWorkbench) || (activeView === 'excel' && excelLevel !== null)) ? 'hidden' : undefined,
+          height: ((activeView === 'windows' && windowsState.inWorkbench) || (activeView === 'excel' && excelLevel !== null)) ? 'calc(100vh - 58px)' : undefined
         }}
       >
         {activeView === 'landing' && (
@@ -519,7 +519,7 @@ export function App() {
       </main>
 
       {/* Brand Footer (hidden in Windows simulation workbench to fit full window without scrolling) */}
-      {!(activeView === 'windows' && windowsState.inWorkbench) && <Footer />}
+      {!(activeView === 'windows' && windowsState.inWorkbench) && !(activeView === 'excel' && excelLevel !== null) && <Footer />}
 
       {/* Modals wrapped in lightweight Suspense */}
       <React.Suspense fallback={null}>
