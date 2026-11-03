@@ -11,19 +11,22 @@ import {
   Award,
   X,
   Lock,
-  ZoomIn
+  ZoomIn,
+  Shuffle
 } from 'lucide-react';
 
 interface SourceDocumentViewerProps {
   sourceRecord: SourceRecord;
   isMobileDrawer?: boolean;
   onClose?: () => void;
+  onRandomize?: () => void;
 }
 
 export const SourceDocumentViewer: React.FC<SourceDocumentViewerProps> = ({ 
   sourceRecord,
   isMobileDrawer = false,
-  onClose
+  onClose,
+  onRandomize
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -81,8 +84,34 @@ export const SourceDocumentViewer: React.FC<SourceDocumentViewerProps> = ({
             REFERENCE SOURCE DOSSIER
           </span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <span className="source-badge">{sourceRecord.uid}</span>
+
+          {onRandomize && (
+            <button
+              type="button"
+              onClick={onRandomize}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                border: '1px solid rgba(217, 119, 6, 0.4)',
+                color: '#ffffff',
+                padding: '2px 8px',
+                borderRadius: '12px',
+                fontSize: '11px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(217, 119, 6, 0.25)',
+                transition: 'all 0.15s ease'
+              }}
+              title="Randomize reference dossier with a fresh candidate profile"
+            >
+              <Shuffle size={12} />
+              <span>Randomize Dossier</span>
+            </button>
+          )}
 
           <button
             type="button"

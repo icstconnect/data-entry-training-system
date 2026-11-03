@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ExcelProgress, ExcelScenarioLevel } from '../../types/excel';
+import { ExcelProgress, ExcelScenarioLevel, ExcelEvaluationSummary } from '../../types/excel';
+import { ExcelEvaluationModal } from './ExcelEvaluationModal';
 import { StudentProgress, Achievement } from '../../types';
 import { EXCEL_LEVELS, EXCEL_ACHIEVEMENTS } from '../../data/excelScenariosData';
 import { loadExcelProgress } from '../../services/excelStorageService';
@@ -19,7 +20,8 @@ import {
   Layers, 
   Award,
   Zap,
-  Target
+  Target,
+  FileText
 } from 'lucide-react';
 
 interface ExcelDashboardProps {
@@ -34,6 +36,45 @@ export const ExcelDashboard: React.FC<ExcelDashboardProps> = ({
   const [excelProgress, setExcelProgress] = useState<ExcelProgress>(() => loadExcelProgress());
   const [selectedAchievementToShare, setSelectedAchievementToShare] = useState<Achievement | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
+  const [viewingEvaluation, setViewingEvaluation] = useState<{
+    summary: ExcelEvaluationSummary;
+    level: ExcelScenarioLevel;
+  } | null>(null);
+
+  const handleViewExcelRecord = (lvl: ExcelScenarioLevel) => {
+    const comp = excelProgress.completedLevels[lvl.levelNumber];
+    if (!comp) return;
+
+    const existing = (excelProgress.recentEvaluations || []).find(e => e.levelNumber === lvl.levelNumber);
+    if (existing) {
+      setViewingEvaluation({ summary: existing, level: lvl });
+      return;
+    }
+
+    const totalCells = lvl.sourceRecords.length * lvl.columns.length;
+    const correctCells = Math.round(totalCells * (comp.highestAccuracy / 100));
+
+    const constructed: ExcelEvaluationSummary = {
+      levelNumber: lvl.levelNumber,
+      scenarioName: lvl.scenarioName,
+      totalCells,
+      correctCells,
+      incorrectCells: totalCells - correctCells,
+      missingCells: 0,
+      accuracyPercentage: comp.highestAccuracy,
+      requiredAccuracy: lvl.targetAccuracy,
+      passed: comp.highestAccuracy >= lvl.targetAccuracy,
+      timeTakenSeconds: comp.bestTimeSeconds,
+      kph: 0,
+      expEarned: lvl.expReward,
+      discrepancies: [],
+      unlockedAchievements: [],
+      submittedAt: comp.completedAt || new Date().toISOString(),
+      studentIdentity: studentProgress.studentIdentity
+    };
+
+    setViewingEvaluation({ summary: constructed, level: lvl });
+  };
 
   useEffect(() => {
     setExcelProgress(loadExcelProgress());
@@ -184,28 +225,50 @@ export const ExcelDashboard: React.FC<ExcelDashboardProps> = ({
                   )}
                 </div>
 
-                <button
-                  type="button"
-                  className={`btn ${isUnlocked ? 'btn-primary' : 'btn-secondary'}`}
-                  onClick={() => {
-                    if (isUnlocked) onSelectLevel(lvl.levelNumber);
-                  }}
-                  disabled={!isUnlocked}
-                  style={{
-                    background: isUnlocked ? '#107c41' : '#f1f5f9',
-                    borderColor: isUnlocked ? '#0d5e2e' : '#cbd5e1',
-                    color: isUnlocked ? '#ffffff' : '#94a3b8',
-                    gap: '6px',
-                    fontSize: '12px',
-                    padding: '6px 14px',
-                    cursor: isUnlocked ? 'pointer' : 'not-allowed',
-                    opacity: isUnlocked ? 1 : 0.65
-                  }}
-                >
-                  {!isUnlocked && <Lock size={13} />}
-                  <span>{isPassed ? 'Practice Again' : isUnlocked ? 'Start Entry' : 'Locked'}</span>
-                  {isUnlocked && <ArrowRight size={14} />}
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  {isPassed && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => handleViewExcelRecord(lvl)}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        fontSize: '12px',
+                        padding: '6px 12px',
+                        cursor: 'pointer'
+                      }}
+                      title={`View Level ${lvl.levelNumber} test evaluation record`}
+                    >
+                      <FileText size={13} />
+                      <span>View Test Record</span>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    className={`btn ${isUnlocked ? 'btn-primary' : 'btn-secondary'}`}
+                    onClick={() => {
+                      if (isUnlocked) onSelectLevel(lvl.levelNumber);
+                    }}
+                    disabled={!isUnlocked}
+                    style={{
+                      background: isUnlocked ? '#107c41' : '#f1f5f9',
+                      borderColor: isUnlocked ? '#0d5e2e' : '#cbd5e1',
+                      color: isUnlocked ? '#ffffff' : '#94a3b8',
+                      gap: '6px',
+                      fontSize: '12px',
+                      padding: '6px 14px',
+                      cursor: isUnlocked ? 'pointer' : 'not-allowed',
+                      opacity: isUnlocked ? 1 : 0.65
+                    }}
+                  >
+                    {!isUnlocked && <Lock size={13} />}
+                    <span>{isPassed ? 'Practice Again' : isUnlocked ? 'Start Entry' : 'Locked'}</span>
+                    {isUnlocked && <ArrowRight size={14} />}
+                  </button>
+                </div>
               </div>
             </div>
           );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Shuffle, FileSearch, AlertCircle, Users } from 'lucide-react';
 import { generateRandomUid, getPreloadedDummyPersons, SAMPLE_UIDS } from '../../services/syntheticDataGenerator';
 
@@ -19,6 +19,12 @@ export const UidSearchSection: React.FC<UidSearchSectionProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const dummyPersons = getPreloadedDummyPersons();
 
+  useEffect(() => {
+    if (currentUid) {
+      setInputVal(currentUid);
+    }
+  }, [currentUid]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = inputVal.trim().toUpperCase();
@@ -31,9 +37,11 @@ export const UidSearchSection: React.FC<UidSearchSectionProps> = ({
   };
 
   const handleRandomize = () => {
-    // Randomly pick one of the 25 preloaded dummy persons or generate a random one
-    const randomPerson = dummyPersons[Math.floor(Math.random() * dummyPersons.length)];
-    const chosenUid = randomPerson ? randomPerson.uid : generateRandomUid();
+    let chosenUid = generateRandomUid();
+    // Ensure we don't pick the exact same UID consecutively if possible
+    if (chosenUid === inputVal) {
+      chosenUid = generateRandomUid();
+    }
     setInputVal(chosenUid);
     setErrorMessage(null);
     onLoadUid(chosenUid);
@@ -41,6 +49,10 @@ export const UidSearchSection: React.FC<UidSearchSectionProps> = ({
 
   const handleSelectFromRoster = (selectedUid: string) => {
     if (!selectedUid) return;
+    if (selectedUid === '__RANDOM__') {
+      handleRandomize();
+      return;
+    }
     setInputVal(selectedUid);
     setErrorMessage(null);
     onLoadUid(selectedUid);
@@ -78,6 +90,7 @@ export const UidSearchSection: React.FC<UidSearchSectionProps> = ({
             title="Quickly select any candidate from the 25 pre-generated student roster"
           >
             <option value="">📋 Select Candidate (25 Trainee Roster)...</option>
+            <option value="__RANDOM__">🎲 [Randomize Candidate Record]</option>
             {dummyPersons.map((p, idx) => (
               <option key={p.uid} value={p.uid}>
                 #{idx + 1}: {p.studentName} ({p.uid}) — {p.schoolName.substring(0, 24)}...
@@ -102,13 +115,37 @@ export const UidSearchSection: React.FC<UidSearchSectionProps> = ({
             type="submit"
             className="btn btn-primary btn-sm"
             disabled={isLoading}
+            title="Load source student record by entered UID"
           >
             <Search size={14} />
             <span>LOAD</span>
           </button>
         </div>
 
-        <div style={{ display: 'flex', gap: '6px' }}>
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className="btn btn-sm"
+            onClick={handleRandomize}
+            style={{
+              background: 'linear-gradient(135deg, #0284c7, #0369a1)',
+              color: '#ffffff',
+              border: 'none',
+              fontWeight: 700,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(2, 132, 199, 0.3)'
+            }}
+            title="Randomize source record with a fresh candidate profile"
+          >
+            <Shuffle size={13} />
+            <span>Randomize Record</span>
+          </button>
+
           <button
             type="button"
             className="btn btn-secondary btn-sm"
@@ -119,16 +156,6 @@ export const UidSearchSection: React.FC<UidSearchSectionProps> = ({
             title="Reset to stage assigned sample UID"
           >
             Default UID
-          </button>
-
-          <button
-            type="button"
-            className="btn btn-secondary btn-sm"
-            onClick={handleRandomize}
-            title="Randomly select one of the 25 candidate profiles"
-          >
-            <Shuffle size={13} />
-            <span>Random Student</span>
           </button>
         </div>
       </form>

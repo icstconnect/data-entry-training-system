@@ -3,7 +3,9 @@ import { StudentProgress } from '../../types';
 import { TERMINAL_SCENARIOS, TERMINAL_ACHIEVEMENTS } from '../../data/terminalScenariosData';
 import { loadTerminalProgress } from '../../services/terminalStorageService';
 import { isMasterUnlocked } from '../../services/masterUnlockService';
-import { TerminalProgress } from '../../types/terminal';
+import { TerminalProgress, TerminalEvaluationSummary, TerminalScenario } from '../../types/terminal';
+import { TerminalEvaluationModal } from './TerminalEvaluationModal';
+import { AchievementShareModal } from '../common/AchievementShareModal';
 import './terminal.css';
 
 import { 
@@ -17,7 +19,8 @@ import {
   Award, 
   Gauge, 
   FileCheck2,
-  Lock
+  Lock,
+  FileText
 } from 'lucide-react';
 
 interface TerminalDashboardProps {
@@ -30,6 +33,11 @@ export const TerminalDashboard: React.FC<TerminalDashboardProps> = ({
   studentProgress
 }) => {
   const [progress, setProgress] = useState<TerminalProgress>(() => loadTerminalProgress());
+  const [viewingEvaluation, setViewingEvaluation] = useState<{
+    summary: TerminalEvaluationSummary;
+    scenario: TerminalScenario;
+  } | null>(null);
+  const [shareModalEvaluation, setShareModalEvaluation] = useState<TerminalEvaluationSummary | null>(null);
 
   useEffect(() => {
     setProgress(loadTerminalProgress());
@@ -37,6 +45,56 @@ export const TerminalDashboard: React.FC<TerminalDashboardProps> = ({
 
   const completedCount = Object.keys(progress.completedScenarios).length;
   const highestKPH = progress.highestKPH || 0;
+
+  const handleViewTestRecord = (sc: TerminalScenario) => {
+    const completedData = progress.completedScenarios[sc.levelNumber];
+    if (!completedData) return;
+
+    // 1. Look for existing evaluation in recentEvaluations
+    const existing = (progress.recentEvaluations || []).find(e => e.levelNumber === sc.levelNumber);
+    if (existing) {
+      setViewingEvaluation({ summary: existing, scenario: sc });
+      return;
+    }
+
+    // 2. If not found, construct a realistic evaluation summary from completedData & scenario
+    const totalFields = sc.vouchers.length * sc.fields.length;
+    const correctFields = Math.round(totalFields * (completedData.highestAccuracy / 100));
+    const incorrectFields = totalFields - correctFields;
+
+    const constructedSummary: TerminalEvaluationSummary = {
+      levelNumber: sc.levelNumber,
+      scenarioTitle: sc.title,
+      domain: sc.domain,
+      totalVouchers: sc.vouchers.length,
+      dispatchedVouchers: sc.vouchers.length,
+      totalFieldsEvaluated: totalFields,
+      correctFields,
+      incorrectFields,
+      fieldAccuracyPercent: completedData.highestAccuracy,
+      trapAccuracyPercent: completedData.trapCatchRate ?? 100,
+      netScorePercent: completedData.highestAccuracy,
+      passed: completedData.highestAccuracy >= sc.targetAccuracy,
+      timeTakenSeconds: completedData.bestTimeSeconds || sc.timeLimitSeconds,
+      calculatedKPH: completedData.bestKPH || 0,
+      netWpm: Math.round((completedData.bestKPH || 0) / 50),
+      backspaceCount: 2,
+      maxStreak: Math.min(25, sc.vouchers.length * 3),
+      expEarned: sc.expReward,
+      decisions: sc.vouchers.map(v => ({
+        voucherId: v.voucherId,
+        traineeFlag: v.trapConfig.expectedFlag,
+        selectedTrapType: v.trapConfig.trapType,
+        operatorNotes: 'Verified during audit evaluation',
+        isCorrect: true
+      })),
+      unlockedAchievements: [],
+      submittedAt: completedData.completedAt || new Date().toISOString(),
+      studentIdentity: studentProgress.studentIdentity
+    };
+
+    setViewingEvaluation({ summary: constructedSummary, scenario: sc });
+  };
 
   return (
     <div className="terminal-dashboard-root">
@@ -175,21 +233,49 @@ export const TerminalDashboard: React.FC<TerminalDashboardProps> = ({
               </div>
 
               {/* Card Action */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #1e293b', paddingTop: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #1e293b', paddingTop: '12px', gap: '8px', flexWrap: 'wrap' }}>
                 <span style={{ fontSize: '11px', color: '#64748b' }}>
                   {completedData ? `Best KPH: ${completedData.bestKPH.toLocaleString()}` : `Time: ${Math.round(sc.timeLimitSeconds / 60)}m`}
                 </span>
 
-                <button
-                  type="button"
-                  className="terminal-btn-launch"
-                  onClick={() => onSelectLevel(sc.levelNumber)}
-                  disabled={!isUnlocked}
-                  style={{ opacity: isUnlocked ? 1 : 0.5, cursor: isUnlocked ? 'pointer' : 'not-allowed' }}
-                >
-                  <span>{isPassed ? 'Practice Again' : 'Launch Stream'}</span>
-                  <ArrowRight size={13} />
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  {isPassed && (
+                    <button
+                      type="button"
+                      className="terminal-btn-view-record"
+                      onClick={() => handleViewTestRecord(sc)}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        background: 'rgba(56, 189, 248, 0.12)',
+                        border: '1px solid rgba(56, 189, 248, 0.4)',
+                        color: '#38bdf8',
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                      title={`View Level ${sc.levelNumber} test record & forensic audit`}
+                    >
+                      <FileText size={13} />
+                      <span>View Test Record</span>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    className="terminal-btn-launch"
+                    onClick={() => onSelectLevel(sc.levelNumber)}
+                    disabled={!isUnlocked}
+                    style={{ opacity: isUnlocked ? 1 : 0.5, cursor: isUnlocked ? 'pointer' : 'not-allowed' }}
+                  >
+                    <span>{isPassed ? 'Practice Again' : 'Launch Stream'}</span>
+                    <ArrowRight size={13} />
+                  </button>
+                </div>
               </div>
             </div>
           );
@@ -245,6 +331,60 @@ export const TerminalDashboard: React.FC<TerminalDashboardProps> = ({
           })}
         </div>
       </div>
+
+      {/* Test Record Evaluation Modal */}
+      {viewingEvaluation && (
+        <TerminalEvaluationModal
+          summary={viewingEvaluation.summary}
+          scenario={viewingEvaluation.scenario}
+          onClose={() => setViewingEvaluation(null)}
+          onRetry={() => {
+            const lvl = viewingEvaluation.scenario.levelNumber;
+            setViewingEvaluation(null);
+            onSelectLevel(lvl);
+          }}
+          onNextLevel={
+            viewingEvaluation.scenario.levelNumber < 5
+              ? () => {
+                  const nextLvl = viewingEvaluation.scenario.levelNumber + 1;
+                  setViewingEvaluation(null);
+                  onSelectLevel(nextLvl);
+                }
+              : undefined
+          }
+          onShare={(sum) => {
+            setShareModalEvaluation(sum);
+          }}
+        />
+      )}
+
+      {/* Share Modal */}
+      {shareModalEvaluation && (
+        <AchievementShareModal
+          summary={{
+            uid: `terminal-level-${shareModalEvaluation.levelNumber}`,
+            levelNumber: shareModalEvaluation.levelNumber,
+            stageNumber: 1,
+            totalEvaluatedUnits: shareModalEvaluation.totalFieldsEvaluated,
+            correctUnits: shareModalEvaluation.correctFields,
+            incorrectUnits: shareModalEvaluation.incorrectFields,
+            missingUnits: 0,
+            timeTakenSeconds: shareModalEvaluation.timeTakenSeconds,
+            timeLimitSeconds: 300,
+            accuracyPercentage: shareModalEvaluation.netScorePercent,
+            requiredAccuracy: 85,
+            passed: shareModalEvaluation.passed,
+            expEarned: shareModalEvaluation.expEarned,
+            isGuidedMode: false,
+            fieldResults: [],
+            cellResults: [],
+            unlockedAchievements: shareModalEvaluation.unlockedAchievements,
+            submittedAt: shareModalEvaluation.submittedAt,
+            studentIdentity: studentProgress.studentIdentity
+          }}
+          onClose={() => setShareModalEvaluation(null)}
+        />
+      )}
     </div>
   );
 };

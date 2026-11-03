@@ -72,6 +72,17 @@ export const TerminalWorkbench: React.FC<TerminalWorkbenchProps> = ({
   const [isDeskSlant, setIsDeskSlant] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [isAutoAdvanceEnabled, setIsAutoAdvanceEnabled] = useState<boolean>(() => {
+    return localStorage.getItem('icst_terminal_auto_advance') === 'true';
+  });
+
+  const toggleAutoAdvance = () => {
+    setIsAutoAdvanceEnabled(prev => {
+      const next = !prev;
+      localStorage.setItem('icst_terminal_auto_advance', String(next));
+      return next;
+    });
+  };
 
   // Telemetry Engine States
   const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
@@ -231,16 +242,21 @@ export const TerminalWorkbench: React.FC<TerminalWorkbenchProps> = ({
       }
     }));
 
-    // Add to stream history ticker tape
-    setStreamHistory(prev => [
-      {
+    // Add or update in stream history ticker tape (avoid redundant duplicates when correcting)
+    setStreamHistory(prev => {
+      const isCleared = val.trim().toLowerCase() === targetExpectedVal.trim().toLowerCase();
+      const status: 'CLEARED' | 'FLAGGED' = isCleared ? 'CLEARED' : 'FLAGGED';
+      const newItem = {
         fieldLabel: currentField.label,
         value: val || '<BLANK>',
-        status: val.trim().toLowerCase() === targetExpectedVal.trim().toLowerCase() ? 'CLEARED' : 'FLAGGED',
+        status,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-      },
-      ...prev.slice(0, 14)
-    ]);
+      };
+      if (prev.length > 0 && prev[0].fieldLabel === currentField.label) {
+        return [newItem, ...prev.slice(1, 15)];
+      }
+      return [newItem, ...prev.slice(0, 14)];
+    });
 
     // Check if there is a next field in the current voucher
     if (activeFieldIdx < scenario.fields.length - 1) {
@@ -297,8 +313,15 @@ export const TerminalWorkbench: React.FC<TerminalWorkbenchProps> = ({
 
     setInputValue(newVal);
 
-    // Auto-advance if field has fixed maxLength and input satisfied completely
-    if (currentField.autoAdvance && currentField.maxLength && newVal.length >= currentField.maxLength) {
+    // Auto-advance strictly when user has enabled auto-advance, the field supports it,
+    // and input length reaches both the field maxLength and expected target length
+    if (
+      isAutoAdvanceEnabled &&
+      currentField.autoAdvance &&
+      currentField.maxLength &&
+      newVal.length >= currentField.maxLength &&
+      newVal.length >= targetExpectedVal.length
+    ) {
       commitFieldAndAdvance(newVal);
     }
   };
@@ -573,6 +596,28 @@ export const TerminalWorkbench: React.FC<TerminalWorkbenchProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <button
                 type="button"
+                onClick={toggleAutoAdvance}
+                style={{
+                  background: isAutoAdvanceEnabled ? '#0284c7' : '#1e293b',
+                  color: isAutoAdvanceEnabled ? '#ffffff' : '#94a3b8',
+                  border: isAutoAdvanceEnabled ? '1px solid #38bdf8' : '1px solid #334155',
+                  borderRadius: '4px',
+                  padding: '3px 8px',
+                  fontSize: '10.5px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+                title={
+                  isAutoAdvanceEnabled
+                    ? 'Auto-Advance is ON (fields jump automatically on fixed length). Click to turn OFF for manual ENTER/TAB control.'
+                    : 'Auto-Advance is OFF (press ENTER or TAB to advance). Click to turn ON.'
+                }
+              >
+                <span>⚡ Auto-Advance: {isAutoAdvanceEnabled ? 'ON' : 'OFF'}</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setIsDeskSlant(!isDeskSlant)}
                 style={{
                   background: isDeskSlant ? '#0284c7' : '#1e293b',
@@ -650,7 +695,7 @@ export const TerminalWorkbench: React.FC<TerminalWorkbenchProps> = ({
               value={inputValue}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              maxLength={currentField.maxLength}
+              maxLength={Math.max(currentField.maxLength || 30, targetExpectedVal.length) + 4}
               placeholder={`Enter ${currentField.label}... (Press ENTER to advance)`}
               autoFocus
             />
@@ -798,6 +843,11 @@ export const TerminalWorkbench: React.FC<TerminalWorkbenchProps> = ({
           <span className="hotkey-chip"><kbd className="key-kbd">ALT+A</kbd> Mark Clean</span>
           <span className="hotkey-chip"><kbd className="key-kbd">ALT+D</kbd> Flag Trap</span>
           <span className="hotkey-chip"><kbd className="key-kbd">CTRL+ENTER</kbd> Dispatch Batch</span>
+          {isAutoAdvanceEnabled ? (
+            <span className="hotkey-chip" style={{ color: '#38bdf8', borderColor: '#0284c7' }}>⚡ Auto-Advance Active</span>
+          ) : (
+            <span className="hotkey-chip" style={{ color: '#94a3b8' }}>⚡ Manual Advance Mode</span>
+          )}
         </div>
 
         <div>

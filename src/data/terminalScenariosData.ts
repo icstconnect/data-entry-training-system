@@ -81,7 +81,7 @@ export const TERMINAL_SCENARIOS: TerminalScenario[] = [
         label: 'Ward & Borough',
         fieldType: 'code',
         placeholder: 'WRD-XX-BXX',
-        maxLength: 9,
+        maxLength: 10,
         autoAdvance: true,
         voucherBox: { topPercent: 26, leftPercent: 6, widthPercent: 38, heightPercent: 9 },
         helpTip: 'Borough administrative jurisdiction'
@@ -664,7 +664,7 @@ export const TERMINAL_SCENARIOS: TerminalScenario[] = [
         fieldType: 'code',
         placeholder: 'E11.9',
         maxLength: 7,
-        autoAdvance: true,
+        autoAdvance: false,
         voucherBox: { topPercent: 26, leftPercent: 52, widthPercent: 42, heightPercent: 9 },
         helpTip: 'International Classification of Diseases'
       },
@@ -847,7 +847,7 @@ export const TERMINAL_SCENARIOS: TerminalScenario[] = [
         fieldType: 'number',
         placeholder: '50100294102941',
         maxLength: 16,
-        autoAdvance: true,
+        autoAdvance: false,
         voucherBox: { topPercent: 46, leftPercent: 6, widthPercent: 44, heightPercent: 10 },
         helpTip: 'Beneficiary bank core savings/current account number'
       },

@@ -7,7 +7,7 @@ import {
   ValidationMode,
   StudentIdentity
 } from '../../types';
-import { generateSyntheticRecord } from '../../services/syntheticDataGenerator';
+import { generateSyntheticRecord, generateRandomUid } from '../../services/syntheticDataGenerator';
 import { evaluateStageSubmission } from '../../services/validationEngine';
 import { checkUnlockedAchievements } from '../../services/achievementEngine';
 import { 
@@ -21,7 +21,7 @@ import {
 import { STAGES, getStage } from '../../data/stagesConfig';
 import { APP_CONFIG } from '../../config/appConfig';
 import { isMasterUnlocked } from '../../services/masterUnlockService';
-import { Lock, Unlock } from 'lucide-react';
+import { Lock, Unlock, Shuffle } from 'lucide-react';
 
 import { UidSearchSection } from './UidSearchSection';
 import { SourceDocumentViewer } from './SourceDocumentViewer';
@@ -96,6 +96,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
   const [pendingDraft, setPendingDraft] = useState<StageDraft | null>(null);
   const [validationMode, setValidationMode] = useState<ValidationMode>('NORMAL');
   const [manualSaveNotification, setManualSaveNotification] = useState<boolean>(false);
+  const [randomizeNotification, setRandomizeNotification] = useState<string | null>(null);
 
   // Mobile Reference Drawer toggle
   const [isMobileReferenceOpen, setIsMobileReferenceOpen] = useState<boolean>(false);
@@ -113,7 +114,8 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
       setTimerElapsedSeconds(draft.timeSeconds || 0);
       setPendingDraft(null);
     } else {
-      resetToNewStage(stage);
+      const freshUid = generateRandomUid();
+      resetToNewStage(stage, freshUid);
     }
   }, [stage.levelNumber, stage.stageNumber]);
 
@@ -164,7 +166,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
 
   // Reset helper
   const resetToNewStage = (st: StageConfig, targetUid?: string) => {
-    const activeUid = targetUid || st.sampleUid;
+    const activeUid = targetUid || generateRandomUid();
     setUid(activeUid);
     const src = generateSyntheticRecord(activeUid, st.marksheetSchema);
     setSourceRecord(src);
@@ -239,6 +241,19 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
       isGuidedMode,
       savedAt: new Date().toISOString()
     });
+  };
+
+  // Handle Randomize Dossier
+  const handleRandomizeDossier = () => {
+    let nextUid = generateRandomUid();
+    while (nextUid === uid) {
+      nextUid = generateRandomUid();
+    }
+    playFeedbackSound('click');
+    handleLoadUid(nextUid);
+    const newRecord = generateSyntheticRecord(nextUid, stage.marksheetSchema);
+    setRandomizeNotification(`🎲 New Dossier Loaded: ${nextUid} (${newRecord.studentName})`);
+    setTimeout(() => setRandomizeNotification(null), 3500);
   };
 
   // Manual save handler
@@ -596,7 +611,10 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
           <div className="workbench-split">
             {/* Desktop Left: Sticky Non-Selectable Source Dossier */}
             <div className="desktop-source-pane">
-              <SourceDocumentViewer sourceRecord={sourceRecord} />
+              <SourceDocumentViewer 
+                sourceRecord={sourceRecord} 
+                onRandomize={handleRandomizeDossier}
+              />
             </div>
 
             {/* Mobile Reference Drawer Modal */}
@@ -610,6 +628,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
                     sourceRecord={sourceRecord} 
                     isMobileDrawer={true}
                     onClose={() => setIsMobileReferenceOpen(false)}
+                    onRandomize={handleRandomizeDossier}
                   />
                 </div>
               </div>
@@ -617,6 +636,25 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
 
             {/* Right / Primary: Destination Form Panel */}
             <div className="form-panel">
+              {randomizeNotification && (
+                <div style={{
+                  background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)',
+                  border: '1px solid #10b981',
+                  color: '#065f46',
+                  borderRadius: '8px',
+                  padding: '8px 14px',
+                  marginBottom: '12px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)'
+                }}>
+                  <Sparkles size={16} color="#059669" />
+                  <span>{randomizeNotification}</span>
+                </div>
+              )}
               {/* Quick Level & Stage Navigator (All Levels & Stages Unlocked) */}
               <div style={{
                 display: 'flex',
