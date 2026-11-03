@@ -21,6 +21,7 @@ interface LandingPageProps {
   onOpenShowcase: () => void;
   onOpenExcel?: () => void;
   onOpenWindows?: () => void;
+  onOpenTerminal?: () => void;
   onOpenAchievementShare?: () => void;
 }
 
@@ -40,6 +41,7 @@ export const LandingPage: React.FC<LandingPageProps> = React.memo(({
   onOpenShowcase,
   onOpenExcel,
   onOpenWindows,
+  onOpenTerminal,
   onOpenAchievementShare
 }) => {
   return (
@@ -246,6 +248,40 @@ export const LandingPage: React.FC<LandingPageProps> = React.memo(({
                 style={{ width: '100%' }}
               >
                 Launch Windows Lab →
+              </button>
+            )}
+          </div>
+
+          {/* Card 4: Terminal Stream */}
+          <div style={{
+            background: 'var(--bg-card, #ffffff)',
+            border: '1.5px solid var(--border-light, #e2e8f0)',
+            borderRadius: '16px',
+            padding: '24px',
+            boxShadow: 'var(--shadow-sm)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
+                ⚡
+              </div>
+              <div>
+                <h3 style={{ fontSize: '17px', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+                  Terminal Stream Lab
+                </h3>
+                <span style={{ fontSize: '11px', color: '#0284c7', fontWeight: 700 }}>5 Enterprise Domains • Up to 14,000 KPH</span>
+              </div>
+            </div>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '16px' }}>
+              Authentic 100% keyboard-driven Heads-Down Data Entry (HDDE). Real-time keystroke discrepancy radar, physical scanned voucher spotlighting, 10-key rhythm, and forensic audit traps.
+            </p>
+            {onOpenTerminal && (
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={onOpenTerminal}
+                style={{ width: '100%' }}
+              >
+                Launch Terminal Lab →
               </button>
             )}
           </div>

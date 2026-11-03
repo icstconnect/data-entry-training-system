@@ -11,14 +11,17 @@ import {
   User,
   AlertTriangle,
   FileSpreadsheet,
-  FolderTree
+  FolderTree,
+  Terminal
 } from 'lucide-react';
 import { UserRole, StudentIdentity } from '../../types';
+import { isMasterUnlocked, lockToStudentProgression } from '../../services/masterUnlockService';
+import { Lock, Unlock } from 'lucide-react';
 
 interface HeaderProps {
   currentRole: UserRole;
-  activeView: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows';
-  setActiveView: (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows') => void;
+  activeView: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal';
+  setActiveView: (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal') => void;
   currentLevel: number;
   currentStage: number;
   totalExp: number;
@@ -57,6 +60,14 @@ export const Header: React.FC<HeaderProps> = React.memo(({
   const isPractice = activeView === 'practice';
   const isOvertime = isPractice && timerElapsedSeconds > timerLimitSeconds;
   const overtimeSeconds = isOvertime ? timerElapsedSeconds - timerLimitSeconds : 0;
+
+  const [masterUnlocked, setMasterUnlockedState] = React.useState<boolean>(() => isMasterUnlocked());
+
+  React.useEffect(() => {
+    const handleMasterChange = () => setMasterUnlockedState(isMasterUnlocked());
+    window.addEventListener('icst_master_unlock_changed', handleMasterChange);
+    return () => window.removeEventListener('icst_master_unlock_changed', handleMasterChange);
+  }, []);
 
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -166,6 +177,17 @@ export const Header: React.FC<HeaderProps> = React.memo(({
 
           <button
             type="button"
+            className={`nav-btn ${activeView === 'terminal' ? 'active' : ''}`}
+            onClick={() => setActiveView('terminal')}
+            title="Terminal Stream: High-Speed Enterprise Data Dispatcher & Voucher Verification"
+          >
+            <Terminal size={15} color="#38bdf8" />
+            <span className="nav-btn-text">Terminal Lab</span>
+            <span className="excel-nav-tag" style={{ background: '#0284c7' }}>STREAM</span>
+          </button>
+
+          <button
+            type="button"
             className={`nav-btn ${activeView === 'student-dashboard' ? 'active' : ''}`}
             onClick={() => setActiveView('student-dashboard')}
           >
@@ -177,11 +199,38 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             type="button"
             className={`nav-btn ${activeView === 'teacher-dashboard' ? 'active' : ''}`}
             onClick={onOpenTeacherPassword}
-            title="Administrative Teacher Mode (Password Required)"
+            title="Administrative Teacher Mode (Password Required: ICST)"
           >
             <UserCheck size={15} />
             <span className="nav-btn-text">Teacher</span>
           </button>
+
+          {masterUnlocked && (
+            <button
+              type="button"
+              className="nav-btn"
+              onClick={() => {
+                lockToStudentProgression();
+                setMasterUnlockedState(false);
+              }}
+              style={{
+                background: 'rgba(16, 185, 129, 0.12)',
+                border: '1px solid rgba(16, 185, 129, 0.4)',
+                color: '#059669',
+                padding: '4px 8px',
+                borderRadius: '6px',
+                fontSize: '11px',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px'
+              }}
+              title="Master Unlocked! All levels accessible. Click to lock back to student progression."
+            >
+              <Unlock size={13} color="#059669" />
+              <span className="nav-btn-text">ICST (Lock 🔒)</span>
+            </button>
+          )}
 
           <button
             type="button"

@@ -70,7 +70,7 @@ export const ExplorerWindow: React.FC<ExplorerWindowProps> = ({
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [isMaximized, setIsMaximized] = useState(false);
-  const [pos, setPos] = useState({ x: 90, y: 35 });
+  const [pos, setPos] = useState({ x: 76, y: 14 });
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef({ mouseX: 0, mouseY: 0, initX: 0, initY: 0 });
 
@@ -266,14 +266,30 @@ export const ExplorerWindow: React.FC<ExplorerWindowProps> = ({
   const hasClipboard = clipboard.action !== null && clipboard.itemIds.length > 0;
   const recycleCount = virtualFS.recycleBin.length;
 
+  // Hierarchically ordered and indented folder tree for sidebar
+  const treeFolders: { folder: VirtualFolder; depth: number }[] = [];
+  const appendBranch = (pId: string, d: number) => {
+    const branch = virtualFS.folders.filter(f => f.parentId === pId);
+    branch.forEach(item => {
+      treeFolders.push({ folder: item, depth: d });
+      appendBranch(item.id, d + 1);
+    });
+  };
+  appendBranch('root', 0);
+  virtualFS.folders.forEach(f => {
+    if (!treeFolders.some(t => t.folder.id === f.id)) {
+      treeFolders.push({ folder: f, depth: 0 });
+    }
+  });
+
   return (
     <div
       className="win-mica-window win-explorer-window"
       style={{
         left: isMaximized ? '0px' : `${pos.x}px`,
         top: isMaximized ? '0px' : `${pos.y}px`,
-        width: isMaximized ? '100%' : 'min(900px, calc(100% - 110px))',
-        height: isMaximized ? '100%' : 'min(580px, calc(100% - 20px))',
+        width: isMaximized ? '100%' : 'min(870px, calc(100% - 400px))',
+        height: isMaximized ? '100%' : 'min(580px, calc(100% - 78px))',
         borderRadius: isMaximized ? '0px' : '12px'
       }}
       onClick={() => onContextMenu({ clientX: 0, clientY: 0 } as any, null)}
@@ -505,7 +521,7 @@ export const ExplorerWindow: React.FC<ExplorerWindowProps> = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            {virtualFS.folders.map(folder => {
+            {treeFolders.map(({ folder, depth }) => {
               const childCount = virtualFS.files.filter(f => f.parentId === folder.id).length + 
                                  virtualFS.folders.filter(f => f.parentId === folder.id).length;
               const isSelected = currentFolderId === folder.id;
@@ -513,6 +529,7 @@ export const ExplorerWindow: React.FC<ExplorerWindowProps> = ({
                 <div
                   key={folder.id}
                   className={`win-sidebar-item ${isSelected ? 'active' : ''}`}
+                  style={{ paddingLeft: `${6 + depth * 12}px` }}
                   onClick={() => onNavigateTo(folder.id)}
                   onDragOver={(e) => {
                     e.preventDefault();
@@ -528,13 +545,13 @@ export const ExplorerWindow: React.FC<ExplorerWindowProps> = ({
                     if (raw) onDropItems(JSON.parse(raw), folder.id);
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
-                    <span>{folder.icon || '📁'}</span>
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', minWidth: 0, overflow: 'hidden' }}>
+                    <span style={{ fontSize: '13px', flexShrink: 0 }}>{folder.icon || '📁'}</span>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '11.5px' }}>
                       {folder.name}
                     </span>
                   </div>
-                  <span style={{ fontSize: '10px', background: 'rgba(0,0,0,0.3)', padding: '1px 5px', borderRadius: '4px', fontFamily: 'monospace' }}>
+                  <span style={{ fontSize: '9px', background: 'rgba(0,0,0,0.3)', padding: '1px 5px', borderRadius: '4px', fontFamily: 'monospace', flexShrink: 0 }}>
                     {childCount}
                   </span>
                 </div>
@@ -721,16 +738,26 @@ export const ExplorerWindow: React.FC<ExplorerWindowProps> = ({
                       <div style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', pointerEvents: 'none' }}>
                         {visual.icon}
                       </div>
-                      <span style={{
-                        fontSize: '11px',
-                        textAlign: 'center',
-                        color: '#f1f5f9',
-                        marginTop: '4px',
-                        wordBreak: 'break-word',
-                        pointerEvents: 'none',
-                        maxWidth: '95px'
-                      }}>
-                        {item.name}
+                      <span 
+                        style={{
+                          fontSize: '11.5px',
+                          textAlign: 'center',
+                          color: '#f1f5f9',
+                          marginTop: '4px',
+                          lineHeight: '1.25',
+                          overflowWrap: 'break-word',
+                          wordBreak: 'break-word',
+                          maxWidth: '116px',
+                          pointerEvents: 'none',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis'
+                        }} 
+                        title={item.name}
+                      >
+                        {item.name.replace(/_/g, '_\u200B')}
                       </span>
                     </div>
                   );

@@ -3,6 +3,7 @@ import { ExcelProgress, ExcelScenarioLevel } from '../../types/excel';
 import { StudentProgress, Achievement } from '../../types';
 import { EXCEL_LEVELS, EXCEL_ACHIEVEMENTS } from '../../data/excelScenariosData';
 import { loadExcelProgress } from '../../services/excelStorageService';
+import { isMasterUnlocked } from '../../services/masterUnlockService';
 import { TrophyGraphic } from '../common/TrophyGraphic';
 import { AchievementShareModal } from '../common/AchievementShareModal';
 import './excel.css';
@@ -42,8 +43,15 @@ export const ExcelDashboard: React.FC<ExcelDashboardProps> = ({
     const handleDataCleared = () => {
       setExcelProgress(loadExcelProgress());
     };
+    const handleMasterChange = () => {
+      setExcelProgress(loadExcelProgress());
+    };
     window.addEventListener('icst_data_cleared', handleDataCleared);
-    return () => window.removeEventListener('icst_data_cleared', handleDataCleared);
+    window.addEventListener('icst_master_unlock_changed', handleMasterChange);
+    return () => {
+      window.removeEventListener('icst_data_cleared', handleDataCleared);
+      window.removeEventListener('icst_master_unlock_changed', handleMasterChange);
+    };
   }, []);
 
   const totalCompleted = Object.keys(excelProgress.completedLevels).length;
@@ -102,13 +110,21 @@ export const ExcelDashboard: React.FC<ExcelDashboardProps> = ({
             Choose a registry to enter the full-screen Excel workbench.
           </p>
         </div>
-        <span style={{ fontSize: '12px', fontWeight: 600, color: '#107c41', background: '#e2fbe8', padding: '4px 10px', borderRadius: '12px' }}>
-          5 Real-World Scenarios
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {isMasterUnlocked() && (
+            <span style={{ fontSize: '11px', fontWeight: 700, color: '#047857', background: '#ecfdf5', border: '1px solid #6ee7b7', padding: '3px 8px', borderRadius: '12px' }}>
+              🔓 Master Unlocked (ICST)
+            </span>
+          )}
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#107c41', background: '#e2fbe8', padding: '4px 10px', borderRadius: '12px' }}>
+            5 Real-World Scenarios
+          </span>
+        </div>
       </div>
 
       <div className="excel-levels-grid">
         {EXCEL_LEVELS.map((lvl) => {
+          const isUnlocked = isMasterUnlocked() || lvl.levelNumber === 1 || !!excelProgress.completedLevels[lvl.levelNumber - 1];
           const completion = excelProgress.completedLevels[lvl.levelNumber];
           const isPassed = !!completion;
           const totalCells = lvl.sourceRecords.length * lvl.columns.length;
@@ -170,12 +186,25 @@ export const ExcelDashboard: React.FC<ExcelDashboardProps> = ({
 
                 <button
                   type="button"
-                  className="btn btn-primary"
-                  onClick={() => onSelectLevel(lvl.levelNumber)}
-                  style={{ background: '#107c41', borderColor: '#0d5e2e', gap: '6px', fontSize: '12px', padding: '6px 14px' }}
+                  className={`btn ${isUnlocked ? 'btn-primary' : 'btn-secondary'}`}
+                  onClick={() => {
+                    if (isUnlocked) onSelectLevel(lvl.levelNumber);
+                  }}
+                  disabled={!isUnlocked}
+                  style={{
+                    background: isUnlocked ? '#107c41' : '#f1f5f9',
+                    borderColor: isUnlocked ? '#0d5e2e' : '#cbd5e1',
+                    color: isUnlocked ? '#ffffff' : '#94a3b8',
+                    gap: '6px',
+                    fontSize: '12px',
+                    padding: '6px 14px',
+                    cursor: isUnlocked ? 'pointer' : 'not-allowed',
+                    opacity: isUnlocked ? 1 : 0.65
+                  }}
                 >
-                  <span>{isPassed ? 'Practice Again' : 'Start Entry'}</span>
-                  <ArrowRight size={14} />
+                  {!isUnlocked && <Lock size={13} />}
+                  <span>{isPassed ? 'Practice Again' : isUnlocked ? 'Start Entry' : 'Locked'}</span>
+                  {isUnlocked && <ArrowRight size={14} />}
                 </button>
               </div>
             </div>

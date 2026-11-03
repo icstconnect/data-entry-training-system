@@ -20,6 +20,8 @@ import {
 } from '../../services/storageService';
 import { STAGES, getStage } from '../../data/stagesConfig';
 import { APP_CONFIG } from '../../config/appConfig';
+import { isMasterUnlocked } from '../../services/masterUnlockService';
+import { Lock, Unlock } from 'lucide-react';
 
 import { UidSearchSection } from './UidSearchSection';
 import { SourceDocumentViewer } from './SourceDocumentViewer';
@@ -77,6 +79,13 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
   const [formValues, setFormValues] = useState<Record<string, any>>({});
   const [tableRows, setTableRows] = useState<Record<string, any>[]>([]);
   const [marksheetValues, setMarksheetValues] = useState<Record<string, any>>({});
+  const [masterUnlocked, setMasterUnlockedState] = useState<boolean>(() => isMasterUnlocked());
+
+  useEffect(() => {
+    const handleMasterChange = () => setMasterUnlockedState(isMasterUnlocked());
+    window.addEventListener('icst_master_unlock_changed', handleMasterChange);
+    return () => window.removeEventListener('icst_master_unlock_changed', handleMasterChange);
+  }, []);
 
   const [timerElapsedSeconds, setTimerElapsedSeconds] = useState<number>(0);
   const [showInstructions, setShowInstructions] = useState<boolean>(true);
@@ -355,6 +364,83 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
     }
   };
 
+  // Direct In-Place Corrections handler from ReviewModal / ResultScreen
+  const handleApplyCorrections = (
+    updatedFormValues: Record<string, any>,
+    updatedTableRows?: Record<string, any>[],
+    updatedMarksheetValues?: Record<string, any>
+  ) => {
+    setFormValues(updatedFormValues);
+    if (updatedTableRows) setTableRows(updatedTableRows);
+    if (updatedMarksheetValues) setMarksheetValues(updatedMarksheetValues);
+
+    saveStageDraft({
+      levelNumber: stage.levelNumber,
+      stageNumber: stage.stageNumber,
+      uid,
+      formValues: updatedFormValues,
+      tableRows: updatedTableRows || tableRows,
+      marksheetValues: updatedMarksheetValues || marksheetValues,
+      timeSeconds: timerElapsedSeconds,
+      isGuidedMode,
+      savedAt: new Date().toISOString()
+    });
+
+    if (validationSummary) {
+      const freshSummary = evaluateStageSubmission(
+        stage,
+        sourceRecord,
+        updatedFormValues,
+        updatedTableRows || tableRows,
+        updatedMarksheetValues || marksheetValues,
+        timerElapsedSeconds,
+        isGuidedMode,
+        validationMode,
+        studentProgress.studentIdentity,
+        timeLimitSeconds
+      );
+
+      const stageKey = `L${stage.levelNumber}-S${stage.stageNumber}`;
+      const prevStageRecord = studentProgress.completedStages[stageKey];
+      const { newAchievements, newBatchTitle } = checkUnlockedAchievements(freshSummary, studentProgress);
+      freshSummary.unlockedAchievements = newAchievements;
+      if (newBatchTitle) freshSummary.newBatchUnlocked = newBatchTitle;
+
+      const additionalExp = Math.max(0, freshSummary.expEarned - (validationSummary.expEarned || 0));
+
+      const updatedProg: StudentProgress = {
+        ...studentProgress,
+        totalExp: studentProgress.totalExp + additionalExp,
+        completedStages: {
+          ...studentProgress.completedStages,
+          [stageKey]: {
+            highestAccuracy: Math.max(prevStageRecord?.highestAccuracy || 0, freshSummary.accuracyPercentage),
+            bestTimeSeconds: prevStageRecord 
+              ? Math.min(prevStageRecord.bestTimeSeconds, freshSummary.timeTakenSeconds) 
+              : freshSummary.timeTakenSeconds,
+            attemptsCount: (prevStageRecord?.attemptsCount || 0) + 1,
+            completedAt: new Date().toISOString()
+          }
+        },
+        unlockedAchievements: [
+          ...studentProgress.unlockedAchievements,
+          ...newAchievements.map(a => a.id)
+        ],
+        currentBatchTitle: newBatchTitle || studentProgress.currentBatchTitle
+      };
+
+      setStudentProgress(updatedProg);
+      saveStudentProgress(updatedProg);
+
+      if (additionalExp > 0) {
+        onExpAwarded(additionalExp);
+      }
+
+      setValidationSummary(freshSummary);
+      playFeedbackSound('level_up');
+    }
+  };
+
   // Group fields by section for multi-section stages
   const sections: { name: string; fields: typeof stage.fields }[] = [];
   const uncategorizedFields = stage.fields.filter(f => !f.section);
@@ -453,6 +539,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
           isFinalStage={isFinalStage}
           onClose={() => setShowReviewModal(false)}
           onConfirmAdvance={handleAdvance}
+          onApplyCorrections={handleApplyCorrections}
         />
       )}
 
@@ -478,6 +565,7 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
           onNextStage={nextStageConfig ? handleNextStageFromResult : undefined}
           onRetry={() => resetToNewStage(stage)}
           hasNextStage={!!nextStageConfig}
+          onApplyCorrections={handleApplyCorrections}
         />
       ) : (
         <>
@@ -529,6 +617,107 @@ export const PracticeWorkbench: React.FC<PracticeWorkbenchProps> = ({
 
             {/* Right / Primary: Destination Form Panel */}
             <div className="form-panel">
+              {/* Quick Level & Stage Navigator (All Levels & Stages Unlocked) */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '8px',
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                marginBottom: '14px',
+                flexWrap: 'wrap'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 700, color: '#334155', flexWrap: 'wrap' }}>
+                  <span style={{ 
+                    background: masterUnlocked ? '#059669' : '#475569', 
+                    color: '#fff', 
+                    padding: '2px 7px', 
+                    borderRadius: '4px', 
+                    fontSize: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}>
+                    {masterUnlocked ? <Unlock size={11} /> : <Lock size={11} />}
+                    {masterUnlocked ? 'MASTER UNLOCKED (ICST)' : 'STUDENT PROGRESSION'}
+                  </span>
+                  <span>Levels:</span>
+                  {[1, 2, 3, 4, 5].map(lvlNum => {
+                    const prevStages = STAGES.filter(s => s.levelNumber === lvlNum - 1);
+                    const isPrevCompleted = prevStages.length > 0 && prevStages.every(s => !!studentProgress.completedStages[`L${lvlNum - 1}-S${s.stageNumber}`]);
+                    const isLvlUnlocked = masterUnlocked || lvlNum === 1 || isPrevCompleted;
+
+                    return (
+                      <button
+                        key={lvlNum}
+                        type="button"
+                        disabled={!isLvlUnlocked}
+                        onClick={() => {
+                          if (isLvlUnlocked) onStageChange(lvlNum, 1);
+                        }}
+                        style={{
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          border: stage.levelNumber === lvlNum ? '1.5px solid #1c6aa7' : '1px solid #cbd5e1',
+                          background: stage.levelNumber === lvlNum ? '#eff6ff' : isLvlUnlocked ? '#ffffff' : '#f1f5f9',
+                          color: stage.levelNumber === lvlNum ? '#1c6aa7' : isLvlUnlocked ? '#475569' : '#94a3b8',
+                          fontWeight: stage.levelNumber === lvlNum ? 800 : 600,
+                          fontSize: '11px',
+                          cursor: isLvlUnlocked ? 'pointer' : 'not-allowed',
+                          opacity: isLvlUnlocked ? 1 : 0.6,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px'
+                        }}
+                        title={isLvlUnlocked ? `Switch to Level ${lvlNum}` : `Level ${lvlNum} locked. Clear Level ${lvlNum - 1} first.`}
+                      >
+                        {!isLvlUnlocked && <Lock size={10} />}
+                        Lvl {lvlNum}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 600, color: '#64748b', flexWrap: 'wrap' }}>
+                  <span>Stages:</span>
+                  {STAGES.filter(s => s.levelNumber === stage.levelNumber).map(s => {
+                    const isStageUnlocked = masterUnlocked || s.stageNumber === 1 || !!studentProgress.completedStages[`L${stage.levelNumber}-S${s.stageNumber - 1}`];
+
+                    return (
+                      <button
+                        key={s.stageNumber}
+                        type="button"
+                        disabled={!isStageUnlocked}
+                        onClick={() => {
+                          if (isStageUnlocked) onStageChange(stage.levelNumber, s.stageNumber);
+                        }}
+                        style={{
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          border: stage.stageNumber === s.stageNumber ? '1.5px solid #16a34a' : '1px solid #cbd5e1',
+                          background: stage.stageNumber === s.stageNumber ? '#f0fdf4' : isStageUnlocked ? '#ffffff' : '#f1f5f9',
+                          color: stage.stageNumber === s.stageNumber ? '#15803d' : isStageUnlocked ? '#475569' : '#94a3b8',
+                          fontWeight: stage.stageNumber === s.stageNumber ? 800 : 500,
+                          fontSize: '11px',
+                          cursor: isStageUnlocked ? 'pointer' : 'not-allowed',
+                          opacity: isStageUnlocked ? 1 : 0.6,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px'
+                        }}
+                        title={isStageUnlocked ? `Switch to Stage ${s.stageNumber}` : `Stage ${s.stageNumber} locked. Clear previous stage first.`}
+                      >
+                        {!isStageUnlocked && <Lock size={10} />}
+                        S{s.stageNumber}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               <div className="form-header-bar">
                 <div>
                   <h3 className="form-title">{stage.title}</h3>

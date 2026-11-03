@@ -1,6 +1,7 @@
 import { Achievement } from '../types';
 import { WindowsProgress } from '../types/windows';
 import { WINDOWS_ACHIEVEMENTS } from '../data/windowsCurriculumData';
+import { isMasterUnlocked } from './masterUnlockService';
 
 const STORAGE_KEY = 'icst_windows_lab_progress_v1';
 
@@ -55,12 +56,16 @@ export function loadWindowsProgress(): WindowsProgress {
     const fileCompleted = parsed.fileManagementCompleted || {};
     const folderCompleted = parsed.folderManagementCompleted || {};
     
-    // Always preserve old cleared stage states and unlocked levels
+    // In student mode, unlock sequentially. In master mode (ICST), all levels unlocked.
+    const masterActive = isMasterUnlocked();
     const existingFileMax = Math.max(1, Number(parsed.fileManagementMaxUnlocked) || 1);
     const existingFolderMax = Math.max(1, Number(parsed.folderManagementMaxUnlocked) || 1);
 
-    const trueFileMaxUnlocked = calculateMaxUnlocked(fileCompleted, 5, existingFileMax);
-    const trueFolderMaxUnlocked = calculateMaxUnlocked(folderCompleted, 7, existingFolderMax);
+    const calcFileMax = calculateMaxUnlocked(fileCompleted, 5, existingFileMax);
+    const calcFolderMax = calculateMaxUnlocked(folderCompleted, 7, existingFolderMax);
+
+    const trueFileMaxUnlocked = masterActive ? 5 : calcFileMax;
+    const trueFolderMaxUnlocked = masterActive ? 7 : calcFolderMax;
 
     const progress: WindowsProgress = {
       fileManagementCurrentLevel: Math.min(

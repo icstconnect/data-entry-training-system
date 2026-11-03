@@ -36,6 +36,12 @@ export function setAppTitle(view: string, detail?: string): void {
         : `Windows Organization Lab | ${BASE_INSTITUTE}`;
       break;
 
+    case 'terminal':
+      document.title = detail 
+        ? `${detail} | ICST Enterprise Terminal Lab`
+        : `Terminal Stream HDDE Lab | ${BASE_INSTITUTE}`;
+      break;
+
     case 'dashboard':
     case 'student-dashboard':
       document.title = `Student Profile & Honors | ${BASE_INSTITUTE}`;

@@ -30,6 +30,7 @@ import { RenameModal } from './modals/RenameModal';
 import { AuditReportModal, AuditItemBreakdown } from './modals/AuditReportModal';
 import { CurriculumModal } from './modals/CurriculumModal';
 import { AchievementsModal } from './modals/AchievementsModal';
+import { isMasterUnlocked } from '../../services/masterUnlockService';
 
 import './windows.css';
 
@@ -50,12 +51,19 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
   const [mode, setMode] = useState<WindowsSimulationMode>(initialMode);
   const [windowsProgress, setWindowsProgress] = useState<WindowsProgress>(() => {
     const p = loadWindowsProgress();
+    const isMaster = isMasterUnlocked();
+    const maxFile = isMaster ? 5 : (p.fileManagementMaxUnlocked || 1);
+    const maxFolder = isMaster ? 7 : (p.folderManagementMaxUnlocked || 1);
+    
     if (initialLevel) {
       if (initialMode === 'file_management') {
-        p.fileManagementCurrentLevel = initialLevel;
+        p.fileManagementCurrentLevel = Math.min(initialLevel, maxFile);
       } else {
-        p.folderManagementCurrentLevel = initialLevel;
+        p.folderManagementCurrentLevel = Math.min(initialLevel, maxFolder);
       }
+    } else {
+      p.fileManagementCurrentLevel = Math.min(p.fileManagementCurrentLevel || 1, maxFile);
+      p.folderManagementCurrentLevel = Math.min(p.folderManagementCurrentLevel || 1, maxFolder);
     }
     return p;
   });
@@ -89,13 +97,23 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
     return () => document.removeEventListener('fullscreenchange', handleFsChange);
   }, []);
   
-  const currentLevel = mode === 'file_management' 
+  useEffect(() => {
+    const handleMasterUnlockChange = () => {
+      setWindowsProgress(loadWindowsProgress());
+    };
+    window.addEventListener('icst_master_unlock_changed', handleMasterUnlockChange);
+    return () => window.removeEventListener('icst_master_unlock_changed', handleMasterUnlockChange);
+  }, []);
+
+  const maxUnlockedLevel = isMasterUnlocked()
+    ? (mode === 'file_management' ? 5 : 7)
+    : (mode === 'file_management' ? (windowsProgress.fileManagementMaxUnlocked || 1) : (windowsProgress.folderManagementMaxUnlocked || 1));
+
+  const rawLevel = mode === 'file_management' 
     ? windowsProgress.fileManagementCurrentLevel 
     : windowsProgress.folderManagementCurrentLevel;
 
-  const maxUnlockedLevel = mode === 'file_management'
-    ? windowsProgress.fileManagementMaxUnlocked
-    : windowsProgress.folderManagementMaxUnlocked;
+  const currentLevel = Math.min(Math.max(1, rawLevel || 1), maxUnlockedLevel || 1);
 
   // Virtual File System
   const [folders, setFolders] = useState<VirtualFolder[]>([]);
@@ -578,14 +596,14 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
           totalPoints++;
           const inActive = folders.some(f => f.name.toLowerCase() === junkName.toLowerCase());
           const inRecycle = recycleBin.some(r => r.name.toLowerCase() === junkName.toLowerCase());
-          const isDeleted = !inActive && inRecycle;
+          const isDeleted = !inActive;
 
           if (isDeleted) {
             earnedPoints++;
             breakdown.push({
               label: `🗑️ Delete "${junkName}"`,
               isCorrect: true,
-              statusText: 'Deleted to Recycle Bin'
+              statusText: inRecycle ? 'Deleted to Recycle Bin' : 'Permanently removed from workspace'
             });
           } else {
             breakdown.push({
@@ -1023,6 +1041,7 @@ export const WindowsWorkbench: React.FC<WindowsWorkbenchProps> = ({
           hasNextStage={currentLevel < (mode === 'file_management' ? 5 : 7)}
           onGiveHint={handleGiveHint}
           onResetLevel={() => initLevel(mode, currentLevel, true)}
+          breakdown={auditEvaluation.breakdown}
         />
       </div>
 

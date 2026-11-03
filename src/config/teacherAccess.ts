@@ -6,6 +6,8 @@
  * with a secure server-side authentication endpoint without rewriting Teacher Mode UI.
  */
 
+import { setMasterUnlocked } from '../services/masterUnlockService';
+
 export const TEACHER_MODE_PASSWORD = "ICST";
 
 export interface TeacherAuthResult {
@@ -14,9 +16,10 @@ export interface TeacherAuthResult {
 }
 
 export async function verifyTeacherPassword(passwordAttempt: string): Promise<TeacherAuthResult> {
-  // Current client-side authentication gate (can be swapped for an async fetch/API call later)
-  if (passwordAttempt === TEACHER_MODE_PASSWORD) {
+  const clean = (passwordAttempt || '').trim().toUpperCase();
+  if (clean === TEACHER_MODE_PASSWORD) {
+    setMasterUnlocked(true);
     return { success: true };
   }
-  return { success: false, error: 'Incorrect teacher password' };
+  return { success: false, error: 'Incorrect teacher password. Enter "ICST" to unlock.' };
 }

@@ -1,0 +1,874 @@
+/* ==========================================================================
+   ICST TERMINAL STREAM - MISSION-CRITICAL ENTERPRISE DISPATCH LAB STYLES
+   High-Speed Voucher Reconciliation & Live Discrepancy Auditing
+   ========================================================================== */
+
+/* Main Container: Strictly 100% Non-Scrollable Desktop Simulation */
+.terminal-workbench-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: calc(100vh - 58px);
+  flex: 1;
+  background-color: #080d14;
+  color: #f1f5f9;
+  font-family: 'JetBrains Mono', 'Segoe UI Mono', monospace;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.terminal-workbench-root.is-fullscreen,
+.terminal-workbench-root:fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  z-index: 999999 !important;
+  border-radius: 0 !important;
+}
+
+/* ==========================================================================
+   TOP TELEMETRY HUD (CYBER COMMAND DECK)
+   ========================================================================== */
+.terminal-hud-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 16px;
+  background: linear-gradient(180deg, #101725 0%, #0a0f18 100%);
+  border-bottom: 1.5px solid #1e293b;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  gap: 12px;
+  flex-shrink: 0;
+  z-index: 30;
+}
+
+.terminal-hud-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.terminal-stream-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #10b981;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.stream-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: streamPulse 1.4s infinite ease-in-out;
+}
+
+@keyframes streamPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.terminal-scenario-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+/* Center HUD: Speedometer & Streak Escalator */
+.terminal-hud-center {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  justify-content: center;
+}
+
+/* Speedometer Dial Pill */
+.kdph-meter-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #111a28;
+  border: 1px solid #1e2e42;
+  padding: 4px 14px;
+  border-radius: 20px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.kdph-value-group {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.kdph-number {
+  font-size: 17px;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+}
+
+.kdph-label {
+  font-size: 9px;
+  color: #64748b;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* Streak Multiplier Pill */
+.streak-meter-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  transition: all 0.3s ease;
+  background: #111a28;
+  border: 1px solid #1e2e42;
+  color: #94a3b8;
+}
+
+.streak-meter-pill.tier-focus {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: #f59e0b;
+  color: #f59e0b;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+}
+
+.streak-meter-pill.tier-electro {
+  background: rgba(6, 182, 212, 0.18);
+  border-color: #06b6d4;
+  color: #06b6d4;
+  animation: electroPulse 1.6s infinite ease-in-out;
+}
+
+.streak-meter-pill.tier-overdrive {
+  background: linear-gradient(90deg, #8b5cf6, #ec4899, #f59e0b);
+  background-size: 200% 200%;
+  animation: overdrivePlasma 3s ease infinite;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 18px rgba(236, 72, 153, 0.55);
+}
+
+@keyframes electroPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(6, 182, 212, 0.3); }
+  50% { box-shadow: 0 0 18px rgba(6, 182, 212, 0.6); }
+}
+
+@keyframes overdrivePlasma {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Dual Balance Badge */
+.balance-check-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.balance-check-badge.balanced {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid #10b981;
+  color: #10b981;
+}
+
+.balance-check-badge.unbalanced {
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  animation: pulseWarning 1.2s infinite ease-in-out;
+}
+
+@keyframes pulseWarning {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.terminal-hud-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.terminal-timer-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #111a28;
+  border: 1px solid #1e2e42;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.terminal-timer-badge.overtime {
+  background: #dc2626;
+  border-color: #ef4444;
+  color: #fff;
+}
+
+/* ==========================================================================
+   MAIN DUAL-STAGE WORKSPACE (48% VOUCHER / 52% INDUSTRIAL TERMINAL)
+   ========================================================================== */
+.terminal-split-stage {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  height: calc(100% - 60px);
+  overflow: hidden;
+  position: relative;
+}
+
+/* LEFT STAGE: SCANNED VOUCHER DOCKET (ARCHIVAL PARCHMENT) */
+.terminal-docket-stage {
+  width: 48%;
+  height: 100%;
+  position: relative;
+  background: radial-gradient(circle at center, #182230 0%, #0e1520 100%);
+  display: flex;
+  flex-direction: column;
+  border-right: 2px solid #1e2e42;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.docket-top-toolbar {
+  padding: 6px 14px;
+  background: #0f1724;
+  border-bottom: 1px solid #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.docket-voucher-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.voucher-step-pill {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #1a2536;
+  color: #94a3b8;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.voucher-step-pill.active {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #38bdf8;
+}
+
+.voucher-step-pill.completed {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.docket-canvas-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Authentic Scanned Physical Voucher Sheet */
+.voucher-paper-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  background: #fbf8f0;
+  color: #1a202c;
+  border-radius: 4px;
+  border: 1px solid #d5c8b2;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.15);
+  padding: 20px 24px;
+  font-family: 'Courier New', Courier, monospace;
+  transition: transform 0.25s ease;
+  user-select: none;
+}
+
+.voucher-paper-sheet.desk-slant {
+  transform: perspective(1000px) rotateX(4deg) scale(0.98);
+}
+
+.voucher-header-band {
+  text-align: center;
+  border-bottom: 2px solid #8c7e6c;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.voucher-issuer-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #2b251e;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.voucher-subtitle-text {
+  font-size: 10px;
+  color: #6c5a45;
+  margin-top: 2px;
+}
+
+.voucher-serial-corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #b45309;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Rubber Stamp Overlay */
+.voucher-rubber-stamp {
+  position: absolute;
+  right: 18px;
+  bottom: 24px;
+  border: 2px dashed #0284c7;
+  color: #0284c7;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transform: rotate(-8deg);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.voucher-rubber-stamp.trap-stamp {
+  border-color: #dc2626;
+  color: #dc2626;
+  transform: rotate(5deg);
+}
+
+/* Physical Voucher Data Table / Grid */
+.voucher-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  position: relative;
+}
+
+.voucher-field-cell {
+  position: relative;
+  background: #fdfcf7;
+  border: 1px solid #dcd1be;
+  border-radius: 3px;
+  padding: 8px 10px;
+  transition: all 0.2s ease;
+}
+
+.voucher-field-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #786650;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.voucher-field-value {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #1c1917;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* DYNAMIC ACTIVE FIELD SPOTLIGHT */
+.voucher-field-cell.is-spotlight {
+  background: #fef9c3 !important;
+  border: 2px solid #b45309 !important;
+  box-shadow: 0 0 16px rgba(180, 83, 9, 0.4) !important;
+  animation: spotlightPulse 1.8s infinite ease-in-out;
+  z-index: 10;
+}
+
+@keyframes spotlightPulse {
+  0%, 100% { outline: 2px solid rgba(180, 83, 9, 0.6); outline-offset: 1px; }
+  50% { outline: 3px solid rgba(180, 83, 9, 0.9); outline-offset: 3px; }
+}
+
+/* Optical Loupe 2.5x Magnifier Glass */
+.optical-loupe-glass {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 3.5px solid #0284c7;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 0 14px rgba(2, 132, 199, 0.2);
+  pointer-events: none;
+  z-index: 40;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: contrast(125%) brightness(110%);
+}
+
+.optical-loupe-crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+}
+
+.optical-loupe-crosshair::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 0;
+  width: 14px;
+  height: 2px;
+  background: rgba(2, 132, 199, 0.8);
+}
+
+.optical-loupe-crosshair::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 0;
+  width: 2px;
+  height: 14px;
+  background: rgba(2, 132, 199, 0.8);
+}
+
+/* RIGHT STAGE: INDUSTRIAL CLEARING CONSOLE */
+.terminal-console-stage {
+  width: 52%;
+  height: 100%;
+  background: #090e17;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  gap: 14px;
+  overflow: hidden;
+}
+
+.console-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.console-title-pill {
+  font-size: 12px;
+  font-weight: 800;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.5px;
+}
+
+.console-stream-mode {
+  font-size: 10px;
+  background: #111a28;
+  padding: 2px 8px;
+  border-radius: 3px;
+  color: #94a3b8;
+  border: 1px solid #1e2e42;
+}
+
+/* ACTIVE FOCUS INPUT CHANNEL (THE RAPID TYPING COCKPIT) */
+.active-dispatch-channel {
+  background: #0d1522;
+  border: 1.5px solid #1e3a5f;
+  border-radius: 8px;
+  padding: 16px;
+  position: relative;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.active-field-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.active-field-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+}
+
+.active-field-tip {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* REAL-TIME CHARACTER RAIL (SEGMENTED VISUAL GLYPHS) */
+.char-diff-rail {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+  min-height: 52px;
+  background: #070c14;
+  border: 1.5px solid #1e293b;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: 10px;
+}
+
+.glyph-slot {
+  width: 28px;
+  height: 38px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  position: relative;
+  transition: all 0.12s ease;
+}
+
+.glyph-slot.glyph-correct {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1.5px solid #10b981;
+  color: #10b981;
+}
+
+.glyph-slot.glyph-discrepancy {
+  background: rgba(239, 68, 68, 0.25);
+  border: 1.5px solid #ef4444;
+  color: #fca5a5;
+  animation: glitchShake 0.2s ease-in-out;
+}
+
+.glyph-slot.glyph-pending {
+  background: #0f1724;
+  border: 1px dashed #243447;
+  color: #475569;
+}
+
+.glyph-slot.glyph-cursor {
+  outline: 2px solid #38bdf8;
+  outline-offset: 1px;
+  animation: cursorPulse 1s infinite ease-in-out;
+}
+
+@keyframes cursorPulse {
+  0%, 100% { outline-color: #38bdf8; }
+  50% { outline-color: rgba(56, 189, 248, 0.3); }
+}
+
+@keyframes glitchShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+/* Native Hidden-or-Styled Input Layer */
+.terminal-rapid-input {
+  width: 100%;
+  height: 42px;
+  background: #060a10;
+  border: 1.5px solid #1e293b;
+  border-radius: 4px;
+  padding: 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f1f5f9;
+  font-family: 'JetBrains Mono', monospace;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.terminal-rapid-input:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 10px rgba(2, 132, 199, 0.3);
+}
+
+.terminal-rapid-input.input-error {
+  border-color: #ef4444;
+  background: #140a0b;
+}
+
+/* LIVE INLINE DISCREPANCY DIFF CHIP */
+.live-diff-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1c0e10;
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 8px;
+  animation: glitchShake 0.2s ease;
+}
+
+.diff-target-val {
+  color: #10b981;
+  font-weight: 800;
+}
+
+.diff-typed-val {
+  color: #ef4444;
+  text-decoration: line-through;
+  font-weight: 800;
+}
+
+/* DISCREPANCY AUDIT FLAG TRIGGER BAR */
+.discrepancy-flag-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0b111a;
+  border: 1px solid #1e2e42;
+  border-radius: 6px;
+  padding: 8px 12px;
+  gap: 10px;
+}
+
+.flag-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.flag-btn.btn-clean {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.flag-btn.btn-clean.active {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.flag-btn.btn-trap {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.flag-btn.btn-trap.active {
+  background: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+}
+
+/* STREAM DISPATCH QUEUE HISTORY (TICKER TAPE) */
+.stream-history-deck {
+  flex: 1;
+  background: #070c14;
+  border: 1px solid #1a2536;
+  border-radius: 6px;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0d1522;
+  border: 1px solid #1e293b;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 11px;
+}
+
+.history-field-lbl {
+  color: #64748b;
+  font-weight: 700;
+  width: 140px;
+}
+
+.history-field-val {
+  color: #38bdf8;
+  font-weight: 700;
+  flex: 1;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.history-status-tag {
+  color: #10b981;
+  font-weight: 800;
+  font-size: 10px;
+}
+
+/* BOTTOM FOOTER COMMAND STRIP */
+.terminal-footer-strip {
+  height: 38px;
+  background: #080d14;
+  border-top: 1px solid #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  font-size: 11px;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.footer-hotkey-hints {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hotkey-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.key-kbd {
+  background: #1e293b;
+  color: #f1f5f9;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 9.5px;
+  font-weight: 800;
+  border: 1px solid #334155;
+}
+
+/* ==========================================================================
+   TERMINAL DASHBOARD & SCENARIO SELECTION STYLES
+   ========================================================================== */
+.terminal-dashboard-root {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+  width: 100%;
+}
+
+.terminal-dash-hero {
+  background: linear-gradient(135deg, #09131f 0%, #0d2238 50%, #064e3b 100%);
+  border-radius: 16px;
+  padding: 28px 32px;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.terminal-hero-title-group h1 {
+  font-size: 26px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.terminal-scenarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 20px;
+  margin-bottom: 36px;
+}
+
+.terminal-scenario-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.terminal-scenario-card:hover {
+  transform: translateY(-2px);
+  border-color: #38bdf8;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.terminal-btn-launch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.terminal-btn-launch:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+  transform: translateY(-1px);
+}
+

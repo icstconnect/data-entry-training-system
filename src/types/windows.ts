@@ -58,6 +58,8 @@ export interface FileManagementLevel {
   badge: string;
   goal: string;
   goalBn?: string;
+  instructions?: string[];
+  instructionsBn?: string[];
   targetFolders: FileManagementTargetFolder[];
   files: Omit<VirtualFile, 'type' | 'parentId'>[];
 }
@@ -78,6 +80,7 @@ export interface FolderManagementLevel {
   goal: string;
   goalBn?: string;
   instructions: string[];
+  instructionsBn?: string[];
   initialFolders: {
     id: string;
     name: string;

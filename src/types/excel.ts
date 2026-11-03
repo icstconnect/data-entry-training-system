@@ -30,6 +30,15 @@ export interface ExcelScenarioLevel {
   tips: string[];
 }
 
+export interface ExcelDiscrepancy {
+  row: number;
+  colLetter: string;
+  header: string;
+  sourceVal: string;
+  enteredVal: string;
+  status: 'correct' | 'incorrect' | 'missing';
+}
+
 export interface ExcelEvaluationSummary {
   levelNumber: number;
   scenarioName: string;
@@ -43,14 +52,7 @@ export interface ExcelEvaluationSummary {
   timeTakenSeconds: number;
   kph: number; // Keystrokes per hour
   expEarned: number;
-  discrepancies: {
-    row: number;
-    colLetter: string;
-    header: string;
-    sourceVal: string;
-    enteredVal: string;
-    status: 'correct' | 'incorrect' | 'missing';
-  }[];
+  discrepancies: ExcelDiscrepancy[];
   unlockedAchievements: Achievement[];
   submittedAt: string;
   studentIdentity?: StudentIdentity;

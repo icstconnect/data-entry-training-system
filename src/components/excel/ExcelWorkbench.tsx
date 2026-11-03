@@ -355,6 +355,29 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
     }
   };
 
+  // Direct In-Place Corrections handler from ExcelEvaluationModal
+  const handleApplyCorrections = (corrections: Record<string, string>) => {
+    const nextGrid = { ...gridData, ...corrections };
+    setGridData(nextGrid);
+    saveExcelDraft({
+      levelNumber: level.levelNumber,
+      gridData: nextGrid,
+      activeCell,
+      elapsedSeconds,
+      savedAt: new Date().toISOString()
+    });
+    const freshSummary = evaluateExcelBatch(
+      level,
+      nextGrid,
+      elapsedSeconds,
+      studentProgress.studentIdentity
+    );
+    setEvalSummary(freshSummary);
+    if (freshSummary.expEarned > 0 && onExpAwarded) {
+      onExpAwarded(freshSummary.expEarned);
+    }
+  };
+
   // Reset/Clear Grid In-App Dialog Handlers
   const handleResetGrid = () => {
     setIsResetConfirmOpen(true);
@@ -1015,6 +1038,7 @@ export const ExcelWorkbench: React.FC<ExcelWorkbenchProps> = ({
             }
           }}
           onShare={(sum) => handleOpenShare(sum)}
+          onApplyCorrections={handleApplyCorrections}
         />
       )}
 

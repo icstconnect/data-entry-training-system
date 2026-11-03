@@ -11,47 +11,63 @@ export const FILE_MANAGEMENT_LEVELS: Record<number, FileManagementLevel> = {
     badge: "Class 3-5: Extensions",
     goal: "Sort the chaotic Desktop files into their respective folders based on file extensions: Documents (.docx, .txt, .pdf), Presentations (.pptx), Spreadsheets (.xlsx), Media (.mp3, .mp4), and Pictures (.jpeg).",
     goalBn: "ডেস্কটপের ছড়ানো-ছিটানো ফাইলগুলোকে তাদের ধরন অনুযায়ী ফোল্ডারে সাজিয়ে রাখুন: ডকুমেন্টস (.docx, .txt, .pdf), প্রেজেন্টেশন (.pptx), স্প্রেডশিট (.xlsx), অডিও-ভিডিও (.mp3, .mp4) এবং ছবি (.jpeg)।",
+    instructions: [
+      "Drag and drop each desktop file into its appropriate target folder based on extension.",
+      "Documents (.docx, .txt, .pdf) ➔ 'Documents' folder.",
+      "Presentation slides (.pptx) ➔ 'Presentations' folder.",
+      "Spreadsheet tables (.xlsx) ➔ 'Spreadsheets' folder.",
+      "Media files (.mp3, .mp4) ➔ 'Audio_Video' folder.",
+      "Image photos (.jpeg, .png) ➔ 'Pictures' folder."
+    ],
+    instructionsBn: [
+      "ডেস্কটপের প্রতিটি ফাইল ড্র্যাগ করে টেনে এনে এক্সটেনশন অনুযায়ী সংশ্লিষ্ট টার্গেট ফোল্ডারে ড্রপ করুন।",
+      "ওয়ার্ড ফাইল (.docx), টেক্সট নোট (.txt) ও পিডিএফ (.pdf) ➔ 'Documents' ফোল্ডারে রাখুন।",
+      "পাওয়ারপয়েন্ট প্রেজেন্টেশন স্লাইড (.pptx) ➔ 'Presentations' ফোল্ডারে রাখুন।",
+      "হিসাব-নিকাশের স্প্রেডশিট টেবিল (.xlsx) ➔ 'Spreadsheets' ফোল্ডারে রাখুন।",
+      "গান ও অডিও-ভিডিও ক্লিপ (.mp3, .mp4) ➔ 'Audio_Video' ফোল্ডারে রাখুন।",
+      "ফটোগ্রাফ ও ডিজিটাল ছবি (.jpeg, .png) ➔ 'Pictures' ফোল্ডারে রাখুন।"
+    ],
     targetFolders: [
-      { 
-        id: 'f_docs', 
-        name: 'Documents', 
-        icon: '📁', 
+      {
+        id: 'f_docs',
+        name: 'Documents',
+        icon: '📁',
         accepted: ['docx', 'txt', 'pdf'],
         infoTitle: 'Documents Folder',
         infoEn: 'Store written articles, notes, essays, and PDF forms here.',
         infoBn: 'সব পড়ার বই, লেখার ফাইল, সাধারণ নোট ও পিডিএফ এখানে রাখুন।'
       },
-      { 
-        id: 'f_slides', 
-        name: 'Presentations', 
-        icon: '📁', 
+      {
+        id: 'f_slides',
+        name: 'Presentations',
+        icon: '📁',
         accepted: ['pptx'],
         infoTitle: 'Presentations Folder',
         infoEn: 'Store PowerPoint slide decks for class seminars and talks here.',
         infoBn: 'ক্লাসে বা মিটিংয়ে উপস্থাপনের সব পাওয়ারপয়েন্ট স্লাইড এখানে রাখুন।'
       },
-      { 
-        id: 'f_sheets', 
-        name: 'Spreadsheets', 
-        icon: '📁', 
+      {
+        id: 'f_sheets',
+        name: 'Spreadsheets',
+        icon: '📁',
         accepted: ['xlsx'],
         infoTitle: 'Spreadsheets Folder',
         infoEn: 'Store calculation tables, math sheets, and numerical lists here.',
         infoBn: 'গণনার হিসাব, খরচ ও সংখ্যার সব এক্সেল টেবিল ফাইল এখানে রাখুন।'
       },
-      { 
-        id: 'f_media', 
-        name: 'Audio_Video', 
-        icon: '📁', 
+      {
+        id: 'f_media',
+        name: 'Audio_Video',
+        icon: '📁',
         accepted: ['mp3', 'mp4'],
         infoTitle: 'Audio & Video Folder',
         infoEn: 'Store recorded sounds, music tracks, and video clips here.',
         infoBn: 'গান, রেকর্ড করা কথা ও ভিডিও ক্লিপগুলো এখানে রাখুন।'
       },
-      { 
-        id: 'f_pics', 
-        name: 'Pictures', 
-        icon: '📁', 
+      {
+        id: 'f_pics',
+        name: 'Pictures',
+        icon: '📁',
         accepted: ['jpeg', 'png'],
         infoTitle: 'Pictures Folder',
         infoEn: 'Store camera photos, snapshots, and digital graphics here.',
@@ -59,97 +75,97 @@ export const FILE_MANAGEMENT_LEVELS: Record<number, FileManagementLevel> = {
       },
     ],
     files: [
-      { 
-        id: 'file_1', 
-        name: 'Science_Report.docx', 
-        ext: 'docx', 
-        size: '24 KB', 
-        date: '2026-09-21', 
-        targetFolderId: 'f_docs', 
+      {
+        id: 'file_1',
+        name: 'Science_Report.docx',
+        ext: 'docx',
+        size: '24 KB',
+        date: '2026-09-21',
+        targetFolderId: 'f_docs',
         preview: 'Science Experiment: Photosynthesis and Solar Energy.\nWritten by Dita Student.',
         infoTitle: 'Science Report (.docx)',
         infoEn: '.docx is a Word document for written work. Belongs in Documents folder.',
         infoBn: '.docx হলো লেখার ওয়ার্ড ফাইল। এটি Documents ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'file_2', 
-        name: 'Solar_System_Deck.pptx', 
-        ext: 'pptx', 
-        size: '1.8 MB', 
-        date: '2026-09-20', 
-        targetFolderId: 'f_slides', 
+      {
+        id: 'file_2',
+        name: 'Solar_System_Deck.pptx',
+        ext: 'pptx',
+        size: '1.8 MB',
+        date: '2026-09-20',
+        targetFolderId: 'f_slides',
         preview: 'Slide 1: Journey to Mars.\nSlide 2: The Asteroid Belt.',
         infoTitle: 'Solar System Deck (.pptx)',
         infoEn: '.pptx is a presentation slide deck. Belongs in Presentations folder.',
         infoBn: '.pptx হলো পাওয়ারপয়েন্ট স্লাইড ফাইল। এটি Presentations ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'file_3', 
-        name: 'Weekly_Allowance_Calc.xlsx', 
-        ext: 'xlsx', 
-        size: '14 KB', 
-        date: '2026-09-22', 
-        targetFolderId: 'f_sheets', 
+      {
+        id: 'file_3',
+        name: 'Weekly_Allowance_Calc.xlsx',
+        ext: 'xlsx',
+        size: '14 KB',
+        date: '2026-09-22',
+        targetFolderId: 'f_sheets',
         preview: 'Row 1: Day | Expense | Balance\nMon | Books | $10\nTue | Lunch | $15',
         infoTitle: 'Allowance Calculator (.xlsx)',
         infoEn: '.xlsx is a spreadsheet table with numbers. Belongs in Spreadsheets folder.',
         infoBn: '.xlsx হলো হিসাবের এক্সেল শিট। এটি Spreadsheets ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'file_4', 
-        name: 'School_Picnic_Photo.jpeg', 
-        ext: 'jpeg', 
-        size: '2.4 MB', 
-        date: '2026-09-18', 
-        targetFolderId: 'f_pics', 
+      {
+        id: 'file_4',
+        name: 'School_Picnic_Photo.jpeg',
+        ext: 'jpeg',
+        size: '2.4 MB',
+        date: '2026-09-18',
+        targetFolderId: 'f_pics',
         preview: 'Image: 4K Sunset at National Park.',
         infoTitle: 'School Picnic Photo (.jpeg)',
         infoEn: '.jpeg is a photograph image. Belongs in Pictures folder.',
         infoBn: '.jpeg হলো ক্যামেরা দিয়ে তোলা ছবি। এটি Pictures ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'file_5', 
-        name: 'Podcast_Episode_01.mp3', 
-        ext: 'mp3', 
-        size: '5.1 MB', 
-        date: '2026-09-19', 
-        targetFolderId: 'f_media', 
+      {
+        id: 'file_5',
+        name: 'Podcast_Episode_01.mp3',
+        ext: 'mp3',
+        size: '5.1 MB',
+        date: '2026-09-19',
+        targetFolderId: 'f_media',
         preview: 'Audio Track: 44.1kHz Stereo - AI Tech Talk episode 1.',
         infoTitle: 'Podcast Episode 01 (.mp3)',
         infoEn: '.mp3 is an audio sound recording. Belongs in Audio_Video folder.',
         infoBn: '.mp3 হলো শোনার মতো অডিও সাউন্ড ফাইল। এটি Audio_Video ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'file_6', 
-        name: 'Robotics_Demo_Reel.mp4', 
-        ext: 'mp4', 
-        size: '22 MB', 
-        date: '2026-09-23', 
-        targetFolderId: 'f_media', 
+      {
+        id: 'file_6',
+        name: 'Robotics_Demo_Reel.mp4',
+        ext: 'mp4',
+        size: '22 MB',
+        date: '2026-09-23',
+        targetFolderId: 'f_media',
         preview: 'Video: 1080p 60fps - Autonomous Line Follower Robot.',
         infoTitle: 'Robotics Demo Reel (.mp4)',
         infoEn: '.mp4 is a video movie clip. Belongs in Audio_Video folder.',
         infoBn: '.mp4 হলো একটি ভিডিও ক্লিপ ফাইল। এটি Audio_Video ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'file_7', 
-        name: 'Parent_Signature_Form.pdf', 
-        ext: 'pdf', 
-        size: '310 KB', 
-        date: '2026-09-24', 
-        targetFolderId: 'f_docs', 
+      {
+        id: 'file_7',
+        name: 'Parent_Signature_Form.pdf',
+        ext: 'pdf',
+        size: '310 KB',
+        date: '2026-09-24',
+        targetFolderId: 'f_docs',
         preview: 'Official Permission Slip for Robotics Field Trip.',
         infoTitle: 'Parent Signature Form (.pdf)',
         infoEn: '.pdf is a fixed layout document for reading/printing. Belongs in Documents folder.',
         infoBn: '.pdf হলো প্রিন্ট বা পড়ার মতো ডকুমেন্ট। এটি Documents ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'file_8', 
-        name: 'Quick_Ideas_Notes.txt', 
-        ext: 'txt', 
-        size: '2 KB', 
-        date: '2026-09-25', 
-        targetFolderId: 'f_docs', 
+      {
+        id: 'file_8',
+        name: 'Quick_Ideas_Notes.txt',
+        ext: 'txt',
+        size: '2 KB',
+        date: '2026-09-25',
+        targetFolderId: 'f_docs',
         preview: 'Todo:\n- Buy Arduino board\n- Read chapter 4 on neural nets.',
         infoTitle: 'Quick Ideas Notes (.txt)',
         infoEn: '.txt is an unformatted plain text note. Belongs in Documents folder.',
@@ -163,38 +179,52 @@ export const FILE_MANAGEMENT_LEVELS: Record<number, FileManagementLevel> = {
     badge: "Class 6-7: Academic Hierarchy",
     goal: "Organize academic homework and project files into appropriate subject directories: Mathematics, Science_Lab, English_Lit, and AI_Robotics_CS.",
     goalBn: "স্কুলের পড়াশোনার বাড়ির কাজ ও প্রজেক্ট ফাইলগুলো সংশ্লিষ্ট বিষয়ের ফোল্ডারে গুছিয়ে রাখুন: Mathematics, Science_Lab, English_Lit, এবং AI_Robotics_CS।",
+    instructions: [
+      "Review the subject-specific school files and place them into the correct subject folders.",
+      "Algebra, geometry theorems, and calculus sheets ➔ 'Mathematics'.",
+      "Physics simulations, chemistry lab titration reports, and biology notes ➔ 'Science_Lab'.",
+      "Shakespeare plays, poetry analyses, and essay reviews ➔ 'English_Lit'.",
+      "Python code scripts, sensor loggers, and AI robotics slides ➔ 'AI_Robotics_CS'."
+    ],
+    instructionsBn: [
+      "স্কুলের বিষয়ভিত্তিক পড়াশোনার ফাইলগুলো দেখে সঠিক বিষয়ের ফোল্ডারে গুছিয়ে রাখুন।",
+      "বীজগণিত, জ্যামিতির উপপাদ্য ও হিসাবের শিট ➔ 'Mathematics' ফোল্ডারে নিন।",
+      "পদার্থবিজ্ঞান পরীক্ষা, রসায়ন ল্যাব রিপোর্ট ও জীববিজ্ঞান ফাইল ➔ 'Science_Lab' ফোল্ডারে নিন।",
+      "ইংরেজি সাহিত্যের প্রবন্ধ, কবিতা বিশ্লেষণ ও নাটকের ফাইল ➔ 'English_Lit' ফোল্ডারে নিন।",
+      "পাইথন কোডিং স্ক্রিপ্ট, রোবটের সেন্সর লগ ও এআই স্লাইড ➔ 'AI_Robotics_CS' ফোল্ডারে নিন।"
+    ],
     targetFolders: [
-      { 
-        id: 'f_math', 
-        name: 'Mathematics', 
-        icon: '📁', 
+      {
+        id: 'f_math',
+        name: 'Mathematics',
+        icon: '📁',
         accepted: ['math'],
         infoTitle: 'Mathematics Subject Folder',
         infoEn: "Mathematics folder: Store math formulas, geometry sheets, algebra tables, and calculations here.",
         infoBn: "গণিত ফোল্ডার: বীজগণিত, জ্যামিতি ও হিসাব-নিকাশের ফাইল এখানে রাখুন।"
       },
-      { 
-        id: 'f_sci', 
-        name: 'Science_Lab', 
-        icon: '📁', 
+      {
+        id: 'f_sci',
+        name: 'Science_Lab',
+        icon: '📁',
         accepted: ['science'],
         infoTitle: 'Science Lab Subject Folder',
         infoEn: "Science Lab folder: Store physics experiments, chemistry titration reports, and biology observation files here.",
         infoBn: "বিজ্ঞান ল্যাব ফোল্ডার: পদার্থবিজ্ঞান, রসায়ন পরীক্ষা ও বিজ্ঞানের সব রিপোর্ট এখানে রাখুন।"
       },
-      { 
-        id: 'f_eng', 
-        name: 'English_Lit', 
-        icon: '📁', 
+      {
+        id: 'f_eng',
+        name: 'English_Lit',
+        icon: '📁',
         accepted: ['english'],
         infoTitle: 'English Literature Folder',
         infoEn: "English Literature folder: Store drama essays, poetry analyses, and creative writing here.",
         infoBn: "ইংরেজি সাহিত্য ফোল্ডার: প্রবন্ধ, কবিতা ও নাটকের সব লেখা এখানে সংরক্ষণ করুন।"
       },
-      { 
-        id: 'f_ai', 
-        name: 'AI_Robotics_CS', 
-        icon: '📁', 
+      {
+        id: 'f_ai',
+        name: 'AI_Robotics_CS',
+        icon: '📁',
         accepted: ['ai_cs'],
         infoTitle: 'AI & Robotics Folder',
         infoEn: "AI & Computer Science folder: Store machine learning decks, robotics sensors, and Python scripts here.",
@@ -202,85 +232,85 @@ export const FILE_MANAGEMENT_LEVELS: Record<number, FileManagementLevel> = {
       },
     ],
     files: [
-      { 
-        id: 'f2_1', 
-        name: 'Linear_Algebra_Formulas.xlsx', 
-        ext: 'xlsx', 
-        size: '32 KB', 
-        date: '2026-09-22', 
-        targetFolderId: 'f_math', 
+      {
+        id: 'f2_1',
+        name: 'Linear_Algebra_Formulas.xlsx',
+        ext: 'xlsx',
+        size: '32 KB',
+        date: '2026-09-22',
+        targetFolderId: 'f_math',
         preview: 'Matrices, Determinants, and Dot Product equations.',
         infoTitle: 'Linear Algebra Formulas',
         infoEn: 'This file contains math matrix equations and algebra formulas. It belongs in the Mathematics folder.',
         infoBn: 'এই ফাইলে বীজগণিতের ম্যাট্রিক্স ও সমীকরণ রয়েছে। এটি Mathematics ফোল্ডারে রাখা উচিত।'
       },
-      { 
-        id: 'f2_2', 
-        name: 'Chemistry_Titration_Lab.docx', 
-        ext: 'docx', 
-        size: '45 KB', 
-        date: '2026-09-23', 
-        targetFolderId: 'f_sci', 
+      {
+        id: 'f2_2',
+        name: 'Chemistry_Titration_Lab.docx',
+        ext: 'docx',
+        size: '45 KB',
+        date: '2026-09-23',
+        targetFolderId: 'f_sci',
         preview: 'Acid-Base Titration with Phenolphthalein indicator.',
         infoTitle: 'Chemistry Titration Lab Report',
         infoEn: 'This document contains an acid-base chemistry lab experiment. It belongs in the Science_Lab folder.',
         infoBn: 'এটি রসায়নের অ্যাসিড-ক্ষার পরীক্ষার একটি ব্যবহারিক রিপোর্ট। এটি Science_Lab ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'f2_3', 
-        name: 'Shakespeare_Macbeth_Essay.docx', 
-        ext: 'docx', 
-        size: '28 KB', 
-        date: '2026-09-24', 
-        targetFolderId: 'f_eng', 
+      {
+        id: 'f2_3',
+        name: 'Shakespeare_Macbeth_Essay.docx',
+        ext: 'docx',
+        size: '28 KB',
+        date: '2026-09-24',
+        targetFolderId: 'f_eng',
         preview: 'Ambition and Fate in Shakespearean Tragedy.',
         infoTitle: "Shakespeare's Macbeth Essay",
         infoEn: 'This essay analyzes Shakespeare’s drama Macbeth. It belongs in the English_Lit folder.',
         infoBn: 'এটি শেক্সপিয়ারের নাটক ম্যাকবেথ নিয়ে লেখা ইংরেজি সাহিত্যের প্রবন্ধ। এটি English_Lit ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'f2_4', 
-        name: 'Computer_Vision_Intro.pptx', 
-        ext: 'pptx', 
-        size: '3.4 MB', 
-        date: '2026-09-25', 
-        targetFolderId: 'f_ai', 
+      {
+        id: 'f2_4',
+        name: 'Computer_Vision_Intro.pptx',
+        ext: 'pptx',
+        size: '3.4 MB',
+        date: '2026-09-25',
+        targetFolderId: 'f_ai',
         preview: 'Convolutional Filters and Edge Detection in OpenCV.',
         infoTitle: 'Computer Vision Introduction Deck',
         infoEn: 'This slide presentation explains AI computer vision and image filters. It belongs in the AI_Robotics_CS folder.',
         infoBn: 'এটি কৃত্রিম বুদ্ধিমত্তা (AI) ও কম্পিউটার ভিশন সম্পর্কিত স্লাইড। এটি AI_Robotics_CS ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'f2_5', 
-        name: 'Geometry_Theorems_CheatSheet.pdf', 
-        ext: 'pdf', 
-        size: '420 KB', 
-        date: '2026-09-25', 
-        targetFolderId: 'f_math', 
+      {
+        id: 'f2_5',
+        name: 'Geometry_Theorems_CheatSheet.pdf',
+        ext: 'pdf',
+        size: '420 KB',
+        date: '2026-09-25',
+        targetFolderId: 'f_math',
         preview: 'Pythagorean Theorem and Circle Arc Lengths.',
         infoTitle: 'Geometry Theorems Cheat Sheet',
         infoEn: 'This reference sheet summarizes geometric theorems and circle formulas. It belongs in the Mathematics folder.',
         infoBn: 'এটি জ্যামিতির উপপাদ্য ও সূত্রের সংক্ষিপ্ত নোট। এটি Mathematics ফোল্ডারে রাখা উচিত।'
       },
-      { 
-        id: 'f2_6', 
-        name: 'Physics_Pendulum_Oscillation.mp4', 
-        ext: 'mp4', 
-        size: '14 MB', 
-        date: '2026-09-20', 
-        targetFolderId: 'f_sci', 
+      {
+        id: 'f2_6',
+        name: 'Physics_Pendulum_Oscillation.mp4',
+        ext: 'mp4',
+        size: '14 MB',
+        date: '2026-09-20',
+        targetFolderId: 'f_sci',
         preview: 'Slow motion video capture of simple harmonic motion.',
         infoTitle: 'Physics Pendulum Video Demo',
         infoEn: 'This video demonstrates pendulum oscillation for a physics practical. It belongs in the Science_Lab folder.',
         infoBn: 'এটি পদার্থবিজ্ঞানের সরল দোলকের গতির ওপর একটি ভিডিও ক্লিপ। এটি Science_Lab ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'f2_7', 
-        name: 'Python_Sensor_Logger.py', 
-        ext: 'txt', 
-        size: '4 KB', 
-        date: '2026-09-26', 
-        targetFolderId: 'f_ai', 
+      {
+        id: 'f2_7',
+        name: 'Python_Sensor_Logger.py',
+        ext: 'txt',
+        size: '4 KB',
+        date: '2026-09-26',
+        targetFolderId: 'f_ai',
         preview: 'import time\nimport sensor\nwhile True: print(sensor.read())',
         infoTitle: 'Python Robotics Sensor Script',
         infoEn: 'This is a Python script that reads data from a robot sensor. It belongs in the AI_Robotics_CS folder.',
@@ -294,20 +324,30 @@ export const FILE_MANAGEMENT_LEVELS: Record<number, FileManagementLevel> = {
     badge: "Class 8-9: Naming Conventions",
     goal: "Clean up confusing names (like 'final_v2_EDIT'). Move outdated revisions into '_Archive' and ensure current files follow the 'YYYY-MM-DD_Subject_v#' standard.",
     goalBn: "অগোছালো নামের খসড়া ফাইলগুলো বাতিল করে '_Archive' ফোল্ডারে রাখুন এবং আন্তর্জাতিক তারিখ ফরম্যাট (YYYY-MM-DD) যুক্ত সচল ফাইলগুলো 'Current_Drafts'-এ সংরক্ষণ করুন।",
+    instructions: [
+      "Identify outdated, duplicate, or superseded files marked 'old', 'copy', or 'DONT_USE' and move them into '_Archive'.",
+      "Keep clean active files following the ISO-8601 standard 'YYYY-MM-DD_Subject_v#' in 'Current_Drafts'.",
+      "Ensure no legacy junk remains unarchived."
+    ],
+    instructionsBn: [
+      "অপ্রয়োজনীয়, অগোছালো বা বাতিল হওয়া খসড়া ফাইলগুলো ('old', 'copy', 'DONT_USE') চিহ্নিত করে '_Archive' ফোল্ডারে সরিয়ে রাখুন।",
+      "আন্তর্জাতিক মানদণ্ড 'YYYY-MM-DD_বিষয়_ভার্সন' বিশিষ্ট সচল ও চূড়ান্ত ফাইলগুলো 'Current_Drafts' ফোল্ডারে রাখুন।",
+      "নিশ্চিত করুন কোনো পুরোনো বিভ্রান্তিকর ফাইল যেন সাধারণ কাজের তালিকায় পড়ে না থাকে।"
+    ],
     targetFolders: [
-      { 
-        id: 'f_active', 
-        name: 'Current_Drafts', 
-        icon: '📁', 
+      {
+        id: 'f_active',
+        name: 'Current_Drafts',
+        icon: '📁',
         accepted: ['active'],
         infoTitle: 'Current Drafts Folder',
         infoEn: 'Current Drafts: Holds active files following the ISO 8601 standard (YYYY-MM-DD_Subject_v#).',
         infoBn: 'সচল কাজের ফোল্ডার: এখানে নির্দিষ্ট তারিখ (YYYY-MM-DD) সহ সচল ও সঠিক ফাইল রাখা হয়।'
       },
-      { 
-        id: 'f_archive', 
-        name: '_Archive', 
-        icon: '📁', 
+      {
+        id: 'f_archive',
+        name: '_Archive',
+        icon: '📁',
         accepted: ['archive'],
         infoTitle: '_Archive Folder',
         infoEn: 'Archive: Move outdated, superseded, confusingly-named revisions here so they do not clutter active work.',
@@ -315,73 +355,73 @@ export const FILE_MANAGEMENT_LEVELS: Record<number, FileManagementLevel> = {
       },
     ],
     files: [
-      { 
-        id: 'f3_1', 
-        name: '2026-09-26_Robotics_Paper_v2.docx', 
-        ext: 'docx', 
-        size: '48 KB', 
-        date: '2026-09-26', 
-        targetFolderId: 'f_active', 
+      {
+        id: 'f3_1',
+        name: '2026-09-26_Robotics_Paper_v2.docx',
+        ext: 'docx',
+        size: '48 KB',
+        date: '2026-09-26',
+        targetFolderId: 'f_active',
         preview: 'Final active draft following ISO standard timestamps.',
         infoTitle: 'Active Robotics Paper (Standard Named)',
         infoEn: 'Follows ISO 8601 date standard (YYYY-MM-DD) and clear versioning (v2). This is active, so it belongs in Current_Drafts.',
         infoBn: 'এতে আন্তর্জাতিক তারিখ ফরম্যাট (YYYY-MM-DD) ও ভার্সন রয়েছে। এটি সচল ফাইল, তাই Current_Drafts-এ যাবে।'
       },
-      { 
-        id: 'f3_2', 
-        name: 'draft_rough_old_Robotics.docx', 
-        ext: 'docx', 
-        size: '18 KB', 
-        date: '2026-08-10', 
-        targetFolderId: 'f_archive', 
+      {
+        id: 'f3_2',
+        name: 'draft_rough_old_Robotics.docx',
+        ext: 'docx',
+        size: '18 KB',
+        date: '2026-08-10',
+        targetFolderId: 'f_archive',
         preview: 'Superseded rough notes. Belongs in _Archive.',
         infoTitle: 'Old Rough Robotics Draft',
         infoEn: 'Has an unstandardized, confusing name and is an obsolete draft. It belongs in _Archive.',
         infoBn: 'এর নামটি অগোছালো এবং এটি একটি পুরনো খসড়া। এটি _Archive ফোল্ডারে রাখা উচিত।'
       },
-      { 
-        id: 'f3_3', 
-        name: '2026-09-25_Quarterly_Budget_v1.xlsx', 
-        ext: 'xlsx', 
-        size: '20 KB', 
-        date: '2026-09-25', 
-        targetFolderId: 'f_active', 
+      {
+        id: 'f3_3',
+        name: '2026-09-25_Quarterly_Budget_v1.xlsx',
+        ext: 'xlsx',
+        size: '20 KB',
+        date: '2026-09-25',
+        targetFolderId: 'f_active',
         preview: 'Active budget table for Q3.',
         infoTitle: 'Active Quarterly Budget (Standard Named)',
         infoEn: 'Clean timestamped financial spreadsheet with clear version number (v1). It belongs in Current_Drafts.',
         infoBn: 'সঠিক তারিখ ও ভার্সন যুক্ত সচল বাজেট হিসাব। এটি Current_Drafts ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'f3_4', 
-        name: 'budget_trash_FINAL_2.xlsx', 
-        ext: 'xlsx', 
-        size: '15 KB', 
-        date: '2026-07-02', 
-        targetFolderId: 'f_archive', 
+      {
+        id: 'f3_4',
+        name: 'budget_trash_FINAL_2.xlsx',
+        ext: 'xlsx',
+        size: '15 KB',
+        date: '2026-07-02',
+        targetFolderId: 'f_archive',
         preview: 'Old, chaotic name. Belongs in _Archive.',
         infoTitle: 'Superseded Budget (Messy Naming)',
         infoEn: 'Suffers from bad "FINAL_2" naming and is superseded by timestamped files. It belongs in _Archive.',
         infoBn: '"FINAL_2" নামের মতো অগোছালো ও বাতিল বাজেট ফাইল। এটি _Archive ফোল্ডারে পাঠাতে হবে।'
       },
-      { 
-        id: 'f3_5', 
-        name: '2026-09-24_Conference_Keynote_v3.pptx', 
-        ext: 'pptx', 
-        size: '4.2 MB', 
-        date: '2026-09-24', 
-        targetFolderId: 'f_active', 
+      {
+        id: 'f3_5',
+        name: '2026-09-24_Conference_Keynote_v3.pptx',
+        ext: 'pptx',
+        size: '4.2 MB',
+        date: '2026-09-24',
+        targetFolderId: 'f_active',
         preview: 'Active slide deck ready for delivery.',
         infoTitle: 'Active Conference Keynote (Standard Named)',
         infoEn: 'Latest conference slide deck correctly formatted with ISO date. It belongs in Current_Drafts.',
         infoBn: 'কনফারেন্সের আসল প্রেজেন্টেশন স্লাইড যা সঠিক তারিখে সাজানো। এটি Current_Drafts-এ যাবে।'
       },
-      { 
-        id: 'f3_6', 
-        name: 'slides_bad_colors_DONT_USE.pptx', 
-        ext: 'pptx', 
-        size: '3.9 MB', 
-        date: '2026-07-15', 
-        targetFolderId: 'f_archive', 
+      {
+        id: 'f3_6',
+        name: 'slides_bad_colors_DONT_USE.pptx',
+        ext: 'pptx',
+        size: '3.9 MB',
+        date: '2026-07-15',
+        targetFolderId: 'f_archive',
         preview: 'Discarded slides with wrong palette.',
         infoTitle: 'Discarded Slide Deck ("DONT_USE")',
         infoEn: 'A discarded revision marked "DONT_USE" with bad color choices. It belongs in _Archive.',
@@ -395,29 +435,39 @@ export const FILE_MANAGEMENT_LEVELS: Record<number, FileManagementLevel> = {
     badge: "Class 10-11: Studio Workflow",
     goal: "Separate raw immutable assets, work-in-progress project source files, and final client deliverables.",
     goalBn: "স্টুডিও মিডিয়া পাইপলাইনের উপাদানগুলোকে ৩ ভাগে বিভক্ত করুন: মূল অপরিবর্তিত ফাইল '01_Raw_Assets', চলমান কাজের ফাইল '02_Workings_Scripts' এবং চূড়ান্ত রিলিজ ফাইল '03_Final_Deliverables'।",
+    instructions: [
+      "Place pristine untouched source camera clips (.raw, .jpeg) into '01_Raw_Assets'.",
+      "Place timeline edits, working scripts, and project project files (.prproj, .txt) into '02_Workings_Scripts'.",
+      "Place finalized polished master videos (.mp4, .mov) ready for clients into '03_Final_Deliverables'."
+    ],
+    instructionsBn: [
+      "ক্যামেরা থেকে সরাসরি তোলা অপরিবর্তিত মূল শুটিং ফাইল (.raw, .jpeg) ➔ '01_Raw_Assets' ফোল্ডারে রাখুন।",
+      "চলমান ভিডিও এডিটিং প্রজেক্ট ফাইল, টাইমলাইন ও চিত্রনাট্যের ড্রাফট ➔ '02_Workings_Scripts' ফোল্ডারে রাখুন।",
+      "গ্রাহক বা দর্শকের জন্য চূড়ান্তভাবে প্রস্তুত ও রেন্ডার করা মাস্টার ভিডিও ➔ '03_Final_Deliverables' ফোল্ডারে রাখুন।"
+    ],
     targetFolders: [
-      { 
-        id: 'f_raw', 
-        name: '01_Raw_Assets', 
-        icon: '📁', 
+      {
+        id: 'f_raw',
+        name: '01_Raw_Assets',
+        icon: '📁',
         accepted: ['raw'],
         infoTitle: '01_Raw_Assets Pipeline Folder',
         infoEn: 'Store untouched original camera shoots and field audio here. Never edit or overwrite raw assets!',
         infoBn: '০১ কাঁচা উপাদান: ক্যামেরা বা মাইকের মূল ফাইল এখানে রাখুন, যা কখনো সরাসরি কাটাছেঁড়া করা হয় না।'
       },
-      { 
-        id: 'f_work', 
-        name: '02_Workings_Scripts', 
-        icon: '📁', 
+      {
+        id: 'f_work',
+        name: '02_Workings_Scripts',
+        icon: '📁',
         accepted: ['workings'],
         infoTitle: '02_Workings_Scripts Pipeline Folder',
         infoEn: 'Store work-in-progress project files, editable timelines, and working scripts here.',
         infoBn: '০২ চলমান প্রজেক্ট: সম্পাদনার কাজ, ভিডিও এডিট টাইমলাইন ও চিত্রনাট্যের ড্রাফট এখানে রাখুন।'
       },
-      { 
-        id: 'f_deliv', 
-        name: '03_Final_Deliverables', 
-        icon: '📁', 
+      {
+        id: 'f_deliv',
+        name: '03_Final_Deliverables',
+        icon: '📁',
         accepted: ['deliverables'],
         infoTitle: '03_Final_Deliverables Pipeline Folder',
         infoEn: 'Store completed master exports and polished deliverables ready for clients, viewers, or release.',
@@ -425,73 +475,73 @@ export const FILE_MANAGEMENT_LEVELS: Record<number, FileManagementLevel> = {
       },
     ],
     files: [
-      { 
-        id: 'f4_1', 
-        name: 'Sony_A7_RAW_0042.jpeg', 
-        ext: 'jpeg', 
-        size: '12 MB', 
-        date: '2026-09-12', 
-        targetFolderId: 'f_raw', 
+      {
+        id: 'f4_1',
+        name: 'Sony_A7_RAW_0042.jpeg',
+        ext: 'jpeg',
+        size: '12 MB',
+        date: '2026-09-12',
+        targetFolderId: 'f_raw',
         preview: 'Uncompressed untouched camera sensor output.',
         infoTitle: 'Untouched Camera Sensor Output',
         infoEn: 'Original uncompressed capture directly from the camera sensor. Belongs in 01_Raw_Assets.',
         infoBn: 'ক্যামেরা সেন্সর থেকে আসা মূল অপরিবর্তিত ছবি। এটি 01_Raw_Assets ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'f4_2', 
-        name: 'Microphone_Interview_Raw.mp3', 
-        ext: 'mp3', 
-        size: '35 MB', 
-        date: '2026-09-12', 
-        targetFolderId: 'f_raw', 
+      {
+        id: 'f4_2',
+        name: 'Microphone_Interview_Raw.mp3',
+        ext: 'mp3',
+        size: '35 MB',
+        date: '2026-09-12',
+        targetFolderId: 'f_raw',
         preview: 'Direct unedited dual-channel field recording.',
         infoTitle: 'Direct Field Audio Recording',
         infoEn: 'Direct unedited dual-channel field recording. Belongs in 01_Raw_Assets as raw source audio.',
         infoBn: 'সরাসরি রেকর্ড করা মূল ভয়েস অডিও। এটি 01_Raw_Assets ফোল্ডারে সুরক্ষিত থাকবে।'
       },
-      { 
-        id: 'f4_3', 
-        name: 'Video_Editor_Timeline.pptx', 
-        ext: 'pptx', 
-        size: '2.1 MB', 
-        date: '2026-09-15', 
-        targetFolderId: 'f_work', 
+      {
+        id: 'f4_3',
+        name: 'Video_Editor_Timeline.pptx',
+        ext: 'pptx',
+        size: '2.1 MB',
+        date: '2026-09-15',
+        targetFolderId: 'f_work',
         preview: 'Storyboards, cut timings, and transitions draft.',
         infoTitle: 'Video Editing Storyboard Timeline',
         infoEn: 'Work-in-progress editing layout, cut timings, and transitions. Belongs in 02_Workings_Scripts.',
         infoBn: 'ভিডিও এডিটের কাটাকাটি ও পরিকল্পনার চলমান কাজের ফাইল। এটি 02_Workings_Scripts-এ যাবে।'
       },
-      { 
-        id: 'f4_4', 
-        name: 'Subtitle_Translation_Script.txt', 
-        ext: 'txt', 
-        size: '9 KB', 
-        date: '2026-09-16', 
-        targetFolderId: 'f_work', 
+      {
+        id: 'f4_4',
+        name: 'Subtitle_Translation_Script.txt',
+        ext: 'txt',
+        size: '9 KB',
+        date: '2026-09-16',
+        targetFolderId: 'f_work',
         preview: 'Working timestamps for English and Hindi closed captions.',
         infoTitle: 'Subtitle Translation Script',
         infoEn: 'Working subtitle draft with timestamps for translation. Belongs in 02_Workings_Scripts.',
         infoBn: 'অনুবাদ ও সাবটাইটেল লেখার চলমান ড্রাফট। এটি 02_Workings_Scripts ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'f4_5', 
-        name: 'Documentary_Master_4K.mp4', 
-        ext: 'mp4', 
-        size: '85 MB', 
-        date: '2026-09-26', 
-        targetFolderId: 'f_deliv', 
+      {
+        id: 'f4_5',
+        name: 'Documentary_Master_4K.mp4',
+        ext: 'mp4',
+        size: '85 MB',
+        date: '2026-09-26',
+        targetFolderId: 'f_deliv',
         preview: 'Color-graded, rendered final video ready for premiere.',
         infoTitle: '4K Master Rendered Video',
         infoEn: 'Color-graded, rendered master video deliverable ready to broadcast. Belongs in 03_Final_Deliverables.',
         infoBn: 'সম্পূর্ণ এডিট করা ৪কে মাস্টার ভিডিও যা রিলিজের জন্য প্রস্তুত। এটি 03_Final_Deliverables-এ যাবে।'
       },
-      { 
-        id: 'f4_6', 
-        name: 'Press_Release_Distribution.pdf', 
-        ext: 'pdf', 
-        size: '890 KB', 
-        date: '2026-09-26', 
-        targetFolderId: 'f_deliv', 
+      {
+        id: 'f4_6',
+        name: 'Press_Release_Distribution.pdf',
+        ext: 'pdf',
+        size: '890 KB',
+        date: '2026-09-26',
+        targetFolderId: 'f_deliv',
         preview: 'Official signed press kit deliverable.',
         infoTitle: 'Official Press Release PDF',
         infoEn: 'Final signed press kit ready for media distribution. Belongs in 03_Final_Deliverables.',
@@ -505,38 +555,50 @@ export const FILE_MANAGEMENT_LEVELS: Record<number, FileManagementLevel> = {
     badge: "Class 11 AI: Data Architecture",
     goal: "Construct a professional Machine Learning project architecture: Unprocessed dirty data, cleaned feature datasets, model prompts & weights, and validation audit reports.",
     goalBn: "পেশাদার মেশিন লার্নিং প্রজেক্টের আর্কিটেকচার তৈরি করুন: অপরিশোধিত ডেটা 'data_raw_unprocessed', পরিশোধিত ডেটা 'data_clean_training', মডেল ও প্রম্পট 'models_and_prompts' এবং মূল্যায়ন রিপোর্ট 'reports_and_eval'।",
+    instructions: [
+      "Sort messy scraped web reviews and raw survey CSVs into 'data_raw_unprocessed'.",
+      "Move normalized, cleaned, tokenized datasets into 'data_clean_training'.",
+      "Organize model architecture files, weight tensors, and system prompts into 'models_and_prompts'.",
+      "Archive validation F1 matrices, accuracy curves, and audit papers into 'reports_and_eval'."
+    ],
+    instructionsBn: [
+      "ইন্টারনেট থেকে সংগ্রহ করা অগোছালো ও ত্রুটিযুক্ত কাঁচা ডেটাসেট ➔ 'data_raw_unprocessed' ফোল্ডারে রাখুন।",
+      "পরিশোধিত, ফিল্টার করা ও প্রস্তুতকৃত ট্রেনিং ডেটা ➔ 'data_clean_training' ফোল্ডারে রাখুন।",
+      "কৃত্রিম বুদ্ধিমত্তা মডেলের আর্কিটেকচার, ওয়েটস ও প্রম্পট ফাইল ➔ 'models_and_prompts' ফোল্ডারে রাখুন।",
+      "মডেলের নির্ভুলতা যাচাইয়ের রিপোর্ট, গ্রাফ ও অডিট পেপার ➔ 'reports_and_eval' ফোল্ডারে রাখুন।"
+    ],
     targetFolders: [
-      { 
-        id: 'f_dir_raw', 
-        name: 'data_raw_unprocessed', 
-        icon: '📁', 
+      {
+        id: 'f_dir_raw',
+        name: 'data_raw_unprocessed',
+        icon: '📁',
         accepted: ['data_raw'],
         infoTitle: 'data_raw_unprocessed Pipeline Folder',
         infoEn: 'Contains uncleaned, scraped, or dirty source datasets with missing values and duplicates.',
         infoBn: 'অশোধিত ডেটা: ইন্টারনেট বা সার্ভার থেকে নেওয়া প্রাথমিক ডেটা, যাতে ভুল বা খালি তথ্য থাকতে পারে।'
       },
-      { 
-        id: 'f_dir_clean', 
-        name: 'data_clean_training', 
-        icon: '📁', 
+      {
+        id: 'f_dir_clean',
+        name: 'data_clean_training',
+        icon: '📁',
         accepted: ['data_clean'],
         infoTitle: 'data_clean_training Pipeline Folder',
         infoEn: 'Contains cleaned, normalized, vectorized tables prepared for machine learning model training.',
         infoBn: 'পরিশোধিত ডেটা: মডেলকে শেখানোর উপযোগী পরিষ্কার, ফিল্টার করা ও প্রস্তুত ডেটাসেট।'
       },
-      { 
-        id: 'f_dir_model', 
-        name: 'models_and_prompts', 
-        icon: '📁', 
+      {
+        id: 'f_dir_model',
+        name: 'models_and_prompts',
+        icon: '📁',
         accepted: ['models'],
         infoTitle: 'models_and_prompts Pipeline Folder',
         infoEn: 'Stores AI model weight checkpoints, architecture configurations, and system prompt engineering templates.',
         infoBn: 'মডেল ও প্রম্পট: কৃত্রিম বুদ্ধিমত্তা মডেলের ওজন (weights) ও সিস্টেম প্রম্পট কোড রাখার জায়গা।'
       },
-      { 
-        id: 'f_dir_eval', 
-        name: 'reports_and_eval', 
-        icon: '📁', 
+      {
+        id: 'f_dir_eval',
+        name: 'reports_and_eval',
+        icon: '📁',
         accepted: ['eval'],
         infoTitle: 'reports_and_eval Pipeline Folder',
         infoEn: 'Stores model validation metrics, F1 confusion matrices, accuracy graphs, and ethical audit papers.',
@@ -544,73 +606,73 @@ export const FILE_MANAGEMENT_LEVELS: Record<number, FileManagementLevel> = {
       },
     ],
     files: [
-      { 
-        id: 'f5_1', 
-        name: 'scraped_web_reviews_dirty.csv', 
-        ext: 'xlsx', 
-        size: '18 MB', 
-        date: '2026-09-10', 
-        targetFolderId: 'f_dir_raw', 
+      {
+        id: 'f5_1',
+        name: 'scraped_web_reviews_dirty.csv',
+        ext: 'xlsx',
+        size: '18 MB',
+        date: '2026-09-10',
+        targetFolderId: 'f_dir_raw',
         preview: 'Raw HTML tags, duplicates, and unescaped quotes.',
         infoTitle: 'Scraped Web Reviews (Dirty Data)',
         infoEn: 'Raw web reviews containing HTML tags, missing rows, and duplicates. Belongs in data_raw_unprocessed.',
         infoBn: 'ইন্টারনেট থেকে সরাসরি নেওয়া অপরিশোধিত ডেটা যাতে ভুল মান রয়েছে। এটি data_raw_unprocessed-এ যাবে।'
       },
-      { 
-        id: 'f5_2', 
-        name: 'training_dataset_normalized.xlsx', 
-        ext: 'xlsx', 
-        size: '8.4 MB', 
-        date: '2026-09-20', 
-        targetFolderId: 'f_dir_clean', 
+      {
+        id: 'f5_2',
+        name: 'training_dataset_normalized.xlsx',
+        ext: 'xlsx',
+        size: '8.4 MB',
+        date: '2026-09-20',
+        targetFolderId: 'f_dir_clean',
         preview: 'Zero null values, tokenized strings, normalized vectors.',
         infoTitle: 'Normalized Training Dataset',
         infoEn: 'Cleaned, null-free, scaled feature vectors ready to train neural networks. Belongs in data_clean_training.',
         infoBn: 'খালি মানমুক্ত ও সংখ্যায় রূপান্তর করা প্রস্তুত ডেটা। এটি data_clean_training ফোল্ডারে যাবে।'
       },
-      { 
-        id: 'f5_3', 
-        name: 'classifier_prompt_system.txt', 
-        ext: 'txt', 
-        size: '3 KB', 
-        date: '2026-09-24', 
-        targetFolderId: 'f_dir_model', 
+      {
+        id: 'f5_3',
+        name: 'classifier_prompt_system.txt',
+        ext: 'txt',
+        size: '3 KB',
+        date: '2026-09-24',
+        targetFolderId: 'f_dir_model',
         preview: 'You are an AI classifier. Label input tokens into sentiment classes.',
         infoTitle: 'AI System Classifier Prompt',
         infoEn: 'Core system instruction prompt that controls the LLM classifier behavior. Belongs in models_and_prompts.',
         infoBn: 'এআই মডেল কীভাবে উত্তর দেবে তার মূল নির্দেশক প্রম্পট। এটি models_and_prompts-এ যাবে।'
       },
-      { 
-        id: 'f5_4', 
-        name: 'model_weights_checkpoint.pptx', 
-        ext: 'pptx', 
-        size: '45 MB', 
-        date: '2026-09-25', 
-        targetFolderId: 'f_dir_model', 
+      {
+        id: 'f5_4',
+        name: 'model_weights_checkpoint.pptx',
+        ext: 'pptx',
+        size: '45 MB',
+        date: '2026-09-25',
+        targetFolderId: 'f_dir_model',
         preview: 'Serialized architecture weights and attention layers.',
         infoTitle: 'Model Weights Architecture Checkpoint',
         infoEn: 'Serialized trained neural network checkpoint and layer weights. Belongs in models_and_prompts.',
         infoBn: 'ট্রেন করা নিউরাল নেটওয়ার্কের ওজন ও স্থাপত্যের ফাইল। এটি models_and_prompts-এ যাবে।'
       },
-      { 
-        id: 'f5_5', 
-        name: 'Confusion_Matrix_F1_Score.pdf', 
-        ext: 'pdf', 
-        size: '640 KB', 
-        date: '2026-09-26', 
-        targetFolderId: 'f_dir_eval', 
+      {
+        id: 'f5_5',
+        name: 'Confusion_Matrix_F1_Score.pdf',
+        ext: 'pdf',
+        size: '640 KB',
+        date: '2026-09-26',
+        targetFolderId: 'f_dir_eval',
         preview: 'Test set precision: 96.4%, Recall: 95.1%, AUC: 0.98.',
         infoTitle: 'Model Evaluation & F1 Metric Report',
         infoEn: 'Official test benchmark report showing precision, recall, and F1 accuracy curves. Belongs in reports_and_eval.',
         infoBn: 'মডেলের কাজের নির্ভুলতা ও এফ-১ স্কোর যাচাইয়ের রেজাল্ট শিট। এটি reports_and_eval-এ যাবে।'
       },
-      { 
-        id: 'f5_6', 
-        name: 'Model_Ethical_Bias_Audit.docx', 
-        ext: 'docx', 
-        size: '55 KB', 
-        date: '2026-09-26', 
-        targetFolderId: 'f_dir_eval', 
+      {
+        id: 'f5_6',
+        name: 'Model_Ethical_Bias_Audit.docx',
+        ext: 'docx',
+        size: '55 KB',
+        date: '2026-09-26',
+        targetFolderId: 'f_dir_eval',
         preview: 'Fairness metric evaluation across diverse demographic test cohorts.',
         infoTitle: 'AI Ethical Bias & Fairness Audit',
         infoEn: 'Document evaluating model fairness and mitigation of bias across demographics. Belongs in reports_and_eval.',
@@ -631,9 +693,14 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
     goal: "Create standard media folders in your workspace: 'Photos', 'Homework', 'Music', and 'Projects'. Delete clutter/junk folders like 'New Folder (1)' and 'temp_junk_delete_me' to the Recycle Bin.",
     goalBn: "আপনার ওয়ার্কস্পেসে ৪টি প্রধান ফোল্ডার তৈরি করুন: 'Photos', 'Homework', 'Music' এবং 'Projects'। এরপর অপ্রয়োজনীয় ও বাতিল ফোল্ডার 'New Folder (1)' এবং 'temp_junk_delete_me' ডিলিট করে রিসাইকেল বিনে পাঠান।",
     instructions: [
-      "Click '➕ New folder' on the ribbon to create 'Photos', 'Homework', 'Music', and 'Projects'.",
-      "Select 'New Folder (1)' and 'temp_junk_delete_me' and press Delete (or click 🗑️ Delete) to send them to the Recycle Bin.",
+      "Click '+ New folder' on the ribbon to create 'Photos', 'Homework', 'Music', and 'Projects'.",
+      "Select 'New Folder (1)' and 'temp_junk_delete_me' and press Delete (or click Delete) to send them to the Recycle Bin.",
       "Check with Dita AI Copilot to verify all required folders exist and junk is removed."
+    ],
+    instructionsBn: [
+      "রিবনের '+ New folder' বোতামে ক্লিক করে ৪টি মূল ফোল্ডার তৈরি করুন: 'Photos', 'Homework', 'Music', এবং 'Projects'।",
+      "'New Folder (1)' এবং 'temp_junk_delete_me' ফোল্ডার দুটি নির্বাচন করে Delete কী চেপে (বা Delete বোতামে ক্লিক করে) রিসাইকেল বিনে পাঠান।",
+      "Dita AI অ্যাসিস্ট্যান্ট দিয়ে যাচাই করুন সব দরকারি ফোল্ডার তৈরি হয়েছে এবং আবর্জনা ফোল্ডার মুছে গেছে কি না।"
     ],
     initialFolders: [
       {
@@ -703,6 +770,12 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
       "Double click into 'School_Work' and create subfolders: 'Term_1', 'Term_2', and 'Exams'.",
       "Rename 'Untitled_Folder' to 'Assignments' using F2 or the ✏️ Rename button.",
       "Move or place 'Assignments' inside 'School_Work'."
+    ],
+    instructionsBn: [
+      "রুট ডিরেক্টরিতে 'School_Work' ফোল্ডার তৈরি করুন (না থাকলে)।",
+      "'School_Work' ফোল্ডারের ভেতর ডাবল-ক্লিক করে ঢুকুন এবং ৩টি সাব-ফোল্ডার তৈরি করুন: 'Term_1', 'Term_2', এবং 'Exams'।",
+      "বাইরে থাকা 'Untitled_Folder'-টিকে নির্বাচন করে F2 চাপুন বা ✏️ রিনেম বোতাম দিয়ে এর নাম পরিবর্তন করে 'Assignments' রাখুন।",
+      "'Assignments' ফোল্ডারটিকে ড্র্যাগ করে বা কাট-পেস্ট করে 'School_Work'-এর ভেতরে নিয়ে যান।"
     ],
     initialFolders: [
       {
@@ -777,6 +850,14 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
       "Inside 'Humanities', create 'History' and 'Geography'.",
       "Delete 'test_copy_delete' to Recycle Bin."
     ],
+    instructionsBn: [
+      "ওয়ার্কস্পেস রুটে প্রধান ফোল্ডার 'Academics' তৈরি করুন।",
+      "'Academics'-এর ভেতর ৩টি প্রধান বিভাগ বানান: 'Science', 'Commerce', এবং 'Humanities'।",
+      "'Science' ফোল্ডারের ভেতর ঢুকে ৩টি বিষয়ের ফোল্ডার তৈরি করুন: 'Physics', 'Chemistry', এবং 'Biology'।",
+      "'Commerce' ফোল্ডারের ভেতর ঢুকে ২টি বিষয়ের ফোল্ডার তৈরি করুন: 'Accounting' এবং 'Economics'।",
+      "'Humanities' ফোল্ডারের ভেতর ঢুকে ২টি বিষয়ের ফোল্ডার তৈরি করুন: 'History' এবং 'Geography'।",
+      "অপ্রয়োজনীয় বাতিল টেস্ট ফোল্ডার 'test_copy_delete'-কে রিসাইকেল বিনে ফেলে ডিলিট করুন।"
+    ],
     initialFolders: [
       {
         id: 'f3_junk',
@@ -844,15 +925,25 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
     levelNumber: 4,
     title: "Level 4: Corporate Departmental Tree (Class 9-10)",
     badge: "Class 9-10: Corporate Admin",
-    goal: "Construct an official enterprise office directory 'Company_HQ': Human_Resources ('Onboarding', 'Payroll', 'Leave_Records'), Finance_Accounts ('Invoices_2026', 'Tax_Audits', 'Budgets'), and Operations ('Logistics', 'Vendor_Contracts'). Rename 'old_hr_stuff' to 'HR_Archives'.",
-    goalBn: "কোম্পানির হেডকোয়ার্টার 'Company_HQ'-এর ভেতর ৩টি বিভাগ বানান: Human_Resources (Onboarding, Payroll, Leave_Records), Finance_Accounts (Invoices_2026, Tax_Audits, Budgets) এবং Operations (Logistics, Vendor_Contracts)। 'old_hr_stuff'-কে রিনেম করে 'HR_Archives' রাখুন।",
+    goal: "Construct official enterprise directory 'Company_HQ': Human_Resources (with subfolders 'Onboarding', 'Payroll', 'Leave_Records', and 'HR_Archives'), Finance_Accounts ('Invoices_2026', 'Tax_Audits', 'Budgets'), and Operations ('Logistics', 'Vendor_Contracts'). Rename legacy 'old_hr_stuff' to 'HR_Archives' and move it under 'Human_Resources'. Delete 'corrupt_temp_cache' to the Recycle Bin.",
+    goalBn: "কোম্পানির হেডকোয়ার্টার 'Company_HQ'-এর ভেতরে ৩টি প্রধান বিভাগ তৈরি করুন: Human_Resources (ভেতরে ৪টি ফোল্ডার: Onboarding, Payroll, Leave_Records এবং HR_Archives), Finance_Accounts (Invoices_2026, Tax_Audits, Budgets) এবং Operations (Logistics, Vendor_Contracts)। পুরোনো 'old_hr_stuff' ফোল্ডারটিকে রিনেম করে 'HR_Archives' করুন ও Human_Resources-এর ভেতরে রাখুন। ক্ষতিকর 'corrupt_temp_cache' ফোল্ডারটি রিসাইকেল বিনে ফেলে ডিলিট করুন।",
     instructions: [
-      "In Workspace Root, create 'Company_HQ'.",
-      "Inside 'Company_HQ', build 3 corporate divisions: 'Human_Resources', 'Finance_Accounts', and 'Operations'.",
-      "Under 'Human_Resources', create 'Onboarding', 'Payroll', 'Leave_Records', and move the renamed 'HR_Archives' here.",
-      "Under 'Finance_Accounts', create 'Invoices_2026', 'Tax_Audits', and 'Budgets'.",
-      "Under 'Operations', create 'Logistics' and 'Vendor_Contracts'.",
-      "Delete 'corrupt_temp_cache' to Recycle Bin."
+      "In Workspace Root, create the main corporate folder 'Company_HQ'.",
+      "Inside 'Company_HQ', build 3 division folders: 'Human_Resources', 'Finance_Accounts', and 'Operations'.",
+      "Rename 'old_hr_stuff' to 'HR_Archives' (press F2 or click Rename), then move it inside 'Company_HQ/Human_Resources'.",
+      "Inside 'Company_HQ/Human_Resources', create 3 new folders: 'Onboarding', 'Payroll', and 'Leave_Records' (so Human_Resources contains all 4 subfolders).",
+      "Inside 'Company_HQ/Finance_Accounts', create 3 folders: 'Invoices_2026', 'Tax_Audits', and 'Budgets'.",
+      "Inside 'Company_HQ/Operations', create 2 folders: 'Logistics' and 'Vendor_Contracts'.",
+      "Delete the corrupted folder 'corrupt_temp_cache' to the Recycle Bin."
+    ],
+    instructionsBn: [
+      "ধাপ ১: ওয়ার্কস্পেসের রুটে প্রধান কর্পোরেট ফোল্ডার 'Company_HQ' তৈরি করুন।",
+      "ধাপ ২: 'Company_HQ'-এর ভেতর ৩টি বিভাগীয় ফোল্ডার তৈরি করুন: 'Human_Resources', 'Finance_Accounts', এবং 'Operations'।",
+      "ধাপ ৩: রুটে থাকা 'old_hr_stuff' ফোল্ডারটিকে রিনেম (F2) করে 'HR_Archives' নাম দিন এবং একে কাট বা ড্র্যাগ করে 'Company_HQ/Human_Resources'-এর ভেতর নিয়ে যান।",
+      "ধাপ ৪: 'Company_HQ/Human_Resources'-এর ভেতর আরও ৩টি ফোল্ডার তৈরি করুন: 'Onboarding', 'Payroll', এবং 'Leave_Records' (ফলে Human_Resources-এ মোট ৪টি ফোল্ডার থাকবে)।",
+      "ধাপ ৫: 'Company_HQ/Finance_Accounts'-এর ভেতর ৩টি ফোল্ডার তৈরি করুন: 'Invoices_2026', 'Tax_Audits', এবং 'Budgets'।",
+      "ধাপ ৬: 'Company_HQ/Operations'-এর ভেতর ২টি ফোল্ডার তৈরি করুন: 'Logistics' এবং 'Vendor_Contracts'।",
+      "ধাপ ৭: রুটে থাকা ক্ষতিকর 'corrupt_temp_cache' ফোল্ডারটি নির্বাচন করে রিসাইকেল বিনে পাঠিয়ে দিন (ডিলিট করুন)।"
     ],
     initialFolders: [
       {
@@ -945,6 +1036,14 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
       "Inside 'docs', create 'api_specs' and 'changelogs'.",
       "Delete 'temp_build_cache' and 'scratch_junk' to the Recycle Bin."
     ],
+    instructionsBn: [
+      "ওয়ার্কস্পেস রুটে মূল প্রজেক্ট ফোল্ডার 'Web_Project' তৈরি করুন।",
+      "'Web_Project'-এর ভেতরে ৩টি স্ট্যান্ডার্ড কোডবেস ডিরেক্টরি তৈরি করুন: 'src', 'public', এবং 'docs'।",
+      "'src' ফোল্ডারের ভেতর ৪টি সাব-ফোল্ডার তৈরি করুন: 'components', 'services', 'types', এবং 'assets'।",
+      "'public' ফোল্ডারের ভেতর ২টি সাব-ফোল্ডার তৈরি করুন: 'images' এবং 'fonts'।",
+      "'docs' ফোল্ডারের ভেতর ২টি সাব-ফোল্ডার তৈরি করুন: 'api_specs' এবং 'changelogs'।",
+      "অস্থায়ী বিল্ড ক্যাশ 'temp_build_cache' এবং স্ক্র্যাচ ড্রাফট 'scratch_junk' নির্বাচন করে রিসাইকেল বিনে পাঠিয়ে ডিলিট করুন।"
+    ],
     initialFolders: [
       {
         id: 'f5_junk1',
@@ -1032,6 +1131,15 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
       "Under '03_Post_Production', create 'VFX_Comps', 'Color_Grade', and 'Sound_Mix'.",
       "Under '04_Exports', create 'ProRes_Masters' and 'Web_H264'.",
       "Delete 'random_shots_delete' and 'test_renders_old' to Recycle Bin."
+    ],
+    instructionsBn: [
+      "ওয়ার্কস্পেস রুটে মাস্টার স্টুডিও ফোল্ডার 'Film_Production' তৈরি করুন।",
+      "'Film_Production'-এর ভেতর ক্রমানুযায়ী ৪টি প্রধান পর্যায় তৈরি করুন: '01_Pre_Production', '02_Production', '03_Post_Production', এবং '04_Exports'।",
+      "'01_Pre_Production'-এর ভেতর ৩টি সাব-ফোল্ডার তৈরি করুন: 'Scripts', 'Storyboards', এবং 'Casting'।",
+      "'02_Production'-এর ভেতর ৩টি সাব-ফোল্ডার তৈরি করুন: 'Camera_A', 'Camera_B', এবং 'Audio_Stems'।",
+      "'03_Post_Production'-এর ভেতর ৩টি সাব-ফোল্ডার তৈরি করুন: 'VFX_Comps', 'Color_Grade', এবং 'Sound_Mix'।",
+      "'04_Exports'-এর ভেতর ২টি ফাইনাল এক্সপোর্ট ফোল্ডার তৈরি করুন: 'ProRes_Masters' এবং 'Web_H264'।",
+      "বাতিল ফুটেজের ফোল্ডার 'random_shots_delete' এবং 'test_renders_old' ডিলিট করে রিসাইকেল বিনে পাঠান।"
     ],
     initialFolders: [
       {
@@ -1134,6 +1242,17 @@ export const FOLDER_MANAGEMENT_LEVELS: Record<number, FolderManagementLevel> = {
       "Under 'Backups', create 'Daily_Snapshots' and 'Disaster_Recovery'.",
       "Under 'Security_Audits', create 'Access_Logs_2026' and 'Penetration_Reports'.",
       "Delete compromised hazard folders 'unsecured_dump' and 'test_keys_leak' to Recycle Bin."
+    ],
+    instructionsBn: [
+      "ওয়ার্কস্পেস রুটে মাস্টার ক্লাউড ফোল্ডার 'Cloud_Infrastructure' তৈরি করুন।",
+      "'Cloud_Infrastructure'-এর ভেতর ৩টি প্রধান স্তর তৈরি করুন: 'Environments', 'Backups', এবং 'Security_Audits'।",
+      "'Environments'-এর ভেতর ৩টি পরিবেশ ফোল্ডার তৈরি করুন: 'Production', 'Staging', এবং 'Development'।",
+      "'Production'-এর ভেতর ৩টি প্রোডাকশন সার্ভিস ফোল্ডার তৈরি করুন: 'App_Cluster', 'Database_Replica', এবং 'SSL_Certs'।",
+      "'Staging'-এর ভেতর ২টি টেস্টিং ফোল্ডার তৈরি করুন: 'QA_Tests' এবং 'Pre_Release'।",
+      "'Development'-এর ভেতর ২টি ডেভেলপমেন্ট ফোল্ডার তৈরি করুন: 'Local_Containers' এবং 'Sandbox'।",
+      "'Backups'-এর ভেতর ২টি ব্যাকআপ ফোল্ডার তৈরি করুন: 'Daily_Snapshots' এবং 'Disaster_Recovery'।",
+      "'Security_Audits'-এর ভেতর ২টি নিরাপত্তা অডিট ফোল্ডার তৈরি করুন: 'Access_Logs_2026' এবং 'Penetration_Reports'।",
+      "বিপজ্জনক ফোল্ডার 'unsecured_dump' এবং 'test_keys_leak' নির্বাচন করে অবিলম্বে রিসাইকেল বিনে পাঠিয়ে ডিলিট করুন।"
     ],
     initialFolders: [
       {

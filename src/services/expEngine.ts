@@ -1,7 +1,8 @@
-import { StudentProgress, UserRole } from '../types';
+import { StudentProgress } from '../types';
 import { loadStudentProgress, saveStudentProgress } from './storageService';
 import { loadExcelProgress } from './excelStorageService';
 import { loadWindowsProgress } from './windowsStorageService';
+import { loadTerminalProgress } from './terminalStorageService';
 
 export interface ExpAwardResult {
   amountAwarded: number;
@@ -10,7 +11,7 @@ export interface ExpAwardResult {
   currentRank: string;
   nextRank: string;
   progressToNextRank: number; // 0 to 100
-  source: 'practice' | 'excel' | 'windows';
+  source: 'practice' | 'excel' | 'windows' | 'terminal';
 }
 
 export interface OperatorRank {
@@ -91,7 +92,7 @@ export function getRankForExp(exp: number): {
  */
 export function awardTaskExp(
   amount: number,
-  source: 'practice' | 'excel' | 'windows',
+  source: 'practice' | 'excel' | 'windows' | 'terminal',
   options?: { alreadyAddedToTotal?: boolean; details?: string }
 ): ExpAwardResult {
   const currentProgress = loadStudentProgress();
@@ -142,23 +143,27 @@ export function calculateGlobalExpBreakdown(): {
   practiceExp: number;
   excelExp: number;
   windowsExp: number;
+  terminalExp: number;
   totalExp: number;
 } {
   const student = loadStudentProgress();
   const excel = loadExcelProgress();
   const win = loadWindowsProgress();
+  const terminal = loadTerminalProgress();
 
   const excelExp = excel.totalExcelExp || 0;
   const windowsExp = win.totalWindowsExp || 0;
+  const terminalExp = terminal.totalTerminalExp || 0;
   
   // Practice EXP is the difference or the student progress total
-  const totalExp = Math.max(student.totalExp || 0, excelExp + windowsExp);
-  const practiceExp = Math.max(0, totalExp - (excelExp + windowsExp));
+  const totalExp = Math.max(student.totalExp || 0, excelExp + windowsExp + terminalExp);
+  const practiceExp = Math.max(0, totalExp - (excelExp + windowsExp + terminalExp));
 
   return {
     practiceExp,
     excelExp,
     windowsExp,
+    terminalExp,
     totalExp
   };
 }

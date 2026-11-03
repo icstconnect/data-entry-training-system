@@ -29,6 +29,8 @@ const ExcelDashboard = React.lazy(() => import('./components/excel/ExcelDashboar
 const ExcelWorkbench = React.lazy(() => import('./components/excel/ExcelWorkbench').then(m => ({ default: m.ExcelWorkbench })));
 const WindowsDashboard = React.lazy(() => import('./components/windows/WindowsDashboard').then(m => ({ default: m.WindowsDashboard })));
 const WindowsWorkbench = React.lazy(() => import('./components/windows/WindowsWorkbench').then(m => ({ default: m.WindowsWorkbench })));
+const TerminalDashboard = React.lazy(() => import('./components/terminal/TerminalDashboard').then(m => ({ default: m.TerminalDashboard })));
+const TerminalWorkbench = React.lazy(() => import('./components/terminal/TerminalWorkbench').then(m => ({ default: m.TerminalWorkbench })));
 import { WindowsSimulationMode } from './types/windows';
 import { setAppTitle } from './utils/dynamicTitle';
 import { awardTaskExp } from './services/expEngine';
@@ -63,8 +65,9 @@ const ViewLoader: React.FC = () => (
 
 export function App() {
   const [currentRole, setCurrentRole] = useState<UserRole>('student');
-  const [activeView, setActiveView] = useState<'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows'>('landing');
+  const [activeView, setActiveView] = useState<'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal'>('landing');
   const [excelLevel, setExcelLevel] = useState<number | null>(null);
+  const [terminalLevel, setTerminalLevel] = useState<number | null>(null);
   const [windowsState, setWindowsState] = useState<{ inWorkbench: boolean; mode: WindowsSimulationMode; level: number }>({
     inWorkbench: false,
     mode: 'file_management',
@@ -111,9 +114,10 @@ export function App() {
 
   // Universal Lab & Action Destination Gate
   type PendingLabTarget = 
-    | { type: 'view'; view: 'practice' | 'excel' | 'windows' | 'showcase' }
+    | { type: 'view'; view: 'practice' | 'excel' | 'windows' | 'showcase' | 'terminal' }
     | { type: 'excelLevel'; level: number }
     | { type: 'windowsSimulation'; mode: WindowsSimulationMode; level: number }
+    | { type: 'terminalLevel'; level: number }
     | { type: 'shareModal' }
     | null;
 
@@ -157,6 +161,8 @@ export function App() {
       setAppTitle('practice', `Level ${currentLevel} • Stage ${currentStage}`);
     } else if (activeView === 'excel') {
       setAppTitle('excel', excelLevel ? `Scenario ${excelLevel} Batch` : undefined);
+    } else if (activeView === 'terminal') {
+      setAppTitle('terminal', terminalLevel ? `Scenario ${terminalLevel} Stream` : undefined);
     } else if (activeView === 'windows') {
       if (windowsState.inWorkbench) {
         const modeText = windowsState.mode === 'folder_management' ? 'Folder Management' : 'File Organization';
@@ -167,7 +173,7 @@ export function App() {
     } else {
       setAppTitle(activeView);
     }
-  }, [activeView, currentLevel, currentStage, excelLevel, windowsState]);
+  }, [activeView, currentLevel, currentStage, excelLevel, windowsState, terminalLevel]);
 
   // Sync Government Accessibility attributes with documentElement & localStorage
   useEffect(() => {
@@ -224,6 +230,8 @@ export function App() {
         setActiveView('practice');
       } else if (hash === '#excel' || path.includes('excel')) {
         setActiveView('excel');
+      } else if (hash === '#terminal' || hash === '#terminal-lab' || path.includes('terminal')) {
+        setActiveView('terminal');
       } else if (hash === '#windows' || hash === '#windows-org' || path.includes('windows')) {
         setActiveView('windows');
       } else if (hash === '#dashboard') {
@@ -244,8 +252,8 @@ export function App() {
   }, []);
 
   // Sync active view to window hash with mandatory student identity check for all labs
-  const handleViewChange = (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows') => {
-    const isLab = view === 'practice' || view === 'excel' || view === 'windows';
+  const handleViewChange = (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal') => {
+    const isLab = view === 'practice' || view === 'excel' || view === 'windows' || view === 'terminal';
     if (isLab && !requireStudentIdentity({ type: 'view', view })) {
       return;
     }
@@ -257,6 +265,8 @@ export function App() {
       window.location.hash = 'practice';
     } else if (view === 'excel') {
       window.location.hash = 'excel';
+    } else if (view === 'terminal') {
+      window.location.hash = 'terminal';
     } else if (view === 'windows') {
       window.location.hash = 'windows';
     } else if (view === 'student-dashboard') {
@@ -286,7 +296,7 @@ export function App() {
   }, []);
 
   // EXP Awarded Micro-animation trigger & unified profile synchronization
-  const handleExpAwarded = (amount: number, source: 'practice' | 'excel' | 'windows' = 'practice') => {
+  const handleExpAwarded = (amount: number, source: 'practice' | 'excel' | 'windows' | 'terminal' = 'practice') => {
     setFloatingExp(amount);
     setTimeout(() => {
       setFloatingExp(null);
@@ -337,6 +347,10 @@ export function App() {
         setActiveView('excel');
         setExcelLevel(target.level);
         window.location.hash = 'excel';
+      } else if (target.type === 'terminalLevel') {
+        setActiveView('terminal');
+        setTerminalLevel(target.level);
+        window.location.hash = 'terminal';
       } else if (target.type === 'windowsSimulation') {
         setActiveView('windows');
         setWindowsState({ inWorkbench: true, mode: target.mode, level: target.level });
@@ -355,6 +369,7 @@ export function App() {
     setCurrentLevel(1);
     setCurrentStage(1);
     setExcelLevel(null);
+    setTerminalLevel(null);
     setWindowsState({ inWorkbench: false, mode: 'file_management', level: 1 });
     setTimerElapsedSeconds(0);
     setTimerLimitSeconds(APP_CONFIG.DEFAULT_TIME_LIMIT_SECONDS);
@@ -411,8 +426,8 @@ export function App() {
           flex: 1, 
           display: 'flex', 
           flexDirection: 'column',
-          overflow: ((activeView === 'windows' && windowsState.inWorkbench) || (activeView === 'excel' && excelLevel !== null)) ? 'hidden' : undefined,
-          height: ((activeView === 'windows' && windowsState.inWorkbench) || (activeView === 'excel' && excelLevel !== null)) ? 'calc(100vh - 58px)' : undefined
+          overflow: ((activeView === 'windows' && windowsState.inWorkbench) || (activeView === 'excel' && excelLevel !== null) || (activeView === 'terminal' && terminalLevel !== null)) ? 'hidden' : undefined,
+          height: ((activeView === 'windows' && windowsState.inWorkbench) || (activeView === 'excel' && excelLevel !== null) || (activeView === 'terminal' && terminalLevel !== null)) ? 'calc(100vh - 58px)' : undefined
         }}
       >
         {activeView === 'landing' && (
@@ -423,6 +438,7 @@ export function App() {
             onOpenShowcase={() => handleViewChange('showcase')}
             onOpenExcel={() => handleViewChange('excel')}
             onOpenWindows={() => handleViewChange('windows')}
+            onOpenTerminal={() => handleViewChange('terminal')}
             onOpenAchievementShare={() => {
               if (!requireStudentIdentity({ type: 'shareModal' })) return;
               setIsUniversalShareOpen(true);
@@ -507,6 +523,26 @@ export function App() {
             />
           )}
 
+          {activeView === 'terminal' && terminalLevel === null && (
+            <TerminalDashboard
+              onSelectLevel={(lvl) => {
+                if (!requireStudentIdentity({ type: 'terminalLevel', level: lvl })) return;
+                setTerminalLevel(lvl);
+              }}
+              studentProgress={studentProgress}
+            />
+          )}
+
+          {activeView === 'terminal' && terminalLevel !== null && (
+            <TerminalWorkbench
+              levelNumber={terminalLevel}
+              onBackToDashboard={() => setTerminalLevel(null)}
+              onSelectLevel={(lvl) => setTerminalLevel(lvl)}
+              studentProgress={studentProgress}
+              onExpAwarded={(exp) => handleExpAwarded(exp, 'terminal')}
+            />
+          )}
+
           {activeView === 'windows' && windowsState.inWorkbench && (
             <WindowsWorkbench
               initialMode={windowsState.mode}
@@ -519,7 +555,7 @@ export function App() {
       </main>
 
       {/* Brand Footer (hidden in Windows simulation workbench to fit full window without scrolling) */}
-      {!(activeView === 'windows' && windowsState.inWorkbench) && !(activeView === 'excel' && excelLevel !== null) && <Footer />}
+      {!(activeView === 'windows' && windowsState.inWorkbench) && !(activeView === 'excel' && excelLevel !== null) && !(activeView === 'terminal' && terminalLevel !== null) && <Footer />}
 
       {/* Modals wrapped in lightweight Suspense */}
       <React.Suspense fallback={null}>

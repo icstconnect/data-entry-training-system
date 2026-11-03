@@ -3,6 +3,8 @@ import { WindowsProgress, WindowsSimulationMode } from '../../types/windows';
 import { StudentProgress } from '../../types';
 import { FILE_MANAGEMENT_LEVELS, FOLDER_MANAGEMENT_LEVELS, WINDOWS_ACHIEVEMENTS } from '../../data/windowsCurriculumData';
 import { loadWindowsProgress } from '../../services/windowsStorageService';
+import { isMasterUnlocked, verifyAndApplyMasterPassword, lockToStudentProgression } from '../../services/masterUnlockService';
+import { Key, Lock, Unlock, X, Shield } from 'lucide-react';
 import { AchievementsModal } from './modals/AchievementsModal';
 import { CurriculumModal } from './modals/CurriculumModal';
 
@@ -20,6 +22,19 @@ export const WindowsDashboard: React.FC<WindowsDashboardProps> = ({
   const [progress, setProgress] = useState<WindowsProgress>(() => loadWindowsProgress());
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
   const [isCurriculumOpen, setIsCurriculumOpen] = useState(false);
+  const [masterUnlocked, setMasterUnlockedState] = useState(() => isMasterUnlocked());
+  const [showMasterPrompt, setShowMasterPrompt] = useState(false);
+  const [masterPasswordInput, setMasterPasswordInput] = useState('');
+  const [masterError, setMasterError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleMasterUnlockChange = () => {
+      setProgress(loadWindowsProgress());
+      setMasterUnlockedState(isMasterUnlocked());
+    };
+    window.addEventListener('icst_master_unlock_changed', handleMasterUnlockChange);
+    return () => window.removeEventListener('icst_master_unlock_changed', handleMasterUnlockChange);
+  }, []);
 
   useEffect(() => {
     setProgress(loadWindowsProgress());
@@ -108,7 +123,58 @@ export const WindowsDashboard: React.FC<WindowsDashboardProps> = ({
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {masterUnlocked ? (
+              <button
+                onClick={() => {
+                  lockToStudentProgression();
+                  setMasterUnlockedState(false);
+                  setProgress(loadWindowsProgress());
+                }}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  background: 'rgba(16, 185, 129, 0.25)',
+                  border: '1px solid rgba(16, 185, 129, 0.5)',
+                  color: '#a7f3d0',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+                title="All levels unlocked! Click to lock back to student progression."
+              >
+                <Unlock size={14} />
+                <span>Master Unlocked (Lock 🔒)</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setShowMasterPrompt(true);
+                  setMasterError(null);
+                  setMasterPasswordInput('');
+                }}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: '#ffffff',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+                title="Enter master password ICST to unlock all levels"
+              >
+                <Key size={14} />
+                <span>Master Unlock (ICST)</span>
+              </button>
+            )}
             <button
               onClick={() => setIsAchievementsOpen(true)}
               style={{
@@ -208,7 +274,7 @@ export const WindowsDashboard: React.FC<WindowsDashboardProps> = ({
             {Array.from({ length: 5 }, (_, i) => {
               const lvlNum = i + 1;
               const isCleared = progress.fileManagementCompleted[lvlNum]?.score === 100;
-              const isUnlocked = lvlNum <= progress.fileManagementMaxUnlocked;
+              const isUnlocked = isMasterUnlocked() || lvlNum <= progress.fileManagementMaxUnlocked;
               const expReward = lvlNum * 50;
               return (
                 <button
@@ -327,7 +393,7 @@ export const WindowsDashboard: React.FC<WindowsDashboardProps> = ({
             {Array.from({ length: 7 }, (_, i) => {
               const lvlNum = i + 1;
               const isCleared = progress.folderManagementCompleted[lvlNum]?.score === 100;
-              const isUnlocked = lvlNum <= progress.folderManagementMaxUnlocked;
+              const isUnlocked = isMasterUnlocked() || lvlNum <= progress.folderManagementMaxUnlocked;
               const expReward = lvlNum * 50;
               return (
                 <button
