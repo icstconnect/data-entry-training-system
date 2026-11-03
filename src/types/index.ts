@@ -274,3 +274,7 @@ export interface TeacherTestConfig {
   assignedBatches?: string[];
   createdAt: string;
 }
+
+
+// Touch Typing Types Re-export
+export * from './touchTyping';

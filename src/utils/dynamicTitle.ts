@@ -42,6 +42,13 @@ export function setAppTitle(view: string, detail?: string): void {
         : `Terminal Stream HDDE Lab | ${BASE_INSTITUTE}`;
       break;
 
+    case 'typing':
+    case 'touch-typing':
+      document.title = detail 
+        ? `${detail} | ICST Touch Typing Lab`
+        : `Touch Typing Kinesthetic Lab | ${BASE_INSTITUTE}`;
+      break;
+
     case 'dashboard':
     case 'student-dashboard':
       document.title = `Student Profile & Honors | ${BASE_INSTITUTE}`;

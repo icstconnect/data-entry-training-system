@@ -22,6 +22,7 @@ interface LandingPageProps {
   onOpenExcel?: () => void;
   onOpenWindows?: () => void;
   onOpenTerminal?: () => void;
+  onOpenTyping?: () => void;
   onOpenAchievementShare?: () => void;
 }
 
@@ -42,6 +43,7 @@ export const LandingPage: React.FC<LandingPageProps> = React.memo(({
   onOpenExcel,
   onOpenWindows,
   onOpenTerminal,
+  onOpenTyping,
   onOpenAchievementShare
 }) => {
   return (
@@ -113,6 +115,17 @@ export const LandingPage: React.FC<LandingPageProps> = React.memo(({
               >
                 <FolderTree size={17} />
                 <span>WINDOWS ORG LAB</span>
+              </button>
+            )}
+
+            {onOpenTyping && (
+              <button
+                type="button"
+                className="btn btn-primary btn-lg"
+                onClick={onOpenTyping}
+                style={{ background: '#0891b2', borderColor: '#0e7490' }}
+              >
+                <span>TOUCH TYPING LAB</span>
               </button>
             )}
 
@@ -282,6 +295,40 @@ export const LandingPage: React.FC<LandingPageProps> = React.memo(({
                 style={{ width: '100%' }}
               >
                 Launch Terminal Lab →
+              </button>
+            )}
+          </div>
+
+          {/* Card 5: Touch Typing Lab */}
+          <div style={{
+            background: 'var(--bg-card, #ffffff)',
+            border: '1.5px solid var(--border-light, #e2e8f0)',
+            borderRadius: '16px',
+            padding: '24px',
+            boxShadow: 'var(--shadow-sm)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
+                ⌨️
+              </div>
+              <div>
+                <h3 style={{ fontSize: '17px', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+                  Touch Typing Lab
+                </h3>
+                <span style={{ fontSize: '11px', color: '#0891b2', fontWeight: 700 }}>25 Progressive Levels • Spatial Light-Beam Guidance</span>
+              </div>
+            </div>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '16px' }}>
+              Spatial light-beam guided kinesthetic 10-finger typing. Master home row rhythm, opposite-hand Shift coordination, top number row, and code marathons with real-time cadence and golden sunburst pixel awards.
+            </p>
+            {onOpenTyping && (
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={onOpenTyping}
+                style={{ width: '100%', borderColor: '#0891b2', color: '#0891b2', fontWeight: 700 }}
+              >
+                Launch Typing Lab →
               </button>
             )}
           </div>

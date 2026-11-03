@@ -67,6 +67,14 @@
   padding: 0;
 }
 
+html,
+body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-main);
@@ -77,7 +85,6 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
 }
 
 #root {
@@ -85,6 +92,9 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 a {
@@ -496,6 +506,48 @@ input, select, textarea {
   border-color: var(--icst-blue-border);
 }
 
+/* Navigation Header Lab Badges */
+.nav-lab-badge,
+.excel-nav-tag {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  padding: 2px 5px !important;
+  border-radius: 4px !important;
+  margin-left: 5px !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  user-select: none !important;
+  vertical-align: middle !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25) !important;
+}
+
+.nav-lab-badge.badge-excel {
+  background: #16a34a !important;
+  color: #ffffff !important;
+}
+
+.nav-lab-badge.badge-windows {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+.nav-lab-badge.badge-terminal {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+.nav-lab-badge.badge-typing {
+  background: #0891b2 !important;
+  color: #ffffff !important;
+}
+
 /* Clear Data Action */
 .clear-data-btn {
   border-color: #fecaca;
@@ -507,6 +559,261 @@ input, select, textarea {
 .clear-data-btn:hover {
   background: #fef2f2;
   border-color: #f87171;
+}
+
+/* ========================================================
+   RESPONSIVE NAVIGATION SUITE (Desktop & Mobile/Tablet)
+   ======================================================== */
+.header-nav-desktop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.header-nav-mobile-trigger {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.exp-badge-container.compact {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+.mobile-menu-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mobile-menu-toggle-btn:hover,
+.mobile-menu-toggle-btn.is-open {
+  background: var(--icst-blue-soft, #e0f2fe);
+  border-color: var(--icst-blue, #0284c7);
+  color: var(--icst-blue, #0284c7);
+}
+
+/* Horizontal Touch-Scrollable Labs Strip */
+.header-tabs-scroll {
+  display: none;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 6px 12px;
+}
+
+.header-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.header-tabs-scroll-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: min-content;
+}
+
+.tab-scroll-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.tab-scroll-btn:hover {
+  background: var(--bg-hover, #ebe4d5);
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+
+.tab-scroll-btn.active {
+  background: var(--icst-blue-soft, #e0f2fe);
+  color: var(--icst-blue-dark, #0369a1);
+  border-color: var(--icst-blue-border, #0284c7);
+  box-shadow: 0 0 0 1px var(--icst-blue-border, #0284c7);
+  font-weight: 700;
+}
+
+/* Mobile Navigation Drawer Overlay */
+.header-mobile-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  animation: drawerFadeIn 0.2s ease;
+}
+
+.header-mobile-drawer {
+  width: 85%;
+  max-width: 320px;
+  height: 100%;
+  background: var(--bg-surface);
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 16px;
+  gap: 14px;
+  overflow-y: auto;
+  animation: drawerSlideLeft 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes drawerFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes drawerSlideLeft {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.drawer-close-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+  background: transparent;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.drawer-student-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+}
+
+.drawer-student-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e0f2fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drawer-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.drawer-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.drawer-nav-item:hover {
+  background: var(--bg-subtle);
+}
+
+.drawer-nav-item.active {
+  background: var(--icst-blue-soft, #e0f2fe);
+  border-color: var(--icst-blue-border, #0284c7);
+  color: var(--icst-blue-dark, #0369a1);
+}
+
+.drawer-footer-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-light);
+}
+
+.drawer-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.drawer-action-btn.clear-danger {
+  border-color: #fecaca;
+  color: var(--error-red);
+}
+
+/* Tablet & Mobile Breakpoint (<= 1100px) */
+@media (max-width: 1100px) {
+  .header-nav-desktop {
+    display: none !important;
+  }
+  .header-nav-mobile-trigger {
+    display: flex !important;
+  }
+  .header-tabs-scroll {
+    display: block !important;
+  }
+  .header-container {
+    padding: 6px 14px;
+    min-height: 50px;
+    gap: 8px;
+  }
 }
 
 /* Buttons */
@@ -1422,14 +1729,7 @@ select#field-guardianPrefix {
   }
 }
 
-@media (max-width: 1040px) {
-  .nav-btn-text {
-    display: none;
-  }
-  .clear-data-text {
-    display: none;
-  }
-}
+
 
 @media (max-width: 768px) {
   .header-container {
@@ -2000,17 +2300,33 @@ select#field-guardianPrefix {
 
 /* Responsive collapse for small screens */
 @media (max-width: 900px) {
+  .govt-utility-bar {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
   .govt-bar-container {
     flex-direction: column;
-    padding: 6px 12px;
+    padding: 6px 10px;
     gap: 6px;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
   }
   .govt-bar-right {
     justify-content: center;
     width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .govt-control-group {
+    flex-wrap: wrap;
+    justify-content: center;
   }
   .govt-seal-text {
     font-size: 9.5px;
+    text-align: center;
   }
 }
 

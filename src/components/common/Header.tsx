@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, 
   HelpCircle, 
@@ -12,16 +12,21 @@ import {
   AlertTriangle,
   FileSpreadsheet,
   FolderTree,
-  Terminal
+  Terminal,
+  Keyboard,
+  Lock,
+  Unlock,
+  Menu,
+  X,
+  ChevronRight
 } from 'lucide-react';
 import { UserRole, StudentIdentity } from '../../types';
 import { isMasterUnlocked, lockToStudentProgression } from '../../services/masterUnlockService';
-import { Lock, Unlock } from 'lucide-react';
 
 interface HeaderProps {
   currentRole: UserRole;
-  activeView: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal';
-  setActiveView: (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal') => void;
+  activeView: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal' | 'typing';
+  setActiveView: (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal' | 'typing') => void;
   currentLevel: number;
   currentStage: number;
   totalExp: number;
@@ -37,6 +42,90 @@ interface HeaderProps {
   timerElapsedSeconds?: number;
   timerLimitSeconds?: number;
 }
+
+interface LabNavItem {
+  id: HeaderProps['activeView'];
+  label: string;
+  shortLabel: string;
+  icon: React.ReactNode;
+  badge?: string;
+  badgeClass?: string;
+  badgeColor?: string;
+  title: string;
+  requiresTeacher?: boolean;
+}
+
+const LAB_NAV_ITEMS: LabNavItem[] = [
+  {
+    id: 'practice',
+    label: 'Practice',
+    shortLabel: 'Practice',
+    icon: <GraduationCap size={15} />,
+    title: 'Core Single-Form Data Entry Practice'
+  },
+  {
+    id: 'excel',
+    label: 'Excel Lab',
+    shortLabel: 'Excel',
+    icon: <FileSpreadsheet size={15} color="#16a34a" />,
+    badge: 'NEW',
+    badgeClass: 'badge-excel',
+    badgeColor: '#16a34a',
+    title: 'Excel Mass Data Entry Simulation Lab (5 Scenarios)'
+  },
+  {
+    id: 'windows',
+    label: 'Windows Lab',
+    shortLabel: 'Windows',
+    icon: <FolderTree size={15} color="#0284c7" />,
+    badge: 'NEW',
+    badgeClass: 'badge-windows',
+    badgeColor: '#0284c7',
+    title: 'Windows 11 Organization Simulation (File & Folder Tracks)'
+  },
+  {
+    id: 'terminal',
+    label: 'Terminal Lab',
+    shortLabel: 'Terminal',
+    icon: <Terminal size={15} color="#38bdf8" />,
+    badge: 'STREAM',
+    badgeClass: 'badge-terminal',
+    badgeColor: '#0284c7',
+    title: 'Terminal Stream: High-Speed Enterprise Data Dispatcher & Voucher Verification'
+  },
+  {
+    id: 'typing',
+    label: 'Typing Lab',
+    shortLabel: 'Typing',
+    icon: <Keyboard size={15} color="#0891b2" />,
+    badge: '25 LVL',
+    badgeClass: 'badge-typing',
+    badgeColor: '#0891b2',
+    title: 'Touch Typing Lab (25 Levels with Light-Beam Guided Kinesthetic Training)'
+  },
+  {
+    id: 'student-dashboard',
+    label: 'Dashboard',
+    shortLabel: 'Dashboard',
+    icon: <LayoutDashboard size={15} />,
+    title: 'Trainee Analytics & Performance Dashboard'
+  },
+  {
+    id: 'teacher-dashboard',
+    label: 'Teacher',
+    shortLabel: 'Teacher',
+    icon: <UserCheck size={15} />,
+    title: 'Administrative Teacher Mode (Password Required: ICST)',
+    requiresTeacher: true
+  },
+  {
+    id: 'showcase',
+    label: 'Showcase',
+    shortLabel: 'Showcase',
+    icon: <Share2 size={15} />,
+    title: 'ICST Social Media Promotional Showcase'
+  }
+];
 
 export const Header: React.FC<HeaderProps> = React.memo(({
   currentRole,
@@ -61,9 +150,10 @@ export const Header: React.FC<HeaderProps> = React.memo(({
   const isOvertime = isPractice && timerElapsedSeconds > timerLimitSeconds;
   const overtimeSeconds = isOvertime ? timerElapsedSeconds - timerLimitSeconds : 0;
 
-  const [masterUnlocked, setMasterUnlockedState] = React.useState<boolean>(() => isMasterUnlocked());
+  const [masterUnlocked, setMasterUnlockedState] = useState<boolean>(() => isMasterUnlocked());
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleMasterChange = () => setMasterUnlockedState(isMasterUnlocked());
     window.addEventListener('icst_master_unlock_changed', handleMasterChange);
     return () => window.removeEventListener('icst_master_unlock_changed', handleMasterChange);
@@ -73,6 +163,15 @@ export const Header: React.FC<HeaderProps> = React.memo(({
     const m = Math.floor(secs / 60);
     const s = secs % 60;
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+
+  const handleSelectNav = (item: LabNavItem) => {
+    setMobileMenuOpen(false);
+    if (item.requiresTeacher) {
+      onOpenTeacherPassword();
+    } else {
+      setActiveView(item.id);
+    }
   };
 
   return (
@@ -86,6 +185,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             className="brand-section"
             onClick={(e) => {
               e.preventDefault();
+              setMobileMenuOpen(false);
               setActiveView('landing');
             }}
           >
@@ -127,8 +227,8 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           )}
         </div>
 
-        {/* Right Nav Actions & Controls */}
-        <div className="header-nav">
+        {/* Desktop Navigation Links & Controls (Visible on screens >= 1100px) */}
+        <div className="header-nav header-nav-desktop">
           {/* Persistent EXP Display */}
           <div 
             className="exp-badge-container" 
@@ -143,68 +243,29 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             )}
           </div>
 
-          {/* Navigation Links */}
-          <button
-            type="button"
-            className={`nav-btn ${activeView === 'practice' ? 'active' : ''}`}
-            onClick={() => setActiveView('practice')}
-          >
-            <GraduationCap size={15} />
-            <span className="nav-btn-text">Practice</span>
-          </button>
+          {/* Full Desktop Lab Navigation Buttons */}
+          {LAB_NAV_ITEMS.map(item => (
+            <button
+              key={item.id}
+              type="button"
+              className={`nav-btn ${activeView === item.id ? 'active' : ''}`}
+              onClick={() => handleSelectNav(item)}
+              title={item.title}
+            >
+              {item.icon}
+              <span className="nav-btn-text">{item.label}</span>
+              {item.badge && (
+                <span 
+                  className={`nav-lab-badge ${item.badgeClass || ''}`} 
+                  style={{ background: item.badgeColor, color: '#ffffff' }}
+                >
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          ))}
 
-          <button
-            type="button"
-            className={`nav-btn ${activeView === 'excel' ? 'active' : ''}`}
-            onClick={() => setActiveView('excel')}
-            title="Excel Mass Data Entry Simulation Lab (5 Scenarios)"
-          >
-            <FileSpreadsheet size={15} color="#16a34a" />
-            <span className="nav-btn-text">Excel Lab</span>
-            <span className="excel-nav-tag">NEW</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-btn ${activeView === 'windows' ? 'active' : ''}`}
-            onClick={() => setActiveView('windows')}
-            title="Windows 11 Organization Simulation (File & Folder Tracks)"
-          >
-            <FolderTree size={15} color="#0284c7" />
-            <span className="nav-btn-text">Windows Lab</span>
-            <span className="excel-nav-tag" style={{ background: '#0284c7' }}>NEW</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-btn ${activeView === 'terminal' ? 'active' : ''}`}
-            onClick={() => setActiveView('terminal')}
-            title="Terminal Stream: High-Speed Enterprise Data Dispatcher & Voucher Verification"
-          >
-            <Terminal size={15} color="#38bdf8" />
-            <span className="nav-btn-text">Terminal Lab</span>
-            <span className="excel-nav-tag" style={{ background: '#0284c7' }}>STREAM</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-btn ${activeView === 'student-dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveView('student-dashboard')}
-          >
-            <LayoutDashboard size={15} />
-            <span className="nav-btn-text">Dashboard</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-btn ${activeView === 'teacher-dashboard' ? 'active' : ''}`}
-            onClick={onOpenTeacherPassword}
-            title="Administrative Teacher Mode (Password Required: ICST)"
-          >
-            <UserCheck size={15} />
-            <span className="nav-btn-text">Teacher</span>
-          </button>
-
+          {/* Master Unlocked Status Pill */}
           {masterUnlocked && (
             <button
               type="button"
@@ -232,16 +293,6 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             </button>
           )}
 
-          <button
-            type="button"
-            className={`nav-btn ${activeView === 'showcase' ? 'active' : ''}`}
-            onClick={() => setActiveView('showcase')}
-            title="ICST Social Media Promotional Showcase"
-          >
-            <Share2 size={15} />
-            <span className="nav-btn-text">Showcase</span>
-          </button>
-
           {/* Persistent Clear Data Control */}
           <button
             type="button"
@@ -262,7 +313,198 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             <HelpCircle size={16} />
           </button>
         </div>
+
+        {/* Mobile / Tablet Header Trigger (Visible on screens < 1100px) */}
+        <div className="header-nav-mobile-trigger">
+          {/* Compact EXP Display */}
+          <div 
+            className="exp-badge-container compact" 
+            title="Total Practice EXP"
+          >
+            <Sparkles size={12} color="#d97706" />
+            <span>EXP {totalExp.toLocaleString()}</span>
+          </div>
+
+          {/* Hamburger / Close Menu Toggle Button */}
+          <button
+            type="button"
+            className={`mobile-menu-toggle-btn ${mobileMenuOpen ? 'is-open' : ''}`}
+            onClick={() => setMobileMenuOpen(prev => !prev)}
+            aria-label="Toggle navigation menu"
+            title="Navigation Menu & Labs"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
+
+      {/* Horizontal Touch-Scrollable Labs Strip (Visible on screens < 1100px) */}
+      <div className="header-tabs-scroll" role="navigation" aria-label="Labs Navigation Bar">
+        <div className="header-tabs-scroll-inner">
+          {LAB_NAV_ITEMS.map(item => (
+            <button
+              key={item.id}
+              type="button"
+              className={`tab-scroll-btn ${activeView === item.id ? 'active' : ''}`}
+              onClick={() => handleSelectNav(item)}
+              title={item.title}
+            >
+              {item.icon}
+              <span className="tab-scroll-label">{item.shortLabel}</span>
+              {item.badge && (
+                <span 
+                  className={`nav-lab-badge ${item.badgeClass || ''}`} 
+                  style={{ background: item.badgeColor, color: '#ffffff' }}
+                >
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Mobile Slide-Down / Slide-Over Navigation Drawer */}
+      {mobileMenuOpen && (
+        <div 
+          className="header-mobile-drawer-backdrop" 
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div 
+            className="header-mobile-drawer" 
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="drawer-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <img src="/logo.png" alt="Logo" style={{ width: '28px', height: '28px' }} />
+                <span style={{ fontWeight: 800, fontSize: '15px' }}>ICST Navigation Hub</span>
+              </div>
+              <button 
+                type="button" 
+                className="drawer-close-btn" 
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Close menu"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Student Profile Overview Card in Drawer */}
+            <div className="drawer-student-card">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div className="drawer-student-avatar">
+                  <User size={16} color="#0284c7" />
+                </div>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '13px' }}>
+                    {studentIdentity ? studentIdentity.name : 'Guest Trainee'}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                    {studentIdentity ? studentIdentity.generatedRollId : 'No roll configured'}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenStudentSetup();
+                }}
+                style={{ fontSize: '11px', padding: '4px 8px' }}
+              >
+                {studentIdentity ? 'Edit Profile' : 'Set Name'}
+              </button>
+            </div>
+
+            {/* Master Unlock Status in Drawer */}
+            {masterUnlocked ? (
+              <div style={{ padding: '8px 12px', background: '#d1fae5', borderRadius: '8px', border: '1px solid #10b981', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#065f46', fontSize: '12px', fontWeight: 700 }}>
+                  <Unlock size={14} color="#059669" />
+                  <span>Master Unlocked (All Labs Open)</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    lockToStudentProgression();
+                    setMasterUnlockedState(false);
+                  }}
+                  style={{ background: '#059669', color: '#ffffff', border: 'none', borderRadius: '4px', padding: '3px 8px', fontSize: '10px', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Lock
+                </button>
+              </div>
+            ) : (
+              <div style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: '8px', border: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: 600 }}>
+                  <Lock size={14} />
+                  <span>Instructor Mode: Passcode ICST</span>
+                </div>
+              </div>
+            )}
+
+            {/* Labs Navigation List */}
+            <div className="drawer-nav-list">
+              <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                Training Laboratories
+              </span>
+
+              {LAB_NAV_ITEMS.map(item => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`drawer-nav-item ${activeView === item.id ? 'active' : ''}`}
+                  onClick={() => handleSelectNav(item)}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span className="drawer-item-icon">{item.icon}</span>
+                    <span style={{ fontWeight: activeView === item.id ? 800 : 600 }}>{item.label}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {item.badge && (
+                      <span 
+                        className={`nav-lab-badge ${item.badgeClass || ''}`} 
+                        style={{ background: item.badgeColor, color: '#ffffff' }}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                    <ChevronRight size={14} color="var(--text-muted)" />
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Utility Actions at Bottom of Drawer */}
+            <div className="drawer-footer-actions">
+              <button
+                type="button"
+                className="drawer-action-btn"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenShortcuts();
+                }}
+              >
+                <HelpCircle size={15} />
+                <span>Keyboard Shortcuts</span>
+              </button>
+
+              <button
+                type="button"
+                className="drawer-action-btn clear-danger"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onClearDataClick();
+                }}
+              >
+                <Trash2 size={15} color="var(--error-red)" />
+                <span>Clear All Data & Reset</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Practice Sub-Toolbar Strip (Visible only in practice view) */}
       {activeView === 'practice' && (

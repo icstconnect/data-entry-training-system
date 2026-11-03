@@ -31,6 +31,10 @@ const WindowsDashboard = React.lazy(() => import('./components/windows/WindowsDa
 const WindowsWorkbench = React.lazy(() => import('./components/windows/WindowsWorkbench').then(m => ({ default: m.WindowsWorkbench })));
 const TerminalDashboard = React.lazy(() => import('./components/terminal/TerminalDashboard').then(m => ({ default: m.TerminalDashboard })));
 const TerminalWorkbench = React.lazy(() => import('./components/terminal/TerminalWorkbench').then(m => ({ default: m.TerminalWorkbench })));
+const TypingDashboard = React.lazy(() => import('./components/typing/TypingDashboard').then(m => ({ default: m.TypingDashboard })));
+const TouchTypingWorkbench = React.lazy(() => import('./components/typing/TouchTypingWorkbench').then(m => ({ default: m.TouchTypingWorkbench })));
+import { loadTouchTypingProgress } from './services/touchTypingStorageService';
+import { isMasterUnlocked, setMasterUnlocked } from './services/masterUnlockService';
 import { WindowsSimulationMode } from './types/windows';
 import { setAppTitle } from './utils/dynamicTitle';
 import { awardTaskExp } from './services/expEngine';
@@ -65,9 +69,18 @@ const ViewLoader: React.FC = () => (
 
 export function App() {
   const [currentRole, setCurrentRole] = useState<UserRole>('student');
-  const [activeView, setActiveView] = useState<'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal'>('landing');
+  const [activeView, setActiveView] = useState<'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal' | 'typing'>('landing');
   const [excelLevel, setExcelLevel] = useState<number | null>(null);
   const [terminalLevel, setTerminalLevel] = useState<number | null>(null);
+  const [typingLevel, setTypingLevel] = useState<number | null>(null);
+  const [typingTheme, setTypingTheme] = useState<'dark' | 'light'>(() => {
+    try {
+      const saved = localStorage.getItem('icst_typing_theme');
+      return saved === 'dark' ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
+  });
   const [windowsState, setWindowsState] = useState<{ inWorkbench: boolean; mode: WindowsSimulationMode; level: number }>({
     inWorkbench: false,
     mode: 'file_management',
@@ -114,10 +127,11 @@ export function App() {
 
   // Universal Lab & Action Destination Gate
   type PendingLabTarget = 
-    | { type: 'view'; view: 'practice' | 'excel' | 'windows' | 'showcase' | 'terminal' }
+    | { type: 'view'; view: 'practice' | 'excel' | 'windows' | 'showcase' | 'terminal' | 'typing' }
     | { type: 'excelLevel'; level: number }
     | { type: 'windowsSimulation'; mode: WindowsSimulationMode; level: number }
     | { type: 'terminalLevel'; level: number }
+    | { type: 'typingLevel'; level: number }
     | { type: 'shareModal' }
     | null;
 
@@ -170,10 +184,12 @@ export function App() {
       } else {
         setAppTitle('windows');
       }
+    } else if (activeView === 'typing') {
+      setAppTitle('typing', typingLevel ? `Level ${typingLevel} Workbench` : undefined);
     } else {
       setAppTitle(activeView);
     }
-  }, [activeView, currentLevel, currentStage, excelLevel, windowsState, terminalLevel]);
+  }, [activeView, currentLevel, currentStage, excelLevel, windowsState, terminalLevel, typingLevel]);
 
   // Sync Government Accessibility attributes with documentElement & localStorage
   useEffect(() => {
@@ -234,6 +250,8 @@ export function App() {
         setActiveView('terminal');
       } else if (hash === '#windows' || hash === '#windows-org' || path.includes('windows')) {
         setActiveView('windows');
+      } else if (hash === '#typing' || hash === '#touch-typing' || path.includes('typing')) {
+        setActiveView('typing');
       } else if (hash === '#dashboard') {
         setActiveView('student-dashboard');
       } else if (hash === '#teacher') {
@@ -252,8 +270,8 @@ export function App() {
   }, []);
 
   // Sync active view to window hash with mandatory student identity check for all labs
-  const handleViewChange = (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal') => {
-    const isLab = view === 'practice' || view === 'excel' || view === 'windows' || view === 'terminal';
+  const handleViewChange = (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal' | 'typing') => {
+    const isLab = view === 'practice' || view === 'excel' || view === 'windows' || view === 'terminal' || view === 'typing';
     if (isLab && !requireStudentIdentity({ type: 'view', view })) {
       return;
     }
@@ -269,6 +287,9 @@ export function App() {
       window.location.hash = 'terminal';
     } else if (view === 'windows') {
       window.location.hash = 'windows';
+    } else if (view === 'typing') {
+      window.location.hash = 'typing';
+      setTypingLevel(null);
     } else if (view === 'student-dashboard') {
       window.location.hash = 'dashboard';
     } else if (view === 'teacher-dashboard') {
@@ -296,7 +317,7 @@ export function App() {
   }, []);
 
   // EXP Awarded Micro-animation trigger & unified profile synchronization
-  const handleExpAwarded = (amount: number, source: 'practice' | 'excel' | 'windows' | 'terminal' = 'practice') => {
+  const handleExpAwarded = (amount: number, source: 'practice' | 'excel' | 'windows' | 'terminal' | 'typing' = 'practice') => {
     setFloatingExp(amount);
     setTimeout(() => {
       setFloatingExp(null);
@@ -355,6 +376,10 @@ export function App() {
         setActiveView('windows');
         setWindowsState({ inWorkbench: true, mode: target.mode, level: target.level });
         window.location.hash = 'windows';
+      } else if (target.type === 'typingLevel') {
+        setActiveView('typing');
+        setTypingLevel(target.level);
+        window.location.hash = 'typing';
       } else if (target.type === 'shareModal') {
         setIsUniversalShareOpen(true);
       }
@@ -370,6 +395,7 @@ export function App() {
     setCurrentStage(1);
     setExcelLevel(null);
     setTerminalLevel(null);
+    setTypingLevel(null);
     setWindowsState({ inWorkbench: false, mode: 'file_management', level: 1 });
     setTimerElapsedSeconds(0);
     setTimerLimitSeconds(APP_CONFIG.DEFAULT_TIME_LIMIT_SECONDS);
@@ -382,7 +408,7 @@ export function App() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
       {/* Government Website Accessibility & Screen Magnifier Bar (GIGW Compliant) */}
       <GovtAccessibilityBar
         fontSize={govtFontSize}
@@ -426,13 +452,17 @@ export function App() {
           flex: 1, 
           display: 'flex', 
           flexDirection: 'column',
-          overflow: ((activeView === 'windows' && windowsState.inWorkbench) || (activeView === 'excel' && excelLevel !== null) || (activeView === 'terminal' && terminalLevel !== null)) ? 'hidden' : undefined,
-          height: ((activeView === 'windows' && windowsState.inWorkbench) || (activeView === 'excel' && excelLevel !== null) || (activeView === 'terminal' && terminalLevel !== null)) ? 'calc(100vh - 58px)' : undefined
+          width: '100%',
+          maxWidth: '100vw',
+          boxSizing: 'border-box',
+          overflow: ((activeView === 'windows' && windowsState.inWorkbench) || (activeView === 'excel' && excelLevel !== null) || (activeView === 'terminal' && terminalLevel !== null) || (activeView === 'typing' && typingLevel !== null)) ? 'hidden' : undefined,
+          height: ((activeView === 'windows' && windowsState.inWorkbench) || (activeView === 'excel' && excelLevel !== null) || (activeView === 'terminal' && terminalLevel !== null) || (activeView === 'typing' && typingLevel !== null)) ? 'calc(100vh - 58px)' : undefined
         }}
       >
         {activeView === 'landing' && (
           <LandingPage
-            onStartPractice={() => handleViewChange('practice')}
+              onOpenTyping={() => handleViewChange('typing')}
+              onStartPractice={() => handleViewChange('practice')}
             onOpenTeacherMode={() => setIsTeacherPasswordOpen(true)}
             onOpenDashboard={() => handleViewChange('student-dashboard')}
             onOpenShowcase={() => handleViewChange('showcase')}
@@ -470,6 +500,7 @@ export function App() {
             <StudentDashboard
               progress={studentProgress}
               onSelectStage={handleSelectStage}
+              onOpenTyping={() => handleViewChange('typing')}
             />
           )}
 
@@ -551,11 +582,52 @@ export function App() {
               onBackToDashboard={() => setWindowsState(s => ({ ...s, inWorkbench: false }))}
             />
           )}
+        
+          {activeView === 'typing' && typingLevel === null && (
+            <TypingDashboard
+              progress={loadTouchTypingProgress()}
+              onLaunchLevel={(lvl) => {
+                if (!requireStudentIdentity({ type: 'typingLevel', level: lvl })) return;
+                setTypingLevel(lvl);
+              }}
+              onOpenCurriculum={() => {}}
+              onToggleMasterUnlock={() => {
+                setMasterUnlocked(!isMasterUnlocked());
+              }}
+              theme={typingTheme}
+              onToggleTheme={() => {
+                setTypingTheme(prev => {
+                  const next = prev === 'dark' ? 'light' : 'dark';
+                  try { localStorage.setItem('icst_typing_theme', next); } catch {}
+                  return next;
+                });
+              }}
+              onBackToMainHub={() => handleViewChange('landing')}
+            />
+          )}
+
+          {activeView === 'typing' && typingLevel !== null && (
+            <TouchTypingWorkbench
+              levelNumber={typingLevel}
+              onBackToDashboard={() => setTypingLevel(null)}
+              onSelectLevel={(lvl) => setTypingLevel(lvl)}
+              studentProgress={studentProgress}
+              onExpAwarded={(exp) => handleExpAwarded(exp, 'typing')}
+              theme={typingTheme}
+              onToggleTheme={() => {
+                setTypingTheme(prev => {
+                  const next = prev === 'dark' ? 'light' : 'dark';
+                  try { localStorage.setItem('icst_typing_theme', next); } catch {}
+                  return next;
+                });
+              }}
+            />
+          )}
         </React.Suspense>
       </main>
 
       {/* Brand Footer (hidden in Windows simulation workbench to fit full window without scrolling) */}
-      {!(activeView === 'windows' && windowsState.inWorkbench) && !(activeView === 'excel' && excelLevel !== null) && !(activeView === 'terminal' && terminalLevel !== null) && <Footer />}
+      {!(activeView === 'windows' && windowsState.inWorkbench) && !(activeView === 'excel' && excelLevel !== null) && !(activeView === 'terminal' && terminalLevel !== null) && !(activeView === 'typing' && typingLevel !== null) && <Footer />}
 
       {/* Modals wrapped in lightweight Suspense */}
       <React.Suspense fallback={null}>

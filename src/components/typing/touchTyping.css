@@ -1,0 +1,674 @@
+/* ============================================================================
+   ICST Touch Typing Lab - Comprehensive Theme Stylesheet
+   Dual Light Mode & Dark Mode Support with Pixel-Perfect Precision
+   ============================================================================ */
+
+/* CSS Reset & Variables for Touch Typing Root */
+.typing-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  min-height: calc(100vh - 60px);
+  position: relative;
+  font-family: var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+  transition: background-color 0.25s ease, color 0.25s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ============================================================================
+   DARK MODE PALETTE (Cyber / Slate Deep Focus)
+   ============================================================================ */
+.typing-root.theme-dark {
+  --tt-bg-page: #191b1f;
+  --tt-bg-card: #212429;
+  --tt-bg-surface: #2b2f36;
+  --tt-bg-subtle: #242830;
+  --tt-bg-hover: #333842;
+  --tt-bg-track: #1c1f24;
+
+  --tt-border-subtle: #323742;
+  --tt-border-medium: #414856;
+  --tt-border-active: #00f0ff;
+  --tt-border-error: #ef4444;
+
+  --tt-text-primary: #f8fafc;
+  --tt-text-secondary: #94a3b8;
+  --tt-text-muted: #64748b;
+  --tt-text-inverse: #0f172a;
+
+  --tt-glow-cyan: rgba(0, 240, 255, 0.45);
+  --tt-glow-cyan-beam: rgba(0, 240, 255, 0.22);
+  --tt-glow-amber: rgba(245, 158, 11, 0.45);
+  --tt-glow-error: rgba(239, 68, 68, 0.45);
+
+  --tt-key-bg: #272a32;
+  --tt-key-border: #3f4654;
+  --tt-key-text: #cbd5e1;
+  --tt-key-shadow: 0 4px 0 #15171b, 0 6px 12px rgba(0, 0, 0, 0.5);
+  --tt-key-pressed-shadow: 0 1px 0 #15171b, 0 2px 4px rgba(0, 0, 0, 0.4);
+
+  --tt-key-active-bg: #1e3a47;
+  --tt-key-active-border: #00f0ff;
+  --tt-key-active-text: #00f0ff;
+  --tt-key-active-glow: 0 0 18px rgba(0, 240, 255, 0.7), inset 0 0 10px rgba(0, 240, 255, 0.25);
+
+  --tt-key-shift-bg: #382d1a;
+  --tt-key-shift-border: #f59e0b;
+  --tt-key-shift-text: #fcd34d;
+  --tt-key-shift-glow: 0 0 16px rgba(245, 158, 11, 0.6), inset 0 0 8px rgba(245, 158, 11, 0.2);
+
+  --tt-hand-skin: #2a2e37;
+  --tt-hand-stroke: #475569;
+  --tt-hand-active-glow: #00f0ff;
+  --tt-hand-error-glow: #ef4444;
+
+  --tt-beam-grad-start: rgba(0, 240, 255, 0.35);
+  --tt-beam-grad-end: rgba(0, 240, 255, 0.02);
+
+  --tt-badge-slot-bg: #1c1f24;
+  --tt-badge-slot-border: #333842;
+  --tt-badge-slot-inner-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+}
+
+/* ============================================================================
+   LIGHT MODE PALETTE (Warm Eye-Care Ivory & Soothing Parchment)
+   ============================================================================ */
+.typing-root.theme-light {
+  --tt-bg-page: #f9f6f0;
+  --tt-bg-card: #ffffff;
+  --tt-bg-surface: #fffdf9;
+  --tt-bg-subtle: #f2ece0;
+  --tt-bg-hover: #ebe3d3;
+  --tt-bg-track: #edf4fa;
+
+  --tt-border-subtle: #e4ddd0;
+  --tt-border-medium: #d2c8b7;
+  --tt-border-active: #0284c7;
+  --tt-border-error: #dc2626;
+
+  --tt-text-primary: #1c1915;
+  --tt-text-secondary: #4d463b;
+  --tt-text-muted: #756c5e;
+  --tt-text-inverse: #ffffff;
+
+  --tt-glow-cyan: rgba(2, 132, 199, 0.3);
+  --tt-glow-cyan-beam: rgba(2, 132, 199, 0.16);
+  --tt-glow-amber: rgba(217, 119, 6, 0.3);
+  --tt-glow-error: rgba(220, 38, 38, 0.25);
+
+  --tt-key-bg: #ffffff;
+  --tt-key-border: #cfc6b6;
+  --tt-key-text: #2c2722;
+  --tt-key-shadow: 0 4px 0 #b8ad9a, 0 4px 8px rgba(28, 25, 21, 0.08);
+  --tt-key-pressed-shadow: 0 1px 0 #b8ad9a, 0 2px 4px rgba(28, 25, 21, 0.05);
+
+  --tt-key-active-bg: #e0f2fe;
+  --tt-key-active-border: #0284c7;
+  --tt-key-active-text: #0369a1;
+  --tt-key-active-glow: 0 0 16px rgba(2, 132, 199, 0.4), inset 0 0 8px rgba(2, 132, 199, 0.15);
+
+  --tt-key-shift-bg: #fef3c7;
+  --tt-key-shift-border: #f59e0b;
+  --tt-key-shift-text: #b45309;
+  --tt-key-shift-glow: 0 0 14px rgba(245, 158, 11, 0.4), inset 0 0 6px rgba(245, 158, 11, 0.15);
+
+  --tt-hand-skin: #f4ede1;
+  --tt-hand-stroke: #b3a693;
+  --tt-hand-active-glow: #0284c7;
+  --tt-hand-error-glow: #dc2626;
+
+  --tt-beam-grad-start: rgba(2, 132, 199, 0.24);
+  --tt-beam-grad-end: rgba(2, 132, 199, 0.02);
+
+  --tt-badge-slot-bg: #ede6d8;
+  --tt-badge-slot-border: #d4cabb;
+  --tt-badge-slot-inner-shadow: inset 0 2px 4px rgba(77, 70, 59, 0.2);
+}
+
+/* Finger Accent Colors */
+.typing-root {
+  --finger-pinky: #8b5cf6;
+  --finger-ring: #3b82f6;
+  --finger-mid: #10b981;
+  --finger-index: #f59e0b;
+  --finger-thumb: #06b6d4;
+}
+
+/* Global root styling */
+.typing-root {
+  background-color: var(--tt-bg-page);
+  color: var(--tt-text-primary);
+}
+
+/* ============================================================================
+   TOP NAVIGATION & HEADER CONTROLS
+   ============================================================================ */
+.typing-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--tt-bg-card);
+  border-bottom: 1px solid var(--tt-border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.typing-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.typing-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.typing-stage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: var(--tt-bg-subtle);
+  border: 1px solid var(--tt-border-subtle);
+  color: var(--tt-text-secondary);
+}
+
+.typing-theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--tt-bg-subtle);
+  border: 1px solid var(--tt-border-medium);
+  color: var(--tt-text-primary);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.typing-theme-toggle-btn:hover {
+  background: var(--tt-bg-hover);
+  border-color: var(--tt-border-active);
+  transform: translateY(-1px);
+}
+
+/* ============================================================================
+   TRACK BARS (Completed, Active Beam, Upcoming)
+   ============================================================================ */
+.typing-track-container {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.typing-track-row {
+  display: flex;
+  align-items: center;
+  position: relative;
+  border-radius: 10px;
+  height: 52px;
+  padding: 0 16px;
+  overflow: hidden;
+  font-family: var(--font-mono, monospace);
+  font-size: 20px;
+  transition: all 0.2s ease;
+}
+
+/* Top: Completed row */
+.typing-track-row.completed-row {
+  background: var(--tt-bg-subtle);
+  border: 1px dashed var(--tt-border-subtle);
+  color: var(--tt-text-muted);
+  font-size: 16px;
+  opacity: 0.85;
+}
+
+/* Middle: Active Target Track with illuminated glow beam */
+.typing-track-row.active-row {
+  background: var(--tt-bg-card);
+  border: 2px solid var(--tt-border-active);
+  box-shadow: 0 4px 20px var(--tt-glow-cyan-beam);
+  height: 64px;
+  font-size: 24px;
+  position: relative;
+  overflow: visible;
+}
+
+.typing-track-row.active-row.is-error {
+  border-color: var(--tt-border-error);
+  box-shadow: 0 4px 20px var(--tt-glow-error);
+}
+
+/* Bottom: Upcoming preview row */
+.typing-track-row.upcoming-row {
+  background: var(--tt-bg-track);
+  border: 1px solid var(--tt-border-subtle);
+  color: var(--tt-text-secondary);
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+/* Horizontal scrolling text stream */
+.typing-char-stream {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  white-space: pre;
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Character chip */
+.typing-char {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 42px;
+  font-weight: 600;
+  transition: color 0.1s ease, transform 0.1s ease;
+}
+
+.typing-char.active-char {
+  width: 44px;
+  height: 50px;
+  border-radius: 8px;
+  background: var(--tt-key-active-bg);
+  color: var(--tt-key-active-text);
+  border: 2px solid var(--tt-key-active-border);
+  box-shadow: var(--tt-key-active-glow);
+  font-weight: 800;
+  font-size: 28px;
+  transform: scale(1.08);
+  z-index: 5;
+  animation: targetPulse 1.2s infinite ease-in-out;
+}
+
+.typing-char.active-char.has-error {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: var(--tt-border-error);
+  color: #ef4444;
+  box-shadow: 0 0 16px var(--tt-glow-error);
+  animation: errorShake 0.25s ease-in-out;
+}
+
+.typing-char.typed-correct {
+  color: #10b981;
+}
+
+.typing-char.typed-incorrect {
+  color: #ef4444;
+  text-decoration: underline wavy #ef4444;
+}
+
+/* Glowing Vertical Guide Beam connecting Active Key to Hands */
+.typing-vertical-beam {
+  position: absolute;
+  top: 100%;
+  pointer-events: none;
+  z-index: 10;
+  width: 40px;
+  height: 280px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    180deg, 
+    var(--tt-beam-grad-start) 0%, 
+    var(--tt-beam-grad-end) 80%, 
+    transparent 100%
+  );
+  filter: blur(2px);
+  animation: beamShimmer 2s infinite ease-in-out;
+}
+
+/* ============================================================================
+   15-UNIT WIREFRAME KEYBOARD
+   ============================================================================ */
+.typing-keyboard-wrap {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--tt-bg-card);
+  border: 1px solid var(--tt-border-subtle);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.typing-keyboard-row {
+  display: flex;
+  width: 100%;
+  gap: 6px;
+  height: 48px;
+}
+
+.typing-keycap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--tt-key-bg);
+  border: 1.5px solid var(--tt-key-border);
+  color: var(--tt-key-text);
+  box-shadow: var(--tt-key-shadow);
+  font-family: var(--font-mono, monospace);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: default;
+  transition: transform 0.06s ease, box-shadow 0.06s ease, border-color 0.15s ease, background-color 0.15s ease;
+  overflow: hidden;
+}
+
+.typing-keycap.is-pressed {
+  transform: translateY(3px);
+  box-shadow: var(--tt-key-pressed-shadow);
+}
+
+.typing-keycap.is-target {
+  background: var(--tt-key-active-bg);
+  border-color: var(--tt-key-active-border);
+  color: var(--tt-key-active-text);
+  box-shadow: var(--tt-key-active-glow);
+  font-weight: 800;
+}
+
+.typing-keycap.is-shift-guide {
+  background: var(--tt-key-shift-bg);
+  border-color: var(--tt-key-shift-border);
+  color: var(--tt-key-shift-text);
+  box-shadow: var(--tt-key-shift-glow);
+  font-weight: 700;
+  animation: shiftGlowPulse 1.2s infinite ease-in-out;
+}
+
+/* Tactile bumps for F and J keys */
+.typing-keycap-bump {
+  position: absolute;
+  bottom: 5px;
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--tt-border-medium);
+}
+
+.typing-keycap.is-target .typing-keycap-bump {
+  background: var(--tt-key-active-text);
+}
+
+/* Finger indicator color pip on keycap bottom */
+.typing-finger-pip {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  opacity: 0.75;
+}
+
+/* Blind Mode Masking */
+.typing-keyboard-wrap.blind-mode .typing-keycap:not(.is-special) .key-label-primary,
+.typing-keyboard-wrap.blind-mode .typing-keycap:not(.is-special) .key-label-shift {
+  filter: blur(6px);
+  opacity: 0.2;
+}
+
+/* ============================================================================
+   ILLUSTRATED HANDS SVG CONTAINER
+   ============================================================================ */
+.typing-hands-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 4px auto 16px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.typing-hands-svg {
+  width: 100%;
+  height: auto;
+  max-height: 230px;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.12));
+}
+
+/* Finger Glow in Hands */
+.finger-path {
+  fill: var(--tt-hand-skin);
+  stroke: var(--tt-hand-stroke);
+  stroke-width: 1.5;
+  transition: all 0.15s ease-out;
+}
+
+.finger-path.active-finger {
+  fill: var(--tt-hand-active-glow);
+  stroke: #ffffff;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 10px var(--tt-hand-active-glow));
+}
+
+.finger-path.shift-finger {
+  fill: #f59e0b;
+  stroke: #ffffff;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 10px #f59e0b);
+}
+
+.finger-path.error-finger {
+  fill: var(--tt-hand-error-glow);
+  stroke: #ffffff;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 10px var(--tt-hand-error-glow));
+}
+
+/* ============================================================================
+   SUMMARY BADGE SLOT (Golden Pixel Sunburst Medal)
+   ============================================================================ */
+.summary-badge-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.summary-badge-slot:hover {
+  transform: scale(1.05);
+}
+
+/* Recessed circular slot */
+.summary-badge-circle {
+  position: relative;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tt-badge-slot-bg);
+  border: 2px solid var(--tt-badge-slot-border);
+  box-shadow: var(--tt-badge-slot-inner-shadow);
+  transition: all 0.3s ease;
+}
+
+.summary-badge-circle.is-earned {
+  background: radial-gradient(circle, #fef08a 0%, #eab308 60%, #ca8a04 100%);
+  border-color: #facc15;
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.6), 0 4px 10px rgba(0,0,0,0.25);
+  animation: sunburstRotate 8s linear infinite;
+}
+
+/* Golden Pixel Sunburst Beams */
+@keyframes sunburstRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes targetPulse {
+  0%, 100% { transform: scale(1.08); }
+  50% { transform: scale(1.14); }
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+@keyframes shiftGlowPulse {
+  0%, 100% { box-shadow: var(--tt-key-shift-glow); }
+  50% { box-shadow: 0 0 24px rgba(245, 158, 11, 0.85), inset 0 0 12px rgba(245, 158, 11, 0.35); }
+}
+
+@keyframes beamShimmer {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+/* ============================================================================
+   TOUCH TYPING DASHBOARD & CURRICULUM MODAL
+   ============================================================================ */
+.typing-dashboard-wrap {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 28px 24px 60px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-sizing: border-box;
+}
+
+.stage-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.stage-card {
+  border-radius: 16px;
+  padding: 22px;
+  background: var(--tt-bg-card);
+  border: 1.5px solid var(--tt-border-subtle);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.stage-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--tt-border-active);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.stage-card.is-active-stage {
+  border-color: var(--tt-border-active);
+  box-shadow: 0 0 0 1px var(--tt-border-active), 0 4px 16px var(--tt-glow-cyan-beam);
+}
+
+/* Drawer / Modal */
+.typing-curriculum-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.typing-curriculum-drawer {
+  width: 100%;
+  max-width: 580px;
+  height: 100%;
+  background: var(--tt-bg-card);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideLeft {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* ============================================================================
+   RESPONSIVE MOBILE BREAKPOINTS FOR TOUCH TYPING
+   ============================================================================ */
+@media (max-width: 768px) {
+  .typing-dashboard-wrap {
+    padding: 16px 12px 40px 12px;
+    gap: 16px;
+    max-width: 100vw;
+  }
+  .stage-card-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .stage-card {
+    padding: 16px;
+    gap: 12px;
+  }
+  .typing-header-bar {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .typing-header-left,
+  .typing-header-right {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .typing-track-container {
+    padding: 12px 10px;
+  }
+  .typing-track-row {
+    height: 46px;
+    font-size: 16px;
+  }
+  .typing-track-row.active-row {
+    height: 54px;
+    font-size: 20px;
+  }
+}

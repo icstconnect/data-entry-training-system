@@ -3,6 +3,7 @@ import { loadStudentProgress, saveStudentProgress } from './storageService';
 import { loadExcelProgress } from './excelStorageService';
 import { loadWindowsProgress } from './windowsStorageService';
 import { loadTerminalProgress } from './terminalStorageService';
+import { loadTouchTypingProgress } from './touchTypingStorageService';
 
 export interface ExpAwardResult {
   amountAwarded: number;
@@ -11,7 +12,7 @@ export interface ExpAwardResult {
   currentRank: string;
   nextRank: string;
   progressToNextRank: number; // 0 to 100
-  source: 'practice' | 'excel' | 'windows' | 'terminal';
+  source: 'practice' | 'excel' | 'windows' | 'terminal' | 'typing';
 }
 
 export interface OperatorRank {
@@ -92,7 +93,7 @@ export function getRankForExp(exp: number): {
  */
 export function awardTaskExp(
   amount: number,
-  source: 'practice' | 'excel' | 'windows' | 'terminal',
+  source: 'practice' | 'excel' | 'windows' | 'terminal' | 'typing',
   options?: { alreadyAddedToTotal?: boolean; details?: string }
 ): ExpAwardResult {
   const currentProgress = loadStudentProgress();
@@ -144,26 +145,30 @@ export function calculateGlobalExpBreakdown(): {
   excelExp: number;
   windowsExp: number;
   terminalExp: number;
+  typingExp: number;
   totalExp: number;
 } {
   const student = loadStudentProgress();
   const excel = loadExcelProgress();
   const win = loadWindowsProgress();
   const terminal = loadTerminalProgress();
+  const typing = loadTouchTypingProgress();
 
   const excelExp = excel.totalExcelExp || 0;
   const windowsExp = win.totalWindowsExp || 0;
   const terminalExp = terminal.totalTerminalExp || 0;
+  const typingExp = typing.totalTouchTypingExp || 0;
   
   // Practice EXP is the difference or the student progress total
-  const totalExp = Math.max(student.totalExp || 0, excelExp + windowsExp + terminalExp);
-  const practiceExp = Math.max(0, totalExp - (excelExp + windowsExp + terminalExp));
+  const totalExp = Math.max(student.totalExp || 0, excelExp + windowsExp + terminalExp + typingExp);
+  const practiceExp = Math.max(0, totalExp - (excelExp + windowsExp + terminalExp + typingExp));
 
   return {
     practiceExp,
     excelExp,
     windowsExp,
     terminalExp,
+    typingExp,
     totalExp
   };
 }

@@ -4,6 +4,7 @@ import { LEVELS_INFO, STAGES } from '../../data/stagesConfig';
 import { ALL_ACHIEVEMENTS } from '../../services/achievementEngine';
 import { WINDOWS_ACHIEVEMENTS } from '../../data/windowsCurriculumData';
 import { loadWindowsProgress } from '../../services/windowsStorageService';
+import { loadTouchTypingProgress } from '../../services/touchTypingStorageService';
 import { AchievementShareModal } from '../common/AchievementShareModal';
 import { TrophyGraphic } from '../common/TrophyGraphic';
 import { 
@@ -17,20 +18,24 @@ import {
   Lock,
   Target,
   Share2,
-  Eye
+  Eye,
+  Keyboard
 } from 'lucide-react';
 
 interface StudentDashboardProps {
   progress: StudentProgress;
   onSelectStage: (level: number, stage: number) => void;
+  onOpenTyping?: () => void;
 }
 
 export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   progress,
-  onSelectStage
+  onSelectStage,
+  onOpenTyping
 }) => {
   const [selectedAchievementForShare, setSelectedAchievementForShare] = useState<Achievement | null>(null);
   const [winProgress] = useState(() => loadWindowsProgress());
+  const [typingProgress] = useState(() => loadTouchTypingProgress());
 
   const totalStagesCount = STAGES.length; // 18 stages
   const completedStagesCount = Object.keys(progress.completedStages).length;
@@ -652,6 +657,130 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* Touch Typing Kinesthetic Lab Section */}
+      <div style={{ marginTop: '28px' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '14px',
+          flexWrap: 'wrap',
+          gap: '10px'
+        }}>
+          <div>
+            <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--icst-charcoal)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>⌨️</span>
+              <span>Touch Typing Kinesthetic Lab (25 Levels)</span>
+            </h3>
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+              10-Finger Spatial Beam Guided Cadence, Rhythm, and Accuracy Telemetry
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{
+              fontSize: '12px',
+              fontWeight: 700,
+              color: '#0891b2',
+              background: '#e0f2fe',
+              padding: '4px 12px',
+              borderRadius: '20px'
+            }}>
+              {Object.values(typingProgress.completedLevels || {}).filter(r => r.passed || r.completed).length} of 25 Levels Cleared • {typingProgress.totalTouchTypingExp || 0} EXP
+            </span>
+
+            {onOpenTyping && (
+              <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                onClick={onOpenTyping}
+                style={{
+                  fontSize: '11px',
+                  padding: '4px 12px',
+                  background: '#0891b2',
+                  borderColor: '#0e7490',
+                  fontWeight: 700,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                <Keyboard size={13} />
+                <span>Open Typing Lab</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Typing Highlights Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: '12px',
+          marginBottom: '16px'
+        }}>
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-light)',
+            borderRadius: 'var(--radius-lg)',
+            padding: '14px',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+              Cleared Levels
+            </div>
+            <div style={{ fontSize: '24px', fontWeight: 800, color: '#0891b2', marginTop: '4px' }}>
+              {Object.values(typingProgress.completedLevels || {}).filter(r => r.passed || r.completed).length} / 25
+            </div>
+          </div>
+
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-light)',
+            borderRadius: 'var(--radius-lg)',
+            padding: '14px',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+              Peak Velocity
+            </div>
+            <div style={{ fontSize: '24px', fontWeight: 800, color: '#0284c7', marginTop: '4px' }}>
+              {typingProgress.bestWpm || 0} <span style={{ fontSize: '14px' }}>WPM</span>
+            </div>
+          </div>
+
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-light)',
+            borderRadius: 'var(--radius-lg)',
+            padding: '14px',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+              Average Accuracy
+            </div>
+            <div style={{ fontSize: '24px', fontWeight: 800, color: '#16a34a', marginTop: '4px' }}>
+              {typingProgress.averageAccuracy || 100}%
+            </div>
+          </div>
+
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-light)',
+            borderRadius: 'var(--radius-lg)',
+            padding: '14px',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+              Stars Earned
+            </div>
+            <div style={{ fontSize: '24px', fontWeight: 800, color: '#f59e0b', marginTop: '4px' }}>
+              {Object.values(typingProgress.completedLevels || {}).reduce((sum, r) => sum + (r.stars || 0), 0)} ★
+            </div>
+          </div>
         </div>
       </div>
 
