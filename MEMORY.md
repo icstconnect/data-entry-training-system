@@ -10,8 +10,9 @@
 
 - **Application Brand**: **ICST LAB** (unified brand name across all UI, SEO, PWA manifest, and certificates)
 - **Parent Portal**: ICST Connect — `https://icstconnect.in`
-- **Official Brand Logos**:
-  - App Logo: `public/logo.png`
+- **Official Brand Logos & Icons**:
+  - App Logo (ICST LAB flask-ribbon emblem, 512×512 PNG): `public/logo.png`, `public/logo-icst.png`, `src/assets/logo.png`
+  - Favicons & PWA Icons: `public/favicon-32x32.png`, `public/favicon.png` (64×64), `public/icon-192.png`, `public/icon-512.png`, `public/icon-maskable-192.png`, `public/icon-maskable-512.png`
   - ICST Connect Logo (fetched from `https://icstconnect.in/logo.png`, optimized to 256×256 PNG): `public/icstconnect-logo.png`
 - **Config Source of Truth**: `src/config/appConfig.ts` (`ICST_CONNECT` & `APP_CONFIG`)
 - **Theme**: Eye-Care Warm Tone Palette (`--bg-main: #f9f6f0`, `--bg-surface: #fffdf9`, `--icst-blue: #1c6aa7`, `--icst-charcoal: #221e1a`) + GIGW Accessibility Bar (font size, page zoom, screen magnifier, speech reader, High Contrast yellow-on-black mode).
@@ -25,7 +26,8 @@
 - **Animation**: `animejs` v4.5 (`animate`, `createScope`, `stagger`, `spring`)
 - **Icons**: `lucide-react`
 - **Effects**: `canvas-confetti` + HTML5 Canvas 2D achievement/certificate renderer
-- **Offline**: Service Worker (`public/sw.js`, cache `icst-lab-v5`) + Web App Manifest (`public/manifest.json`) + `localStorage` persistence
+- **Offline**: Service Worker (`public/sw.js`, cache `icst-lab-v8`) + Web App Manifest (`public/manifest.json`) + `localStorage` persistence
+- **Modern Multi-Theme Cursor Studio**: 5 selectable modern cursor themes (`ICST Fluent`, `Outlier Minimal`, `Stealth Rim`, animated `Pulse Orbit`, animated `Prism Aurora`) × 2 auto-switching surface tones (Light & Dark) × 41 SVG cursors (`public/cursors/<theme>/<surface>/*.svg`), selectable from the `Header.tsx` Navigation Cursor Selector (persisted in `localStorage` as default), with automatic real-time Light/Dark surface luminance detection (`src/utils/icstCursor.ts`), manual `Auto | Light | Dark` override, GIGW High Contrast adaptation, and GPU-composited 60fps `animejs` v4 animated companion overlay (`src/components/common/IcstAnimatedCursorOverlay.tsx`, fullscreen-portal aware).
 
 ---
 
@@ -83,3 +85,7 @@
     - `#word-express` (`WordExpressDashboard.tsx`): Electric Violet courier runway hero with gliding SVG vehicle, orbital progress ring, spring-animated cookie-backed Toughness selector, interactive 16-Tier Fleet Spotlight showroom, and 25-stage grid.
     - `#terminal` (`TerminalDashboard.tsx`): Midnight Cyan HDDE dispatch hero, animated orbital batch ring, rolling Peak KPH & EXP counters, interactive voucher audit radar scanner, filterable 5-domain stream cards, animated operator certification badges, and preserved evaluation/share modals.
   - Animated persistent navigation bar (`src/components/common/Header.tsx`) with `animejs` v4: scoped initial mount stagger, brand logo hover spring, spring-animated desktop & mobile dropdown menus with staggered items, slide-over mobile drawer animation, EXP badge pop on gain, active-view spring feedback, and Practice sub-toolbar slide-down.
+  - Added mobile & tablet physical keyboard guidance (`src/components/common/PhysicalKeyboardNotice.tsx` + `physicalKeyboardNotice.css`) for both typing labs (`TypingDashboard.tsx`, `TouchTypingWorkbench.tsx`, `WordExpressDashboard.tsx`, `WordExpressWorkbench.tsx`): auto-detects mobile/tablet viewports and touch devices, renders an `animejs` v4 scoped SVG illustration (OTG cable plug + signal pulse + Bluetooth waves + home-row keyboard ripple) with bilingual **English + সহজ বাংলা** instructions, live physical key detection feedback, inline banner on dashboards, dismissible entry modal on workbenches, and GIGW High Contrast support.
+  - Replaced default Vite logo/favicon (`public/favicon.svg`, `src/assets/vite.svg` removed) with the new ICST LAB flask-ribbon emblem across website logos (`public/logo.png`, `public/logo-icst.png`, `src/assets/logo.png`), browser favicons (`public/favicon-32x32.png`, `public/favicon.png`), and PWA icons (`public/icon-192.png`, `public/icon-512.png`, `public/icon-maskable-192.png`, `public/icon-maskable-512.png`); updated `index.html` favicon links and bumped Service Worker cache (`public/sw.js` -> `icst-lab-v6`) while preserving `public/icstconnect-logo.png`.
+  - Generated and integrated a complete 41-cursor brand-matched ICST LAB SVG cursor suite (`public/cursors/*.svg`) covering all Standard & navigation (7), Selection & interaction (7), Drag & drop (5 incl. custom `dragging`), Resize (14), Zoom (2), and Custom ICST Labs states (6: `icst-default`, `icst-pointer`, `icst-click`, `icst-loading`, `icst-success`, `icst-error`); added CSS token/utility/semantic stylesheet (`src/styles/icstCursors.css`), typed registry & runtime controller (`src/utils/icstCursor.ts`), wired into `src/main.tsx` and all app CSS files, and bumped Service Worker cache (`public/sw.js` -> `icst-lab-v7`).
+  - Modernized the entire cursor suite into **5 selectable cursor themes** inspired by Windows 11 Concept, Outlier / Lightsout, MMXX, Modest, Remus, and Neon Rim packs (`public/cursors/<theme>/<surface>/*.svg` — 410 themed SVGs + 41 fallbacks): 3 crisp static themes (**ICST Fluent**, **Outlier Minimal**, **Stealth Rim**) + 2 animated themes (**Pulse Orbit** & **Prism Aurora** powered by GPU-composited `IcstAnimatedCursorOverlay.tsx` + `animejs` v4 click sonar/sparks with Fullscreen portal support); added real-time **Auto Dark/Light** surface luminance switcher (+ manual `Auto | Light | Dark` control & GIGW High Contrast sync) and the **Navigation Cursor Selector** dropdown in `Header.tsx` (desktop + mobile drawer), persisted in `localStorage`, and bumped Service Worker cache (`public/sw.js` -> `icst-lab-v8`).

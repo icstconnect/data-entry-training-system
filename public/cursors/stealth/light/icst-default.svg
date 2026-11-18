@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="gBody" x1="4" y1="3" x2="26" y2="27" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#18181b"/>
+      <stop offset="100%" stop-color="#27272a"/>
+    </linearGradient>
+    <linearGradient id="gAccent" x1="3" y1="3" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="gPrism" x1="4" y1="24" x2="22" y2="6" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="50%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <filter id="ds" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0.5" dy="1.1" stdDeviation="0.9" flood-color="#020617" flood-opacity="0.30"/>
+    </filter>
+    
+  </defs>
+  <g filter="url(#ds)">
+    
+      <path d="M4.3 3.4L20.8 16.1C16.2 15.5 12.2 17.5 8.8 22.6L4.3 3.4Z"
+            fill="url(#gBody)" stroke="#ffffff" stroke-width="1.55" stroke-linejoin="round"/>
+      <path d="M8.8 22.2C11.9 17.4 15.8 15.6 20.3 16.0"
+            stroke="url(#gAccent)" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="9.2" cy="11.6" r="1.4" fill="url(#gAccent)"/>
+    
+  </g>
+</svg>

@@ -61,6 +61,11 @@ import { IllustratedHandsSVG } from '../typing/IllustratedHandsSVG';
 import { HandSetupGuide } from '../typing/HandSetupGuide';
 import { FullscreenRequiredGate } from '../common/FullscreenRequiredGate';
 import { LabGuideAssistant } from '../common/LabGuideAssistant';
+import { PhysicalKeyboardNotice } from '../common/PhysicalKeyboardNotice';
+import {
+  useIsMobileOrTablet,
+  isPhysicalKeyboardNoticeDismissed
+} from '../../utils/mobileKeyboardDetect';
 import {
   WordDeliveryRunway,
   DepartingDeliveryItem,
@@ -94,6 +99,9 @@ export const WordExpressWorkbench: React.FC<WordExpressWorkbenchProps> = ({
   onToggleTheme: controlledToggleTheme
 }) => {
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const isMobileOrTablet = useIsMobileOrTablet();
+  const [physKbdDismissed, setPhysKbdDismissed] = useState<boolean>(() => isPhysicalKeyboardNoticeDismissed());
+  const showPhysicalKeyboardModal = isMobileOrTablet && !physKbdDismissed;
   const { isFullscreen, isPseudoFullscreen, enterFullscreen, exitFullscreen, toggleFullscreen } = useFullscreen(
     rootRef,
     { useDocumentRoot: true, mandatory: true }
@@ -339,14 +347,14 @@ export const WordExpressWorkbench: React.FC<WordExpressWorkbenchProps> = ({
     [onSelectLevel, resetLevelSession, currentStreak]
   );
 
-  // Live timer (pauses automatically if Hand Guide or Mandatory Full Screen gate is open)
+  // Live timer (pauses automatically if Hand Guide, Keyboard Notice, or Mandatory Full Screen gate is open)
   useEffect(() => {
-    if (!startTime || viewMode !== 'typing' || showHandGuide || !isFullscreen) return;
+    if (!startTime || viewMode !== 'typing' || showHandGuide || !isFullscreen || showPhysicalKeyboardModal) return;
     const timer = setInterval(() => {
       setElapsedSec((performance.now() - startTime) / 1000);
     }, 100);
     return () => clearInterval(timer);
-  }, [startTime, viewMode, showHandGuide, isFullscreen]);
+  }, [startTime, viewMode, showHandGuide, isFullscreen, showPhysicalKeyboardModal]);
 
   // Live stats
   const liveStats = useMemo(() => {
@@ -470,6 +478,10 @@ export const WordExpressWorkbench: React.FC<WordExpressWorkbenchProps> = ({
       if (e.altKey && e.key.toLowerCase() === 'f') {
         e.preventDefault();
         toggleFullscreen();
+        return;
+      }
+
+      if (showPhysicalKeyboardModal) {
         return;
       }
 
@@ -685,6 +697,7 @@ export const WordExpressWorkbench: React.FC<WordExpressWorkbenchProps> = ({
     centerCarrier,
     viewMode,
     isFullscreen,
+    showPhysicalKeyboardModal,
     showHandGuide,
     isCurriculumOpen,
     unlockPromptOpen,
@@ -1115,8 +1128,23 @@ export const WordExpressWorkbench: React.FC<WordExpressWorkbenchProps> = ({
         theme={activeTheme}
       />
 
+      {/* Mobile/Tablet Physical Keyboard Recommendation Modal (English + সহজ বাংলা) */}
+      {showPhysicalKeyboardModal && (
+        <PhysicalKeyboardNotice
+          variant="modal"
+          labName="Word Express Lab"
+          labNameBn="ওয়ার্ড এক্সপ্রেস ল্যাব"
+          theme={activeTheme}
+          onContinue={() => {
+            setPhysKbdDismissed(true);
+            if (!isFullscreen) void enterFullscreen();
+          }}
+          onBackToDashboard={handleReturnToDashboard}
+        />
+      )}
+
       {/* Mandatory Full Screen Gate (Blocks typing whenever Full Screen is exited) */}
-      {!isFullscreen && (
+      {!showPhysicalKeyboardModal && !isFullscreen && (
         <FullscreenRequiredGate
           labName="Word Express Delivery Lab"
           theme={activeTheme}
@@ -1129,7 +1157,7 @@ export const WordExpressWorkbench: React.FC<WordExpressWorkbenchProps> = ({
       )}
 
       {/* Pre-Start Hand-Set Visual Guide (Shown once in Full Screen) */}
-      {isFullscreen && showHandGuide && viewMode === 'typing' && (
+      {!showPhysicalKeyboardModal && isFullscreen && showHandGuide && viewMode === 'typing' && (
         <HandSetupGuide
           level={levelGuideAdapter}
           theme={activeTheme}

@@ -40,6 +40,8 @@ import { useFullscreen, requestDocumentFullscreen } from '../../utils/useFullscr
 import { SummaryBadgeSlot } from '../typing/SummaryBadgeSlot';
 import { DeliveryCarrierSVG } from './DeliveryCarrierSVG';
 import { LabGuideAssistant } from '../common/LabGuideAssistant';
+import { PhysicalKeyboardNotice } from '../common/PhysicalKeyboardNotice';
+import { useIsMobileOrTablet } from '../../utils/mobileKeyboardDetect';
 import '../common/moduleDashboard.css';
 import '../typing/touchTyping.css';
 import './wordExpress.css';
@@ -58,25 +60,25 @@ const TOUGHNESS_CARDS: Array<{
   desc: string;
   badge: string;
 }> = [
-  {
-    id: 'easy',
-    label: 'Easy',
-    desc: 'Relaxed pace (6–22 WPM), 78–88% accuracy & zero error caps — ideal for learning.',
-    badge: 'Learning Friendly'
-  },
-  {
-    id: 'moderate',
-    label: 'Moderate',
-    desc: 'Balanced pace (10–32 WPM), 84–93% accuracy & fair streak targets.',
-    badge: 'Balanced Default'
-  },
-  {
-    id: 'hard',
-    label: 'Hard',
-    desc: 'High velocity (13–42 WPM), 88–97% accuracy & tight error limits for pro runners.',
-    badge: 'Pro Challenge'
-  }
-];
+    {
+      id: 'easy',
+      label: 'Easy',
+      desc: 'Relaxed pace (6–22 WPM), 78–88% accuracy & zero error caps — ideal for learning.',
+      badge: 'Learning Friendly'
+    },
+    {
+      id: 'moderate',
+      label: 'Moderate',
+      desc: 'Balanced pace (10–32 WPM), 84–93% accuracy & fair streak targets.',
+      badge: 'Balanced Default'
+    },
+    {
+      id: 'hard',
+      label: 'Hard',
+      desc: 'High velocity (13–42 WPM), 88–97% accuracy & tight error limits for pro runners.',
+      badge: 'Pro Challenge'
+    }
+  ];
 
 export const WordExpressDashboard: React.FC<WordExpressDashboardProps> = ({
   progress,
@@ -86,6 +88,7 @@ export const WordExpressDashboard: React.FC<WordExpressDashboardProps> = ({
   onBackToMainHub
 }) => {
   const isDark = theme === 'dark';
+  const isMobileOrTablet = useIsMobileOrTablet();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const wpmRef = useRef<HTMLSpanElement | null>(null);
   const spotlightRef = useRef<HTMLDivElement | null>(null);
@@ -362,6 +365,16 @@ export const WordExpressDashboard: React.FC<WordExpressDashboardProps> = ({
           '--md-glow': 'radial-gradient(circle, rgba(192, 132, 252, 0.38), transparent 70%)'
         } as React.CSSProperties}
       >
+        {/* Mobile & Tablet Physical Keyboard Recommendation (English + সহজ বাংলা) */}
+        {isMobileOrTablet && (
+          <PhysicalKeyboardNotice
+            variant="banner"
+            labName="Word Express Lab"
+            labNameBn="ওয়ার্ড এক্সপ্রেস ল্যাব"
+            theme={theme}
+          />
+        )}
+
         {/* ELECTRIC VIOLET COURIER RUNWAY HERO */}
         <section className="md-hero we-reveal" aria-label="Word Express Lab Overview">
           <div className="md-hero-glow" aria-hidden="true" />

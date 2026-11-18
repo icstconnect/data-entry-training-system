@@ -11,6 +11,7 @@ import { APP_CONFIG } from './config/appConfig';
 import { Header } from './components/common/Header';
 import { Footer } from './components/common/Footer';
 import { OfflineNotice } from './components/common/OfflineNotice';
+import { IcstAnimatedCursorOverlay } from './components/common/IcstAnimatedCursorOverlay';
 import { LandingPage } from './components/landing/LandingPage';
 import {
   GovtAccessibilityBar,
@@ -428,6 +429,9 @@ export function App() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '100vw', overflowX: 'clip' }}>
+      {/* Animated Cursor Companion Overlay (active for Pulse Orbit & Prism Aurora themes) */}
+      <IcstAnimatedCursorOverlay />
+
       {/* Government Website Accessibility & Screen Magnifier Bar (GIGW Compliant) */}
       <GovtAccessibilityBar
         fontSize={govtFontSize}

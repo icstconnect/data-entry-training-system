@@ -1,0 +1,737 @@
+/* ==========================================================================
+   ICST LAB — COMPLETE CUSTOM CURSOR SYSTEM (41 BRAND-MATCHED SVG CURSORS)
+   Institute of Computer Science and Technology, Chowberia (icstconnect.in)
+   ========================================================================== */
+
+:root {
+  /* Standard & Navigation (7) */
+  --cursor-default: url('/cursors/default.svg') 4 3, default;
+  --cursor-auto: url('/cursors/auto.svg') 4 3, auto;
+  --cursor-pointer: url('/cursors/pointer.svg') 10 3, pointer;
+  --cursor-context-menu: url('/cursors/context-menu.svg') 4 3, context-menu;
+  --cursor-help: url('/cursors/help.svg') 4 3, help;
+  --cursor-progress: url('/cursors/progress.svg') 4 3, progress;
+  --cursor-wait: url('/cursors/wait.svg') 16 16, wait;
+
+  /* Selection & Interaction (7) */
+  --cursor-text: url('/cursors/text.svg') 16 16, text;
+  --cursor-vertical-text: url('/cursors/vertical-text.svg') 16 16, vertical-text;
+  --cursor-crosshair: url('/cursors/crosshair.svg') 16 16, crosshair;
+  --cursor-cell: url('/cursors/cell.svg') 16 16, cell;
+  --cursor-alias: url('/cursors/alias.svg') 4 3, alias;
+  --cursor-copy: url('/cursors/copy.svg') 4 3, copy;
+  --cursor-move: url('/cursors/move.svg') 16 16, move;
+
+  /* Drag & Drop (5) */
+  --cursor-grab: url('/cursors/grab.svg') 16 16, grab;
+  --cursor-grabbing: url('/cursors/grabbing.svg') 16 16, grabbing;
+  --cursor-no-drop: url('/cursors/no-drop.svg') 4 3, no-drop;
+  --cursor-not-allowed: url('/cursors/not-allowed.svg') 16 16, not-allowed;
+  --cursor-dragging: url('/cursors/dragging.svg') 16 16, grabbing;
+
+  /* Resize (14) */
+  --cursor-col-resize: url('/cursors/col-resize.svg') 16 16, col-resize;
+  --cursor-row-resize: url('/cursors/row-resize.svg') 16 16, row-resize;
+  --cursor-n-resize: url('/cursors/n-resize.svg') 16 16, n-resize;
+  --cursor-s-resize: url('/cursors/s-resize.svg') 16 16, s-resize;
+  --cursor-e-resize: url('/cursors/e-resize.svg') 16 16, e-resize;
+  --cursor-w-resize: url('/cursors/w-resize.svg') 16 16, w-resize;
+  --cursor-ne-resize: url('/cursors/ne-resize.svg') 16 16, ne-resize;
+  --cursor-nw-resize: url('/cursors/nw-resize.svg') 16 16, nw-resize;
+  --cursor-se-resize: url('/cursors/se-resize.svg') 16 16, se-resize;
+  --cursor-sw-resize: url('/cursors/sw-resize.svg') 16 16, sw-resize;
+  --cursor-ew-resize: url('/cursors/ew-resize.svg') 16 16, ew-resize;
+  --cursor-ns-resize: url('/cursors/ns-resize.svg') 16 16, ns-resize;
+  --cursor-nesw-resize: url('/cursors/nesw-resize.svg') 16 16, nesw-resize;
+  --cursor-nwse-resize: url('/cursors/nwse-resize.svg') 16 16, nwse-resize;
+
+  /* Zoom (2) */
+  --cursor-zoom-in: url('/cursors/zoom-in.svg') 13 13, zoom-in;
+  --cursor-zoom-out: url('/cursors/zoom-out.svg') 13 13, zoom-out;
+
+  /* Custom ICST Labs Cursor States (6) */
+  --cursor-icst-default: url('/cursors/icst-default.svg') 4 3, default;
+  --cursor-icst-pointer: url('/cursors/icst-pointer.svg') 10 3, pointer;
+  --cursor-icst-click: url('/cursors/icst-click.svg') 10 3, pointer;
+  --cursor-icst-loading: url('/cursors/icst-loading.svg') 16 16, progress;
+  --cursor-icst-success: url('/cursors/icst-success.svg') 4 3, default;
+  --cursor-icst-error: url('/cursors/icst-error.svg') 4 3, not-allowed;
+}
+
+/* Apply custom cursors on pointer-capable devices (mouse / trackpad / stylus) */
+@media (hover: hover) and (pointer: fine) {
+  html,
+  body {
+    cursor: var(--cursor-icst-default);
+  }
+
+  /* Interactive controls -> ICST Pointer */
+  a,
+  button,
+  summary,
+  select,
+  label[for],
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"],
+  [role="link"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="range"],
+  input[type="file"],
+  .btn,
+  .nav-btn,
+  .lab-card,
+  .clickable {
+    cursor: var(--cursor-icst-pointer);
+  }
+
+  /* Tactile active press feedback -> ICST Click */
+  a:active,
+  button:not(:disabled):active,
+  summary:active,
+  [role="button"]:not([aria-disabled="true"]):active,
+  [role="tab"]:active,
+  [role="menuitem"]:active,
+  input[type="button"]:not(:disabled):active,
+  input[type="submit"]:not(:disabled):active,
+  html[data-icst-cursor-pressed="true"] a,
+  html[data-icst-cursor-pressed="true"] button:not(:disabled),
+  html[data-icst-cursor-pressed="true"] [role="button"]:not([aria-disabled="true"]) {
+    cursor: var(--cursor-icst-click);
+  }
+
+  /* Text entry & selectable editorial inputs -> ICST Text I-beam */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="url"],
+  input[type="tel"],
+  input[type="number"],
+  input:not([type]),
+  textarea,
+  [contenteditable="true"] {
+    cursor: var(--cursor-text);
+  }
+
+  /* Disabled / locked states -> ICST Not Allowed */
+  button:disabled,
+  input:disabled,
+  select:disabled,
+  textarea:disabled,
+  [aria-disabled="true"],
+  .disabled {
+    cursor: var(--cursor-not-allowed);
+  }
+
+  /* Help & Context Menu hints */
+  abbr[title],
+  [data-help],
+  .help-trigger {
+    cursor: var(--cursor-help);
+  }
+
+  [data-context-menu] {
+    cursor: var(--cursor-context-menu);
+  }
+
+  /* Draggable & Dragging states */
+  [draggable="true"] {
+    cursor: var(--cursor-grab);
+  }
+
+  [draggable="true"]:active {
+    cursor: var(--cursor-grabbing);
+  }
+
+  html[data-icst-dragging="true"],
+  html[data-icst-dragging="true"] * {
+    cursor: var(--cursor-dragging) !important;
+  }
+
+  /* Busy / Loading indicators */
+  [aria-busy="true"] {
+    cursor: var(--cursor-progress);
+  }
+
+  /* Lab-specific semantic mappings */
+  .excel-data-cell {
+    cursor: var(--cursor-cell) !important;
+  }
+
+  .excel-fill-handle {
+    cursor: var(--cursor-crosshair) !important;
+  }
+
+  .win-window-titlebar {
+    cursor: var(--cursor-move) !important;
+  }
+
+  /* Seamlessly upgrade inline React style={{ cursor: '...' }} declarations */
+  [style*="cursor: pointer"]:not([data-cursor]):not(:disabled) { cursor: var(--cursor-icst-pointer) !important; }
+  [style*="cursor: pointer"]:not([data-cursor]):not(:disabled):active { cursor: var(--cursor-icst-click) !important; }
+  [style*="cursor: default"]:not([data-cursor]) { cursor: var(--cursor-icst-default) !important; }
+  [style*="cursor: text"]:not([data-cursor]) { cursor: var(--cursor-text) !important; }
+  [style*="cursor: not-allowed"]:not([data-cursor]) { cursor: var(--cursor-not-allowed) !important; }
+  [style*="cursor: no-drop"]:not([data-cursor]) { cursor: var(--cursor-no-drop) !important; }
+  [style*="cursor: move"]:not([data-cursor]) { cursor: var(--cursor-move) !important; }
+  [style*="cursor: grab"]:not([data-cursor]) { cursor: var(--cursor-grab) !important; }
+  [style*="cursor: grabbing"]:not([data-cursor]) { cursor: var(--cursor-grabbing) !important; }
+  [style*="cursor: cell"]:not([data-cursor]) { cursor: var(--cursor-cell) !important; }
+  [style*="cursor: crosshair"]:not([data-cursor]) { cursor: var(--cursor-crosshair) !important; }
+  [style*="cursor: help"]:not([data-cursor]) { cursor: var(--cursor-help) !important; }
+  [style*="cursor: wait"]:not([data-cursor]) { cursor: var(--cursor-wait) !important; }
+  [style*="cursor: progress"]:not([data-cursor]) { cursor: var(--cursor-progress) !important; }
+  [style*="cursor: zoom-in"]:not([data-cursor]) { cursor: var(--cursor-zoom-in) !important; }
+  [style*="cursor: zoom-out"]:not([data-cursor]) { cursor: var(--cursor-zoom-out) !important; }
+  [style*="cursor: col-resize"]:not([data-cursor]) { cursor: var(--cursor-col-resize) !important; }
+  [style*="cursor: row-resize"]:not([data-cursor]) { cursor: var(--cursor-row-resize) !important; }
+
+  /* Global Transient ICST Cursor States (triggered via setGlobalCursorState) */
+  html[data-icst-cursor-state="loading"],
+  html[data-icst-cursor-state="loading"] * {
+    cursor: var(--cursor-icst-loading) !important;
+  }
+
+  html[data-icst-cursor-state="success"],
+  html[data-icst-cursor-state="success"] * {
+    cursor: var(--cursor-icst-success) !important;
+  }
+
+  html[data-icst-cursor-state="error"],
+  html[data-icst-cursor-state="error"] * {
+    cursor: var(--cursor-icst-error) !important;
+  }
+
+  /* ========================================================================
+     UTILITY CLASSES (.cursor-*) & DATA ATTRIBUTES ([data-cursor="*"])
+     All 41 cursors available declaratively anywhere in the app
+     ======================================================================== */
+
+  /* Standard & navigation */
+  .cursor-default, [data-cursor="default"] { cursor: var(--cursor-default) !important; }
+  .cursor-auto, [data-cursor="auto"] { cursor: var(--cursor-auto) !important; }
+  .cursor-pointer, [data-cursor="pointer"] { cursor: var(--cursor-pointer) !important; }
+  .cursor-context-menu, [data-cursor="context-menu"] { cursor: var(--cursor-context-menu) !important; }
+  .cursor-help, [data-cursor="help"] { cursor: var(--cursor-help) !important; }
+  .cursor-progress, [data-cursor="progress"] { cursor: var(--cursor-progress) !important; }
+  .cursor-wait, [data-cursor="wait"] { cursor: var(--cursor-wait) !important; }
+
+  /* Selection & interaction */
+  .cursor-text, [data-cursor="text"] { cursor: var(--cursor-text) !important; }
+  .cursor-vertical-text, [data-cursor="vertical-text"] { cursor: var(--cursor-vertical-text) !important; }
+  .cursor-crosshair, [data-cursor="crosshair"] { cursor: var(--cursor-crosshair) !important; }
+  .cursor-cell, [data-cursor="cell"] { cursor: var(--cursor-cell) !important; }
+  .cursor-alias, [data-cursor="alias"] { cursor: var(--cursor-alias) !important; }
+  .cursor-copy, [data-cursor="copy"] { cursor: var(--cursor-copy) !important; }
+  .cursor-move, [data-cursor="move"] { cursor: var(--cursor-move) !important; }
+
+  /* Drag & drop */
+  .cursor-grab, [data-cursor="grab"] { cursor: var(--cursor-grab) !important; }
+  .cursor-grabbing, [data-cursor="grabbing"] { cursor: var(--cursor-grabbing) !important; }
+  .cursor-no-drop, [data-cursor="no-drop"] { cursor: var(--cursor-no-drop) !important; }
+  .cursor-not-allowed, [data-cursor="not-allowed"] { cursor: var(--cursor-not-allowed) !important; }
+  .cursor-dragging, [data-cursor="dragging"] { cursor: var(--cursor-dragging) !important; }
+
+  /* Resize */
+  .cursor-col-resize, [data-cursor="col-resize"] { cursor: var(--cursor-col-resize) !important; }
+  .cursor-row-resize, [data-cursor="row-resize"] { cursor: var(--cursor-row-resize) !important; }
+  .cursor-n-resize, [data-cursor="n-resize"] { cursor: var(--cursor-n-resize) !important; }
+  .cursor-s-resize, [data-cursor="s-resize"] { cursor: var(--cursor-s-resize) !important; }
+  .cursor-e-resize, [data-cursor="e-resize"] { cursor: var(--cursor-e-resize) !important; }
+  .cursor-w-resize, [data-cursor="w-resize"] { cursor: var(--cursor-w-resize) !important; }
+  .cursor-ne-resize, [data-cursor="ne-resize"] { cursor: var(--cursor-ne-resize) !important; }
+  .cursor-nw-resize, [data-cursor="nw-resize"] { cursor: var(--cursor-nw-resize) !important; }
+  .cursor-se-resize, [data-cursor="se-resize"] { cursor: var(--cursor-se-resize) !important; }
+  .cursor-sw-resize, [data-cursor="sw-resize"] { cursor: var(--cursor-sw-resize) !important; }
+  .cursor-ew-resize, [data-cursor="ew-resize"] { cursor: var(--cursor-ew-resize) !important; }
+  .cursor-ns-resize, [data-cursor="ns-resize"] { cursor: var(--cursor-ns-resize) !important; }
+  .cursor-nesw-resize, [data-cursor="nesw-resize"] { cursor: var(--cursor-nesw-resize) !important; }
+  .cursor-nwse-resize, [data-cursor="nwse-resize"] { cursor: var(--cursor-nwse-resize) !important; }
+
+  /* Zoom */
+  .cursor-zoom-in, [data-cursor="zoom-in"] { cursor: var(--cursor-zoom-in) !important; }
+  .cursor-zoom-out, [data-cursor="zoom-out"] { cursor: var(--cursor-zoom-out) !important; }
+
+  /* Custom ICST Labs cursor states */
+  .cursor-icst-default, [data-cursor="icst-default"] { cursor: var(--cursor-icst-default) !important; }
+  .cursor-icst-pointer, [data-cursor="icst-pointer"] { cursor: var(--cursor-icst-pointer) !important; }
+  .cursor-icst-click, [data-cursor="icst-click"] { cursor: var(--cursor-icst-click) !important; }
+  .cursor-icst-loading, [data-cursor="icst-loading"] { cursor: var(--cursor-icst-loading) !important; }
+  .cursor-icst-success, [data-cursor="icst-success"] { cursor: var(--cursor-icst-success) !important; }
+  .cursor-icst-error, [data-cursor="icst-error"] { cursor: var(--cursor-icst-error) !important; }
+}
+
+/* ==========================================================================
+   ANIMATED CURSOR OVERLAY (Pulse Orbit & Prism Aurora)
+   GPU-composited (transform + opacity), zero pointer interception
+   ========================================================================== */
+
+.icst-anim-cursor-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483646;
+  opacity: 0;
+  transition: opacity 180ms ease;
+  overflow: hidden;
+}
+
+.icst-anim-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+  pointer-events: none;
+  transition: width 180ms cubic-bezier(0.22, 1, 0.36, 1),
+              height 180ms cubic-bezier(0.22, 1, 0.36, 1),
+              filter 180ms ease;
+}
+
+.icst-anim-cursor-ring[data-hover="pointer"] {
+  width: 52px;
+  height: 52px;
+}
+
+.icst-anim-cursor-ring[data-hover="text"] {
+  width: 32px;
+  height: 32px;
+}
+
+.icst-anim-cursor-ring[data-hover="cell"] {
+  width: 36px;
+  height: 36px;
+}
+
+.icst-anim-cursor-ring[data-pressed="true"] {
+  width: 36px;
+  height: 36px;
+}
+
+/* --- Theme 4: Pulse Orbit --- */
+.icst-orbit-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  will-change: transform;
+}
+
+.appearance-dark .icst-orbit-track {
+  stroke: rgba(15, 23, 42, 0.32);
+}
+
+.appearance-dark .icst-orbit-arc {
+  stroke: #0284c7;
+  filter: drop-shadow(0 0 3px rgba(2, 132, 199, 0.45));
+}
+
+.appearance-dark .icst-orbit-satellite {
+  fill: #0ea5e9;
+  stroke: #ffffff;
+  stroke-width: 1.2;
+}
+
+.appearance-light .icst-orbit-track {
+  stroke: rgba(248, 250, 252, 0.36);
+}
+
+.appearance-light .icst-orbit-arc {
+  stroke: #22d3ee;
+  filter: drop-shadow(0 0 5px rgba(34, 211, 238, 0.75));
+}
+
+.appearance-light .icst-orbit-satellite {
+  fill: #38bdf8;
+  stroke: #0f172a;
+  stroke-width: 1.2;
+}
+
+.icst-anim-cursor-ring[data-hover="pointer"] .icst-orbit-arc {
+  stroke-width: 2.5;
+}
+
+.icst-anim-cursor-ring[data-hover="disabled"] .icst-orbit-arc,
+.icst-anim-cursor-ring[data-hover="disabled"] .icst-orbit-satellite {
+  stroke: #ef4444;
+  fill: #ef4444;
+}
+
+.icst-orbit-click-ripple {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 28px;
+  margin-left: -14px;
+  margin-top: -14px;
+  border-radius: 50%;
+  border: 2px solid #0ea5e9;
+  opacity: 0;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.appearance-light .icst-orbit-click-ripple {
+  border-color: #22d3ee;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.55);
+}
+
+/* --- Theme 5: Prism Aurora --- */
+.icst-aurora-ring-spinner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  padding: 2px;
+  background: conic-gradient(
+    from 0deg,
+    #22d3ee,
+    #6366f1,
+    #a855f7,
+    #ec4899,
+    #34d399,
+    #22d3ee
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.4px), #000 calc(100% - 1.6px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2.4px), #000 calc(100% - 1.6px));
+  opacity: 0.78;
+  will-change: transform;
+}
+
+.appearance-light .icst-aurora-ring-spinner {
+  opacity: 0.92;
+  filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.6));
+}
+
+.appearance-dark .icst-aurora-ring-spinner {
+  opacity: 0.74;
+  filter: drop-shadow(0 0 3px rgba(99, 102, 241, 0.35));
+}
+
+.icst-aurora-trail-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  opacity: 0;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.icst-aurora-trail-dot.dot-0 { background: #22d3ee; }
+.icst-aurora-trail-dot.dot-1 { background: #38bdf8; }
+.icst-aurora-trail-dot.dot-2 { background: #818cf8; }
+.icst-aurora-trail-dot.dot-3 { background: #c084fc; }
+.icst-aurora-trail-dot.dot-4 { background: #34d399; }
+
+.appearance-light .icst-aurora-trail-dot {
+  box-shadow: 0 0 8px currentColor;
+}
+
+.icst-aurora-spark {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  margin-top: -3px;
+  border-radius: 50%;
+  opacity: 0;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.icst-aurora-spark.spark-0 { background: #22d3ee; }
+.icst-aurora-spark.spark-1 { background: #6366f1; }
+.icst-aurora-spark.spark-2 { background: #a855f7; }
+.icst-aurora-spark.spark-3 { background: #ec4899; }
+.icst-aurora-spark.spark-4 { background: #34d399; }
+.icst-aurora-spark.spark-5 { background: #38bdf8; }
+
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+  .icst-anim-cursor-layer {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   HEADER NAVIGATION CURSOR SELECTOR DROPDOWN
+   Harmonized with ICST Eye-Care Warm Tone + GIGW High Contrast Mode
+   ========================================================================== */
+
+.cursor-selector-trigger {
+  gap: 5px;
+}
+
+.cursor-trigger-preview {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 1px solid var(--border-light);
+  flex-shrink: 0;
+}
+
+.cursor-trigger-preview img {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  display: block;
+}
+
+.cursor-anim-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0ea5e9, #a855f7);
+  box-shadow: 0 0 6px rgba(14, 165, 233, 0.75);
+  flex-shrink: 0;
+}
+
+.cursor-dropdown-menu {
+  width: 312px !important;
+  min-width: 296px;
+  padding: 10px !important;
+}
+
+.cursor-dropdown-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 4px 8px;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 8px;
+}
+
+.cursor-dropdown-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+}
+
+.cursor-auto-status-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--icst-blue-soft);
+  color: var(--icst-blue);
+  border: 1px solid var(--icst-blue-border);
+  white-space: nowrap;
+}
+
+/* Auto / Light / Dark Switcher Bar */
+.cursor-tone-switcher {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 3px;
+  background: var(--bg-subtle);
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  margin-bottom: 10px;
+}
+
+.cursor-tone-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+  cursor: var(--cursor-icst-pointer);
+}
+
+.cursor-tone-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.cursor-tone-btn.active {
+  background: var(--bg-surface);
+  color: var(--icst-blue);
+  border-color: var(--icst-blue-border);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.cursor-theme-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cursor-theme-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 7px 8px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
+  cursor: var(--cursor-icst-pointer);
+}
+
+.cursor-theme-item:hover {
+  background: var(--bg-subtle);
+  border-color: var(--border-light);
+}
+
+.cursor-theme-item.active {
+  background: var(--icst-blue-soft);
+  border-color: var(--icst-blue-border);
+}
+
+.cursor-theme-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.cursor-theme-swatch img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.cursor-theme-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.cursor-theme-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cursor-theme-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.cursor-anim-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.cursor-theme-desc {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cursor-theme-check {
+  color: var(--icst-blue);
+  flex-shrink: 0;
+}
+
+/* Mobile Drawer Cursor Picker */
+.drawer-cursor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.drawer-cursor-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-align: left;
+  cursor: var(--cursor-icst-pointer);
+}
+
+.drawer-cursor-chip.active {
+  border-color: var(--icst-blue);
+  background: var(--icst-blue-soft);
+  color: var(--icst-blue);
+}
+
+.drawer-cursor-chip img {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* GIGW High Contrast Mode Overrides */
+html[data-contrast="high"] .cursor-dropdown-menu,
+html[data-contrast="high"] .cursor-tone-switcher,
+html[data-contrast="high"] .drawer-cursor-chip {
+  background: #000000 !important;
+  border-color: #ffff00 !important;
+  color: #ffff00 !important;
+}
+
+html[data-contrast="high"] .cursor-tone-btn,
+html[data-contrast="high"] .cursor-theme-name,
+html[data-contrast="high"] .cursor-theme-desc,
+html[data-contrast="high"] .cursor-dropdown-title {
+  color: #ffff00 !important;
+}
+
+html[data-contrast="high"] .cursor-tone-btn.active,
+html[data-contrast="high"] .cursor-theme-item.active,
+html[data-contrast="high"] .drawer-cursor-chip.active {
+  background: #ffff00 !important;
+  color: #000000 !important;
+}
+
+html[data-contrast="high"] .cursor-theme-item.active .cursor-theme-name,
+html[data-contrast="high"] .cursor-theme-item.active .cursor-theme-desc,
+html[data-contrast="high"] .cursor-theme-item.active .cursor-theme-check {
+  color: #000000 !important;
+}
+

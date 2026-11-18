@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="gBody" x1="4" y1="3" x2="26" y2="27" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.88)"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="gAccent" x1="3" y1="3" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="gPrism" x1="4" y1="24" x2="22" y2="6" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="50%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <filter id="ds" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0.5" dy="1.1" stdDeviation="0.9" flood-color="#020617" flood-opacity="0.24"/>
+    </filter>
+    
+  </defs>
+  <g filter="url(#ds)">
+    
+    <path d="M4.6 4.4C4.4 3.3 5.5 2.5 6.4 3.1L20.4 12.8C21.3 13.4 21.0 14.9 19.9 15.1L13.8 16.4C13.2 16.5 12.7 16.9 12.4 17.4L9.5 22.6C8.9 23.6 7.5 23.3 7.3 22.2L4.6 4.4Z"
+          fill="rgba(255,255,255,0.88)" stroke="#ffffff" stroke-width="4.0" stroke-linejoin="round"/>
+    <path d="M4.6 4.4C4.4 3.3 5.5 2.5 6.4 3.1L20.4 12.8C21.3 13.4 21.0 14.9 19.9 15.1L13.8 16.4C13.2 16.5 12.7 16.9 12.4 17.4L9.5 22.6C8.9 23.6 7.5 23.3 7.3 22.2L4.6 4.4Z"
+          fill="none" stroke="#0f172a" stroke-width="2.0" stroke-linejoin="round"/>
+    <path d="M6.4 16.2L7.3 22.2C7.5 23.3 8.9 23.6 9.5 22.6L12.4 17.4C12.7 16.9 13.2 16.5 13.8 16.4L17.0 15.7"
+          stroke="url(#gPrism)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  </g>
+</svg>

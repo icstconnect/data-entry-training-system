@@ -167,7 +167,7 @@
   border-radius: 10px;
   font-size: 12px;
   font-weight: 800;
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
@@ -302,7 +302,7 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #cbd5e1;
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
   will-change: transform;
 }
@@ -519,7 +519,7 @@
   background: var(--bg-main, #f9f6f0);
   border: 1.5px solid var(--border-light, #e4ddd0);
   text-align: left;
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.2s ease;
   will-change: transform, opacity;
 }
@@ -609,7 +609,7 @@
   font-size: 13px;
   font-weight: 800;
   color: var(--text-secondary, #4d463b);
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   transition: background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
 }
 
@@ -651,7 +651,7 @@
   font-size: 12.5px;
   font-weight: 800;
   color: var(--text-secondary, #4d463b);
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   transition: all 0.16s ease;
 }
 
@@ -726,7 +726,7 @@
   background: var(--bg-main, #f9f6f0);
   border: 1px solid var(--border-medium, #d2c8b7);
   color: var(--text-secondary, #4d463b);
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   transition: all 0.15s ease;
 }
 

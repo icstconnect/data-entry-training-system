@@ -290,7 +290,7 @@
   background: #1a2536;
   color: #94a3b8;
   border: 1px solid transparent;
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   transition: all 0.15s ease;
 }
 
@@ -687,7 +687,7 @@
   border-radius: 4px;
   font-size: 11.5px;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   border: 1px solid transparent;
   transition: all 0.15s ease;
 }
@@ -863,7 +863,7 @@
   border-radius: 6px;
   font-size: 13px;
   font-weight: 700;
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   transition: all 0.15s ease;
 }
 

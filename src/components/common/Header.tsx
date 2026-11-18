@@ -24,12 +24,25 @@ import {
   Monitor,
   LayoutGrid,
   Rocket,
-  ExternalLink
+  ExternalLink,
+  Sun,
+  Moon,
+  Contrast
 } from 'lucide-react';
 import { animate, createScope, stagger, spring } from 'animejs';
 import { UserRole, StudentIdentity } from '../../types';
 import { ICST_CONNECT } from '../../config/appConfig';
 import { isMasterUnlocked, lockToStudentProgression } from '../../services/masterUnlockService';
+import {
+  ICST_CURSOR_THEMES,
+  CursorPreferencesState,
+  CursorToneMode,
+  getCursorPreferences,
+  getCursorSvgPath,
+  setCursorTheme,
+  setCursorToneMode,
+  subscribeCursorPreferences
+} from '../../utils/icstCursor';
 
 export type ActiveViewId =
   | 'landing'
@@ -244,8 +257,16 @@ export const Header: React.FC<HeaderProps> = React.memo(({
 
   const [masterUnlocked, setMasterUnlockedState] = useState<boolean>(() => isMasterUnlocked());
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<NavDropdownGroup['id'] | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<NavDropdownGroup['id'] | 'cursor' | null>(null);
   const [openMobileDropdown, setOpenMobileDropdown] = useState<'data-entry' | 'os-typing' | null>(null);
+  const [cursorPrefs, setCursorPrefs] = useState<CursorPreferencesState>(() => getCursorPreferences());
+
+  useEffect(() => {
+    return subscribeCursorPreferences(setCursorPrefs);
+  }, []);
+
+  const activeCursorMeta =
+    ICST_CURSOR_THEMES.find(t => t.id === cursorPrefs.theme) || ICST_CURSOR_THEMES[0];
 
   const headerRef = useRef<HTMLElement | null>(null);
   const desktopNavRef = useRef<HTMLDivElement | null>(null);
@@ -286,7 +307,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           ease: spring({ stiffness: 360, damping: 22 })
         });
       }
-      const items = headerRef.current?.querySelectorAll('.nav-dropdown-menu .nav-dropdown-item');
+      const items = headerRef.current?.querySelectorAll('.nav-dropdown-menu .nav-dropdown-item, .nav-dropdown-menu .cursor-theme-item');
       if (items && items.length > 0) {
         animate(items, {
           translateX: [-8, 0],
@@ -446,7 +467,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
     }
   };
 
-  const toggleDesktopDropdown = (groupId: NavDropdownGroup['id']) => {
+  const toggleDesktopDropdown = (groupId: NavDropdownGroup['id'] | 'cursor') => {
     setOpenDropdown(prev => (prev === groupId ? null : groupId));
   };
 
@@ -705,6 +726,129 @@ export const Header: React.FC<HeaderProps> = React.memo(({
               </div>
             );
           })()}
+
+          {/* Navigation Cursor Selector Dropdown (5 Modern Themes + Auto Dark/Light) */}
+          <div className="nav-dropdown">
+            <button
+              type="button"
+              className={`nav-btn nav-dropdown-trigger cursor-selector-trigger ${openDropdown === 'cursor' ? 'open' : ''}`}
+              onClick={() => toggleDesktopDropdown('cursor')}
+              aria-haspopup="menu"
+              aria-expanded={openDropdown === 'cursor'}
+              title={`Cursor Style: ${activeCursorMeta.name} (${cursorPrefs.toneMode === 'auto' ? `Auto · ${cursorPrefs.resolvedAppearance}` : cursorPrefs.toneMode})`}
+            >
+              <span
+                className="cursor-trigger-preview"
+                style={{
+                  background:
+                    cursorPrefs.resolvedAppearance === 'light'
+                      ? activeCursorMeta.previewBgDark
+                      : activeCursorMeta.previewBgLight
+                }}
+              >
+                <img
+                  src={getCursorSvgPath(cursorPrefs.theme, cursorPrefs.resolvedAppearance, 'icst-default')}
+                  alt=""
+                  width={14}
+                  height={14}
+                />
+              </span>
+              <span className="nav-btn-text">Cursor</span>
+              {activeCursorMeta.animated && <span className="cursor-anim-dot" aria-hidden="true" />}
+              <ChevronDown size={13} className="nav-chevron" />
+            </button>
+
+            {openDropdown === 'cursor' && (
+              <div
+                className="nav-dropdown-menu align-right cursor-dropdown-menu"
+                role="menu"
+                aria-label="Website Cursor Selector"
+              >
+                <div className="cursor-dropdown-top">
+                  <span className="cursor-dropdown-title">Cursor Studio (5 Types)</span>
+                  <span className="cursor-auto-status-pill">
+                    {cursorPrefs.toneMode === 'auto'
+                      ? `Auto · ${cursorPrefs.resolvedAppearance === 'light' ? 'Light' : 'Dark'}`
+                      : cursorPrefs.toneMode === 'light'
+                        ? 'Forced Light'
+                        : 'Forced Dark'}
+                  </span>
+                </div>
+
+                {/* Auto / Light / Dark Switcher */}
+                <div className="cursor-tone-switcher" role="group" aria-label="Cursor Light/Dark Mode">
+                  {(
+                    [
+                      { id: 'auto', label: 'Auto', icon: <Contrast size={12} /> },
+                      { id: 'light', label: 'Light', icon: <Sun size={12} /> },
+                      { id: 'dark', label: 'Dark', icon: <Moon size={12} /> }
+                    ] as Array<{ id: CursorToneMode; label: string; icon: React.ReactNode }>
+                  ).map(opt => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      className={`cursor-tone-btn ${cursorPrefs.toneMode === opt.id ? 'active' : ''}`}
+                      onClick={() => setCursorToneMode(opt.id)}
+                      aria-pressed={cursorPrefs.toneMode === opt.id}
+                    >
+                      {opt.icon}
+                      <span>{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* 5 Selectable Modern Cursor Packs */}
+                <div className="cursor-theme-list">
+                  {ICST_CURSOR_THEMES.map(theme => {
+                    const isSelected = cursorPrefs.theme === theme.id;
+                    const previewAppearance =
+                      cursorPrefs.toneMode === 'light'
+                        ? 'light'
+                        : cursorPrefs.toneMode === 'dark'
+                          ? 'dark'
+                          : cursorPrefs.resolvedAppearance;
+                    return (
+                      <button
+                        key={theme.id}
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={isSelected}
+                        className={`cursor-theme-item ${isSelected ? 'active' : ''}`}
+                        onClick={() => setCursorTheme(theme.id)}
+                      >
+                        <span
+                          className="cursor-theme-swatch"
+                          style={{
+                            background:
+                              previewAppearance === 'light'
+                                ? theme.previewBgDark
+                                : theme.previewBgLight
+                          }}
+                        >
+                          <img
+                            src={getCursorSvgPath(theme.id, previewAppearance, 'icst-default')}
+                            alt={`${theme.name} cursor preview`}
+                            width={22}
+                            height={22}
+                          />
+                        </span>
+                        <span className="cursor-theme-info">
+                          <span className="cursor-theme-name-row">
+                            <span className="cursor-theme-name">{theme.name}</span>
+                            {theme.animated && (
+                              <span className="cursor-anim-badge">Animated</span>
+                            )}
+                          </span>
+                          <span className="cursor-theme-desc">{theme.tagline}</span>
+                        </span>
+                        {isSelected && <Check size={15} className="cursor-theme-check" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
 
           <span className="header-nav-divider" aria-hidden="true" />
 
@@ -1033,6 +1177,53 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                     <ChevronRight size={14} color="var(--text-muted)" />
                   </button>
                 ))}
+              </div>
+              <div className="drawer-nav-list">
+                <span className="drawer-section-label">Cursor Style & Auto Light/Dark</span>
+                <div className="cursor-tone-switcher" role="group" aria-label="Cursor Light/Dark Mode">
+                  {(
+                    [
+                      { id: 'auto', label: 'Auto', icon: <Contrast size={12} /> },
+                      { id: 'light', label: 'Light', icon: <Sun size={12} /> },
+                      { id: 'dark', label: 'Dark', icon: <Moon size={12} /> }
+                    ] as Array<{ id: CursorToneMode; label: string; icon: React.ReactNode }>
+                  ).map(opt => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      className={`cursor-tone-btn ${cursorPrefs.toneMode === opt.id ? 'active' : ''}`}
+                      onClick={() => setCursorToneMode(opt.id)}
+                      aria-pressed={cursorPrefs.toneMode === opt.id}
+                    >
+                      {opt.icon}
+                      <span>{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="drawer-cursor-grid">
+                  {ICST_CURSOR_THEMES.map(theme => {
+                    const isSelected = cursorPrefs.theme === theme.id;
+                    return (
+                      <button
+                        key={theme.id}
+                        type="button"
+                        className={`drawer-cursor-chip ${isSelected ? 'active' : ''}`}
+                        onClick={() => setCursorTheme(theme.id)}
+                      >
+                        <img
+                          src={getCursorSvgPath(theme.id, cursorPrefs.resolvedAppearance, 'icst-default')}
+                          alt=""
+                          width={18}
+                          height={18}
+                        />
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {theme.name}
+                          {theme.animated ? ' ✦' : ''}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 

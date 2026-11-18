@@ -40,6 +40,11 @@ import { TypingTrackBars } from './TypingTrackBars';
 import { HandSetupGuide } from './HandSetupGuide';
 import { FullscreenRequiredGate } from '../common/FullscreenRequiredGate';
 import { LabGuideAssistant } from '../common/LabGuideAssistant';
+import { PhysicalKeyboardNotice } from '../common/PhysicalKeyboardNotice';
+import {
+  useIsMobileOrTablet,
+  isPhysicalKeyboardNoticeDismissed
+} from '../../utils/mobileKeyboardDetect';
 import { useFullscreen } from '../../utils/useFullscreen';
 import './touchTyping.css';
 
@@ -63,6 +68,9 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
   onToggleTheme: controlledToggleTheme
 }) => {
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const isMobileOrTablet = useIsMobileOrTablet();
+  const [physKbdDismissed, setPhysKbdDismissed] = useState<boolean>(() => isPhysicalKeyboardNoticeDismissed());
+  const showPhysicalKeyboardModal = isMobileOrTablet && !physKbdDismissed;
   const { isFullscreen, isPseudoFullscreen, enterFullscreen, exitFullscreen, toggleFullscreen } = useFullscreen(
     rootRef,
     { useDocumentRoot: true, mandatory: true }
@@ -247,14 +255,14 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
     setShowHandGuide(true);
   }, [onSelectLevel, resetLevelSession, currentStreak]);
 
-  // Live Timer for accurate speed calculations (pauses if Hand Guide or Mandatory Full Screen gate is open)
+  // Live Timer for accurate speed calculations (pauses if Hand Guide, Keyboard Notice, or Mandatory Full Screen gate is open)
   useEffect(() => {
-    if (!startTime || viewMode !== 'typing' || showHandGuide || !isFullscreen) return;
+    if (!startTime || viewMode !== 'typing' || showHandGuide || !isFullscreen || showPhysicalKeyboardModal) return;
     const interval = setInterval(() => {
       setElapsedSec((performance.now() - startTime) / 1000);
     }, 100);
     return () => clearInterval(interval);
-  }, [startTime, viewMode, showHandGuide, isFullscreen]);
+  }, [startTime, viewMode, showHandGuide, isFullscreen, showPhysicalKeyboardModal]);
 
   // Live WPM & Accuracy
   const liveStats = useMemo(() => {
@@ -378,6 +386,10 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
       if (e.altKey && e.key.toLowerCase() === 'f') {
         e.preventDefault();
         toggleFullscreen();
+        return;
+      }
+
+      if (showPhysicalKeyboardModal) {
         return;
       }
 
@@ -540,6 +552,7 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
     isCurriculumOpen,
     unlockPromptOpen,
     isFullscreen,
+    showPhysicalKeyboardModal,
     showHandGuide,
     handleNextOrRetry,
     resetLevelSession,
@@ -1648,9 +1661,23 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
       </main>
 
       {/* ==================================================================== */}
-      {/* 4. MODALS: FULL SCREEN GATE, HAND-SET GUIDE, CURRICULUM & UNLOCK     */}
+      {/* 4. MODALS: PHYSICAL KEYBOARD NOTICE, FULL SCREEN GATE, HAND GUIDE    */}
       {/* ==================================================================== */}
-      {!isFullscreen && (
+      {showPhysicalKeyboardModal && (
+        <PhysicalKeyboardNotice
+          variant="modal"
+          labName="Touch Typing Lab"
+          labNameBn="টাচ টাইপিং ল্যাব"
+          theme={activeTheme}
+          onContinue={() => {
+            setPhysKbdDismissed(true);
+            if (!isFullscreen) void enterFullscreen();
+          }}
+          onBackToDashboard={handleReturnToDashboard}
+        />
+      )}
+
+      {!showPhysicalKeyboardModal && !isFullscreen && (
         <FullscreenRequiredGate
           labName="Touch Typing Lab"
           theme={activeTheme}
@@ -1662,7 +1689,7 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
         />
       )}
 
-      {isFullscreen && showHandGuide && viewMode === 'typing' && (
+      {!showPhysicalKeyboardModal && isFullscreen && showHandGuide && viewMode === 'typing' && (
         <HandSetupGuide
           level={currentLevel}
           theme={activeTheme}

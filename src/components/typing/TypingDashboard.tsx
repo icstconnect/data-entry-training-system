@@ -20,6 +20,8 @@ import { animate, createScope, stagger, spring } from 'animejs';
 import { SummaryBadgeSlot } from './SummaryBadgeSlot';
 import { TypingCurriculumModal } from './TypingCurriculumModal';
 import { LabGuideAssistant } from '../common/LabGuideAssistant';
+import { PhysicalKeyboardNotice } from '../common/PhysicalKeyboardNotice';
+import { useIsMobileOrTablet } from '../../utils/mobileKeyboardDetect';
 import { STAGES_META, LEVELS } from './typingData';
 import { TypingTheme } from '../../types/typing';
 import { TouchTypingProgress } from '../../types/touchTyping';
@@ -57,6 +59,7 @@ export const TypingDashboard: React.FC<TypingDashboardProps> = ({
   className = ''
 }) => {
   const isDark = theme === 'dark';
+  const isMobileOrTablet = useIsMobileOrTablet();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const stagesGridRef = useRef<HTMLDivElement | null>(null);
   const wpmRef = useRef<HTMLSpanElement | null>(null);
@@ -408,6 +411,16 @@ export const TypingDashboard: React.FC<TypingDashboardProps> = ({
           '--md-glow': 'radial-gradient(circle, rgba(34, 211, 238, 0.34), transparent 70%)'
         } as React.CSSProperties}
       >
+        {/* Mobile & Tablet Physical Keyboard Recommendation (English + সহজ বাংলা) */}
+        {isMobileOrTablet && (
+          <PhysicalKeyboardNotice
+            variant="banner"
+            labName="Touch Typing Lab"
+            labNameBn="টাচ টাইপিং ল্যাব"
+            theme={theme}
+          />
+        )}
+
         {/* ANIMATED KINESTHETIC HERO + LIVE HOME-ROW PULSE CONSOLE */}
         <section className="md-hero tp-reveal" aria-label="Touch Typing Lab Overview">
           <div className="md-hero-glow" aria-hidden="true" />

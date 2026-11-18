@@ -1,0 +1,397 @@
+/* ============================================================================
+   Physical Keyboard Recommendation Notice (Mobile & Tablet — Typing Labs)
+   Bilingual (English + সহজ বাংলা) with Anime.js v4 Graphical Animation
+   ============================================================================ */
+
+.pkn-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 970;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  overflow-y: auto;
+}
+
+.pkn-root {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pkn-root.pkn-variant-modal {
+  max-width: 720px;
+  margin: auto;
+}
+
+.pkn-root.pkn-variant-banner {
+  margin-bottom: 16px;
+}
+
+.pkn-card-shell {
+  width: 100%;
+  border-radius: 18px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.14);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.pkn-root.is-light .pkn-card-shell {
+  background: linear-gradient(145deg, #fffdf9 0%, #f4f9ff 100%);
+  border: 1.5px solid #bfd6ea;
+  color: #1c1915;
+}
+
+.pkn-root.is-dark .pkn-card-shell {
+  background: linear-gradient(145deg, #1d222c 0%, #171d2a 100%);
+  border: 1.5px solid #334155;
+  color: #f8fafc;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
+}
+
+.pkn-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pkn-pill-group {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.pkn-device-pill,
+.pkn-lab-pill,
+.pkn-detected-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.pkn-device-pill {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #b45309;
+}
+
+.pkn-root.is-dark .pkn-device-pill {
+  color: #fbbf24;
+}
+
+.pkn-lab-pill {
+  background: rgba(2, 132, 199, 0.12);
+  border: 1px solid rgba(2, 132, 199, 0.35);
+  color: #0369a1;
+}
+
+.pkn-root.is-dark .pkn-lab-pill {
+  color: #7dd3fc;
+}
+
+.pkn-detected-pill {
+  background: rgba(16, 185, 129, 0.16);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: #059669;
+}
+
+.pkn-root.is-dark .pkn-detected-pill {
+  color: #34d399;
+}
+
+.pkn-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.pkn-lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.pkn-lang-ico {
+  margin: 0 4px 0 6px;
+  opacity: 0.7;
+}
+
+.pkn-lang-btn {
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  opacity: 0.75;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: var(--cursor-icst-pointer);
+  transition: all 0.14s ease;
+}
+
+.pkn-lang-btn.active {
+  background: #0284c7;
+  color: #ffffff;
+  opacity: 1;
+}
+
+.pkn-collapse-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: transparent;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: var(--cursor-icst-pointer);
+}
+
+.pkn-collapsed-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  cursor: var(--cursor-icst-pointer);
+  padding: 2px 2px;
+}
+
+/* Graphical Animated Illustration Stage */
+.pkn-graphic-stage {
+  width: 100%;
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pkn-root.is-light .pkn-graphic-stage {
+  background: linear-gradient(135deg, #edf5fc 0%, #f5f3ff 100%);
+  border: 1px solid #d5e4f2;
+}
+
+.pkn-root.is-dark .pkn-graphic-stage {
+  background: linear-gradient(135deg, #131823 0%, #1a182d 100%);
+  border: 1px solid #2b3549;
+}
+
+.pkn-graphic-svg {
+  width: 100%;
+  max-width: 440px;
+  height: auto;
+  display: block;
+}
+
+/* Bilingual Cards Grid */
+.pkn-bilingual-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.pkn-bilingual-grid.is-dual {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pkn-bilingual-grid.is-single {
+  grid-template-columns: 1fr;
+}
+
+.pkn-lang-card {
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.pkn-root.is-light .pkn-lang-card {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #e2ddd0;
+}
+
+.pkn-root.is-dark .pkn-lang-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.pkn-lang-tag {
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  background: rgba(2, 132, 199, 0.14);
+  color: #0284c7;
+}
+
+.pkn-lang-tag.is-bn {
+  background: rgba(124, 58, 237, 0.14);
+  color: #7c3aed;
+}
+
+.pkn-root.is-dark .pkn-lang-tag {
+  color: #38bdf8;
+}
+
+.pkn-root.is-dark .pkn-lang-tag.is-bn {
+  color: #c084fc;
+}
+
+.pkn-heading {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.pkn-desc {
+  margin: 0;
+  font-size: 12.2px;
+  line-height: 1.55;
+  opacity: 0.88;
+}
+
+.pkn-steps-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.pkn-step-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pkn-root.is-light .pkn-step-chip {
+  background: #edf4fa;
+  color: #124d7b;
+  border: 1px solid #cfe0f0;
+}
+
+.pkn-root.is-dark .pkn-step-chip {
+  background: rgba(56, 189, 248, 0.12);
+  color: #bae6fd;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+/* Modal Footer Actions */
+.pkn-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 6px;
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.pkn-secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: transparent;
+  color: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: var(--cursor-icst-pointer);
+}
+
+.pkn-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: 11px;
+  border: none;
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: var(--cursor-icst-pointer);
+  margin-left: auto;
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+}
+
+.pkn-primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(2, 132, 199, 0.45);
+}
+
+@media (max-width: 680px) {
+  .pkn-bilingual-grid.is-dual {
+    grid-template-columns: 1fr;
+  }
+  .pkn-card-shell {
+    padding: 14px;
+  }
+  .pkn-modal-footer {
+    flex-direction: column-reverse;
+  }
+  .pkn-primary-btn,
+  .pkn-secondary-btn {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+/* ============================================================================
+   GIGW HIGH CONTRAST ACCESSIBILITY COMPATIBILITY
+   ============================================================================ */
+html[data-contrast="high"] .pkn-card-shell,
+html[data-contrast="high"] .pkn-graphic-stage,
+html[data-contrast="high"] .pkn-lang-card {
+  background: #000000 !important;
+  border: 2px solid #ffff00 !important;
+  color: #ffff00 !important;
+  box-shadow: none !important;
+}
+
+html[data-contrast="high"] .pkn-primary-btn,
+html[data-contrast="high"] .pkn-lang-btn.active {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border: 2px solid #ffffff !important;
+}
+
+html[data-contrast="high"] .pkn-step-chip,
+html[data-contrast="high"] .pkn-device-pill,
+html[data-contrast="high"] .pkn-lab-pill {
+  background: #1a1a1a !important;
+  border: 1px solid #ffff00 !important;
+  color: #ffff00 !important;
+}

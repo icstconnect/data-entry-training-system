@@ -124,7 +124,7 @@
   border-radius: 12px;
   font-size: 13.5px;
   font-weight: 800;
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   border: 1.5px solid transparent;
   text-decoration: none;
   transition: transform 0.16s ease, box-shadow 0.18s ease, background 0.16s ease;
@@ -271,7 +271,7 @@
   font-family: var(--font-mono, monospace);
   font-size: 11px;
   font-weight: 800;
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -306,7 +306,7 @@
   font-family: var(--font-mono, monospace);
   font-size: 12px;
   font-weight: 900;
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -406,7 +406,7 @@
   font-size: 12px;
   font-weight: 800;
   color: var(--text-secondary, #4d463b);
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   transition: background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
 }
 
@@ -492,7 +492,7 @@
   align-items: center;
   justify-content: center;
   gap: 3px;
-  cursor: pointer;
+  cursor: var(--cursor-icst-pointer);
   border: 1.5px solid var(--border-medium, #d2c8b7);
   background: var(--bg-surface, #fffdf9);
   color: var(--text-primary, #1c1915);
@@ -506,7 +506,7 @@
 
 .md-level-btn:disabled {
   opacity: 0.5;
-  cursor: not-allowed;
+  cursor: var(--cursor-not-allowed);
 }
 
 /* Fleet Spotlight Banner (Word Express) */

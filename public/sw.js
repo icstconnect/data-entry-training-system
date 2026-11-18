@@ -3,7 +3,7 @@
    Institute of Computer Science and Technology Chowberia (icstconnect.in)
    ========================================================================== */
 
-const CACHE_NAME = 'icst-lab-v5';
+const CACHE_NAME = 'icst-lab-v8';
 
 // Core static assets to cache immediately upon install
 const PRECACHE_ASSETS = [
@@ -15,12 +15,26 @@ const PRECACHE_ASSETS = [
   '/logo.png',
   '/icstconnect-logo.png',
   '/logo-icst.png',
+  '/favicon.png',
+  '/favicon-32x32.png',
   '/icon-192.png',
   '/icon-512.png',
   '/icon-maskable-192.png',
   '/icon-maskable-512.png',
-  '/favicon.svg',
-  '/icons.svg'
+  '/icons.svg',
+  '/cursors/fluent/light/icst-default.svg',
+  '/cursors/fluent/light/icst-pointer.svg',
+  '/cursors/fluent/light/icst-click.svg',
+  '/cursors/fluent/dark/icst-default.svg',
+  '/cursors/fluent/dark/icst-pointer.svg',
+  '/cursors/outlier/light/icst-default.svg',
+  '/cursors/outlier/dark/icst-default.svg',
+  '/cursors/stealth/light/icst-default.svg',
+  '/cursors/stealth/dark/icst-default.svg',
+  '/cursors/pulse-orbit/light/icst-default.svg',
+  '/cursors/pulse-orbit/dark/icst-default.svg',
+  '/cursors/prism-aurora/light/icst-default.svg',
+  '/cursors/prism-aurora/dark/icst-default.svg'
 ];
 
 // Install Event - Pre-cache critical application shell

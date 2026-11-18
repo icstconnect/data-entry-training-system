@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="gBody" x1="4" y1="3" x2="26" y2="27" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+    <linearGradient id="gAccent" x1="3" y1="3" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="gPrism" x1="4" y1="24" x2="22" y2="6" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="50%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <filter id="ds" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0.5" dy="1.1" stdDeviation="0.9" flood-color="#020617" flood-opacity="0.45"/>
+    </filter>
+    
+  </defs>
+  <g filter="url(#ds)">
+    
+      <g transform="rotate(90 16 16)">
+        <path d="M14.2 6.0V26.0M17.8 6.0V26.0" stroke="#0f172a" stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M14.2 6.4V25.6M17.8 6.4V25.6" stroke="url(#gAccent)" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M4.2 16L10.2 10.8V14.0H12.0V18.0H10.2V21.2L4.2 16Z" fill="url(#gBody)" stroke="#0f172a" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M27.8 16L21.8 10.8V14.0H20.0V18.0H21.8V21.2L27.8 16Z" fill="url(#gBody)" stroke="#0f172a" stroke-width="1.5" stroke-linejoin="round"/>
+      </g>
+    
+  </g>
+</svg>

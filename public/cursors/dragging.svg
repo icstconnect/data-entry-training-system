@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="gBody" x1="4" y1="3" x2="26" y2="27" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="gAccent" x1="3" y1="3" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <linearGradient id="gPrism" x1="4" y1="24" x2="22" y2="6" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="50%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <filter id="ds" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0.5" dy="1.1" stdDeviation="0.9" flood-color="#020617" flood-opacity="0.26"/>
+    </filter>
+    
+  </defs>
+  <g filter="url(#ds)">
+    
+      <rect x="4.0" y="3.2" width="13.2" height="9.2" rx="2.4" fill="#ffffff" stroke="#0284c7" stroke-width="1.6"/>
+      <line x1="6.8" y1="6.4" x2="14.4" y2="6.4" stroke="#0284c7" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="6.8" y1="9.2" x2="12.2" y2="9.2" stroke="#111827" stroke-width="1.3" stroke-linecap="round" opacity="0.7"/>
+      <path d="M20.2 5.4H26.4M22.2 8.2H27.6" stroke="#0284c7" stroke-width="1.6" stroke-linecap="round"/>
+      
+    <g transform="translate(0, 2.5)">
+      <path d="M9.4 13.2C8.3 13.2 7.5 14.1 7.5 15.2V17.2C7.5 20.3 10.0 22.8 13.1 22.8H19.2C22.0 22.8 24.3 20.5 24.3 17.7V13.4C24.3 12.2 23.4 11.3 22.2 11.3C21.5 11.3 20.9 11.6 20.5 12.1C20.2 11.1 19.3 10.4 18.2 10.4C17.4 10.4 16.7 10.8 16.3 11.4C15.9 10.6 15.1 10.1 14.2 10.1C13.1 10.1 12.2 10.8 11.9 11.8C11.5 11.4 11.0 11.2 10.5 11.2C9.8 11.2 9.4 11.8 9.4 12.5V13.2Z"
+            fill="#111827" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round"/>
+      <rect x="11.2" y="23.0" width="10.6" height="3.6" rx="1.8" fill="url(#gAccent)" stroke="#ffffff" stroke-width="1.2"/>
+    </g>
+  
+    
+  </g>
+</svg>

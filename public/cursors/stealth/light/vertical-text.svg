@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="gBody" x1="4" y1="3" x2="26" y2="27" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#18181b"/>
+      <stop offset="100%" stop-color="#27272a"/>
+    </linearGradient>
+    <linearGradient id="gAccent" x1="3" y1="3" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="gPrism" x1="4" y1="24" x2="22" y2="6" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="50%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <filter id="ds" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0.5" dy="1.1" stdDeviation="0.9" flood-color="#020617" flood-opacity="0.30"/>
+    </filter>
+    
+  </defs>
+  <g filter="url(#ds)">
+    
+      <path d="M6.8 12.2V19.8M25.2 12.2V19.8M6.8 16H25.2" stroke="#ffffff" stroke-width="4.4" stroke-linecap="round"/>
+      <path d="M6.8 12.6V19.4M25.2 12.6V19.4M6.8 16H25.2" stroke="#18181b" stroke-width="2.0" stroke-linecap="round"/>
+      <line x1="16" y1="13.8" x2="16" y2="18.2" stroke="url(#gAccent)" stroke-width="1.8" stroke-linecap="round"/>
+    
+  </g>
+</svg>
