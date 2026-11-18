@@ -2,35 +2,35 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StageValidationSummary, Achievement, StudentIdentity } from '../../types';
 import { normalizeAndGenerateRollId, APP_CONFIG } from '../../config/appConfig';
 import { UNIFIED_SYSTEM_ACHIEVEMENTS } from '../../services/achievementEngine';
-import { 
-  loadStudentProgress, 
-  saveStudentProgress, 
-  loadStudentIdentity, 
-  saveStudentIdentity 
+import {
+  loadStudentProgress,
+  saveStudentProgress,
+  loadStudentIdentity,
+  saveStudentIdentity
 } from '../../services/storageService';
 import { loadExcelProgress } from '../../services/excelStorageService';
 import { loadWindowsProgress } from '../../services/windowsStorageService';
-import { 
-  getGroupCertificateStatuses, 
-  renderFormalA4Certificate, 
+import {
+  getGroupCertificateStatuses,
+  renderFormalA4Certificate,
   CertificateModuleGroup,
-  GroupCertificateInfo 
+  GroupCertificateInfo
 } from '../../services/formalCertificateService';
-import { 
-  X, 
-  Download, 
-  Share2, 
-  Copy, 
-  Check, 
-  Smartphone, 
-  Image as ImageIcon, 
-  Award, 
-  Sparkles, 
-  FileSpreadsheet, 
-  FolderTree, 
-  ChevronLeft, 
-  CheckCircle2, 
-  Lock, 
+import {
+  X,
+  Download,
+  Share2,
+  Copy,
+  Check,
+  Smartphone,
+  Image as ImageIcon,
+  Award,
+  Sparkles,
+  FileSpreadsheet,
+  FolderTree,
+  ChevronLeft,
+  CheckCircle2,
+  Lock,
   Tag,
   User,
   AlertCircle,
@@ -695,22 +695,22 @@ export const AchievementShareModal: React.FC<AchievementShareModalProps> = ({
     const grpInfo = groupStatuses[selectedGroupModule];
     const shareText = isA4
       ? `*ICST FORMAL INSTITUTIONAL DIPLOMA*\n\n` +
-        `🎓 *Student:* ${studentName}\n` +
-        `🆔 *Trainee Roll ID:* ${rollId}\n` +
-        `📜 *Module:* ${grpInfo.formalTitle}\n` +
-        `🏛️ *Institution:* Institute of Computer Science and Technology Chowberia\n` +
-        `✍️ *Signed by:* Academic Head & Chief Controller of Examinations\n\n` +
-        `Verified Credentials: https://github.com/icstconnect\n` +
-        `#ICSTChowberia @icstconnect`
-      : `*ICST DATA ENTRY LAB — OFFICIAL ACHIEVEMENT*\n\n` +
-        `👤 *Student:* ${studentName}\n` +
-        `🆔 *Trainee Roll:* ${rollId}\n` +
-        `🏆 *Achievement:* ${selectedAch.title}\n` +
-        `📋 *Division:* ${selectedAch.groupTitle || 'ICST Training Lab'}\n` +
-        `📝 *Details:* ${selectedAch.description}\n\n` +
-        `Institute of Computer Science and Technology Chowberia\n` +
-        `GitHub: https://github.com/icstconnect\n` +
-        `#ICSTChowberia @icstconnect`;
+      `🎓 *Student:* ${studentName}\n` +
+      `🆔 *Trainee Roll ID:* ${rollId}\n` +
+      `📜 *Module:* ${grpInfo.formalTitle}\n` +
+      `🏛️ *Institution:* Institute of Computer Science and Technology Chowberia\n` +
+      `✍️ *Signed by:* Academic Head & Chief Controller of Examinations\n\n` +
+      `Verified Credentials: https://github.com/icstconnect\n` +
+      `#ICSTChowberia @icstconnect`
+      : `*ICST LAB — OFFICIAL ACHIEVEMENT*\n\n` +
+      `👤 *Student:* ${studentName}\n` +
+      `🆔 *Trainee Roll:* ${rollId}\n` +
+      `🏆 *Achievement:* ${selectedAch.title}\n` +
+      `📋 *Division:* ${selectedAch.groupTitle || 'ICST LAB'}\n` +
+      `📝 *Details:* ${selectedAch.description}\n\n` +
+      `Institute of Computer Science and Technology Chowberia\n` +
+      `GitHub: https://github.com/icstconnect\n` +
+      `#ICSTChowberia @icstconnect`;
 
     try {
       const blob = await getCanvasBlob();
@@ -777,9 +777,9 @@ export const AchievementShareModal: React.FC<AchievementShareModalProps> = ({
 
   return (
     <div className="modal-overlay" style={{ zIndex: 1250 }} onClick={onClose}>
-      <div 
-        className="modal-card" 
-        style={{ 
+      <div
+        className="modal-card"
+        style={{
           maxWidth: currentStep === 'select' ? '920px' : '1080px',
           maxHeight: '94vh',
           display: 'flex',
@@ -789,7 +789,7 @@ export const AchievementShareModal: React.FC<AchievementShareModalProps> = ({
           borderRadius: '20px',
           boxShadow: '0 25px 60px rgba(0, 0, 0, 0.45)',
           background: '#ffffff'
-        }} 
+        }}
         onClick={e => e.stopPropagation()}
       >
         {/* Modal Top Header */}
@@ -841,9 +841,9 @@ export const AchievementShareModal: React.FC<AchievementShareModalProps> = ({
                 <span>Choose Another Honor</span>
               </button>
             )}
-            <button 
-              type="button" 
-              onClick={onClose} 
+            <button
+              type="button"
+              onClick={onClose}
               style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '6px' }}
               title="Close modal"
             >
@@ -1050,10 +1050,10 @@ export const AchievementShareModal: React.FC<AchievementShareModalProps> = ({
                                 width: '40px',
                                 height: '40px',
                                 borderRadius: '10px',
-                                background: isPractice 
-                                  ? 'linear-gradient(135deg, #1e40af, #3b82f6)' 
-                                  : isExcel 
-                                    ? 'linear-gradient(135deg, #065f46, #10b981)' 
+                                background: isPractice
+                                  ? 'linear-gradient(135deg, #1e40af, #3b82f6)'
+                                  : isExcel
+                                    ? 'linear-gradient(135deg, #065f46, #10b981)'
                                     : 'linear-gradient(135deg, #0369a1, #0284c7)',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -1295,9 +1295,9 @@ export const AchievementShareModal: React.FC<AchievementShareModalProps> = ({
                   position: 'relative'
                 }}>
                   {previewDataUrl ? (
-                    <img 
-                      src={previewDataUrl} 
-                      alt="Certificate Preview" 
+                    <img
+                      src={previewDataUrl}
+                      alt="Certificate Preview"
                       style={{
                         maxHeight: '74vh',
                         maxWidth: '100%',
@@ -1307,7 +1307,7 @@ export const AchievementShareModal: React.FC<AchievementShareModalProps> = ({
                         boxShadow: '0 20px 50px rgba(0, 0, 0, 0.7)',
                         border: '1.5px solid rgba(255, 255, 255, 0.15)',
                         display: 'block'
-                      }} 
+                      }}
                     />
                   ) : (
                     <div style={{ padding: '60px', color: '#94a3b8', fontSize: '14px', textAlign: 'center' }}>

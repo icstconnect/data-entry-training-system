@@ -1,4 +1,4 @@
-/* ICST Data Entry Lab - Professional Design System */
+/* ICST LAB - Professional Design System */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
@@ -197,10 +197,80 @@ input, select, textarea {
 
 .brand-sub {
   font-size: 10px;
-  color: var(--icst-slate);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: var(--icst-blue);
+  font-weight: 700;
+  letter-spacing: 0.35px;
+}
+
+/* Direct ICST Connect Header Pill (icstconnect.in) */
+.icst-connect-header-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 6px;
+  border-radius: 999px;
+  background: var(--icst-blue-soft);
+  border: 1px solid var(--icst-blue-border);
+  color: var(--icst-blue-dark);
+  font-size: 11.5px;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.icst-connect-header-pill:hover {
+  text-decoration: none;
+  background: var(--icst-blue);
+  border-color: var(--icst-blue-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(28, 106, 167, 0.24);
+}
+
+.icst-connect-pill-logo {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  object-fit: cover;
+  display: block;
+}
+
+.icst-connect-pill-icon {
+  opacity: 0.8;
+}
+
+.drawer-icst-connect-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #124d7b 0%, #1c6aa7 100%);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(18, 77, 123, 0.22);
+}
+
+.drawer-icst-connect-card:hover {
+  text-decoration: none;
+}
+
+.drawer-icst-connect-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 2px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1180px) {
+  .icst-connect-header-pill {
+    display: none;
+  }
 }
 
 /* Student Identity Chip in Header */
@@ -1959,43 +2029,219 @@ select#field-guardianPrefix {
 }
 
 /* ========================================================
-   BRAND FOOTER
+   BRAND FOOTER (DUAL-LOGO ICST CONNECT ECOSYSTEM & SITEMAP)
    ======================================================== */
 .app-footer {
   margin-top: auto;
   background: var(--bg-surface);
   border-top: 1px solid var(--border-light);
-  padding: 20px 16px;
+  padding: 36px 20px 24px;
   color: var(--text-secondary);
 }
 
-.footer-container {
-  max-width: 1440px;
+.footer-shell {
+  max-width: 1220px;
   margin: 0 auto;
+}
+
+.footer-top-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.55fr) repeat(3, minmax(150px, 1fr));
+  gap: 28px;
+  padding-bottom: 26px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.footer-brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.footer-dual-logos {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  display: block;
+}
+
+.footer-logo-link-x {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--icst-blue);
+}
+
+.footer-icstconnect-logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  overflow: hidden;
+  border: 1.5px solid var(--icst-blue-border);
+  box-shadow: 0 3px 10px rgba(28, 106, 167, 0.14);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.footer-icstconnect-logo-wrap:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(28, 106, 167, 0.22);
+}
+
+.footer-icstconnect-logo {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  display: block;
+}
+
+.footer-brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.footer-ownership-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--icst-blue-soft);
+  border: 1px solid var(--icst-blue-border);
+  color: var(--icst-blue-dark);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.footer-inst-title {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--icst-charcoal);
+  line-height: 1.3;
+}
+
+.footer-inst-sub {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: 390px;
+}
+
+.footer-portal-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  margin-top: 4px;
+  padding: 7px 13px;
+  border-radius: 9px;
+  background: var(--icst-blue);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 0.16s ease, transform 0.16s ease;
+}
+
+.footer-portal-cta:hover {
+  text-decoration: none;
+  background: var(--icst-blue-dark);
+  transform: translateY(-1px);
+}
+
+.footer-col-heading {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--icst-charcoal);
+  margin: 0 0 12px;
+}
+
+.footer-link-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-link-list a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.14s ease, transform 0.14s ease;
+}
+
+.footer-link-list a:hover {
+  color: var(--icst-blue);
+  text-decoration: none;
+  transform: translateX(2px);
+}
+
+.footer-bottom-bar {
+  padding-top: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px;
-}
-
-.footer-brand {
-  display: flex;
-  align-items: center;
   gap: 12px;
 }
 
-.footer-logo {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
+.footer-copyright {
+  font-size: 11.5px;
+  color: var(--text-secondary);
 }
 
 .footer-disclaimer {
   font-size: 11px;
   color: var(--text-muted);
-  max-width: 480px;
-  line-height: 1.4;
+  max-width: 520px;
+  line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+  .footer-top-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .footer-top-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+html[data-contrast="high"] .app-footer {
+  background: #000000 !important;
+  border-top: 2px solid #ffff00 !important;
+}
+
+html[data-contrast="high"] .footer-ownership-pill,
+html[data-contrast="high"] .icst-connect-header-pill {
+  background: #0a0a0a !important;
+  border: 2px solid #ffff00 !important;
+  color: #ffff00 !important;
+}
+
+html[data-contrast="high"] .footer-portal-cta {
+  background: #ffff00 !important;
+  color: #000000 !important;
+}
+
+html[data-contrast="high"] .footer-portal-cta span,
+html[data-contrast="high"] .footer-portal-cta svg {
+  color: #000000 !important;
 }
 
 /* ========================================================

@@ -1,7 +1,7 @@
 /**
  * Dedicated Teacher Mode Access Configuration
  * 
- * NOTE: This is an application-level access gate for the ICST Data Entry Lab.
+ * NOTE: This is an application-level access gate for ICST LAB.
  * It is isolated in this configuration module so it can easily be replaced
  * with a secure server-side authentication endpoint without rewriting Teacher Mode UI.
  */

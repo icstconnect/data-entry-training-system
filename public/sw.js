@@ -1,16 +1,19 @@
 /* ==========================================================================
-   ICST DATA ENTRY LAB - SERVICE WORKER (LIGHTNING-FAST OFFLINE ENGINE)
-   Institute of Computer Science and Technology Chowberia
+   ICST LAB - SERVICE WORKER (LIGHTNING-FAST OFFLINE ENGINE)
+   Institute of Computer Science and Technology Chowberia (icstconnect.in)
    ========================================================================== */
 
-const CACHE_NAME = 'icst-data-entry-v3';
+const CACHE_NAME = 'icst-lab-v5';
 
 // Core static assets to cache immediately upon install
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/sitemap.xml',
+  '/robots.txt',
   '/logo.png',
+  '/icstconnect-logo.png',
   '/logo-icst.png',
   '/icon-192.png',
   '/icon-512.png',

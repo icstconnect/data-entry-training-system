@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Sparkles, 
-  Share2, 
-  Download, 
-  Copy, 
-  Check, 
-  Play, 
-  Smartphone, 
-  Monitor, 
-  Award, 
-  CheckCircle2, 
-  ShieldCheck, 
-  Send 
+import {
+  Sparkles,
+  Share2,
+  Download,
+  Copy,
+  Check,
+  Play,
+  Smartphone,
+  Monitor,
+  Award,
+  CheckCircle2,
+  ShieldCheck,
+  Send
 } from 'lucide-react';
 import { StudentIdentity } from '../../types';
 
@@ -22,11 +22,11 @@ interface ShowcasePageProps {
   onPromptStudentSetup?: () => void;
 }
 
-export const ShowcasePage: React.FC<ShowcasePageProps> = ({ 
+export const ShowcasePage: React.FC<ShowcasePageProps> = ({
   onStartPractice,
   onOpenAchievementShare,
   studentIdentity,
-  onPromptStudentSetup 
+  onPromptStudentSetup
 }) => {
   const [devicePreview, setDevicePreview] = useState<'desktop' | 'mobile'>('desktop');
   const [copiedLink, setCopiedLink] = useState(false);
@@ -74,7 +74,7 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({
 
   // Social Share Handlers
   const shareUrl = window.location.origin;
-  const shareText = `*ICST DATA ENTRY LAB* - Institute of Computer Science and Technology Chowberia\n\nPractice high-volume real-world data entry, academic marksheets (WBBSE/WBCHSE/CBSE), and earn EXP with verified accuracy!\n\nTry it free: ${shareUrl}`;
+  const shareText = `*ICST LAB* - Institute of Computer Science and Technology Chowberia (icstconnect.in)\n\nPractice high-volume real-world data entry, academic marksheets (WBBSE/WBCHSE/CBSE), and earn EXP with verified accuracy!\n\nTry it free: ${shareUrl}`;
 
   const handleShareWhatsApp = () => {
     if (!studentIdentity?.name?.trim() && onPromptStudentSetup) {
@@ -99,8 +99,8 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'ICST Data Entry Lab - Chowberia',
-          text: 'Practice realistic data entry simulation at ICST Chowberia',
+          title: 'ICST LAB — ICST Connect',
+          text: 'Practice realistic interactive lab simulations on ICST LAB by ICST Connect (icstconnect.in)',
           url: shareUrl
         });
       } catch (e) {
@@ -160,7 +160,7 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({
       // Main Title
       ctx.fillStyle = '#ffffff';
       ctx.font = '800 72px Inter, sans-serif';
-      ctx.fillText('ICST DATA ENTRY LAB', 540, 780);
+      ctx.fillText('ICST LAB', 540, 780);
 
       ctx.fillStyle = '#cbd5e1';
       ctx.font = '500 36px Inter, sans-serif';
@@ -244,7 +244,7 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({
         </div>
 
         <h1 style={{ fontSize: '38px', fontWeight: 800, letterSpacing: '-0.5px', marginBottom: '8px' }}>
-          ICST DATA ENTRY LAB
+          ICST LAB
         </h1>
         <div style={{ fontSize: '18px', color: '#94a3b8', fontWeight: 500, marginBottom: '20px' }}>
           Learn • Practice • Improve • Achieve
@@ -488,7 +488,7 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({
       }}>
         <div>
           <h4 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--icst-charcoal)' }}>
-            Share ICST Data Entry Lab with Students & Batches
+            Share ICST LAB with Students &amp; Batches
           </h4>
           <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
             Direct link to practice portal for mobile and desktop browser training.

@@ -23,9 +23,11 @@ import {
   ClipboardList,
   Monitor,
   LayoutGrid,
-  Rocket
+  Rocket,
+  ExternalLink
 } from 'lucide-react';
 import { UserRole, StudentIdentity } from '../../types';
+import { ICST_CONNECT } from '../../config/appConfig';
 import { isMasterUnlocked, lockToStudentProgression } from '../../services/masterUnlockService';
 
 export type ActiveViewId =
@@ -334,13 +336,34 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           >
             <img
               src="/logo.png"
-              alt="ICST Chowberia Official Logo"
+              alt="ICST LAB Official Logo"
               className="brand-logo-img"
+              width={40}
+              height={40}
             />
             <div className="brand-meta">
-              <span className="brand-title">ICST Data Entry Lab</span>
-              <span className="brand-sub">ICST - Chowberia</span>
+              <span className="brand-title">ICST LAB</span>
+              <span className="brand-sub">Part of icstconnect.in</span>
             </div>
+          </a>
+
+          {/* Direct Connection Pill to Official ICST Connect Portal */}
+          <a
+            href={ICST_CONNECT.URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="icst-connect-header-pill"
+            title="Visit ICST Connect Official Portal (icstconnect.in) — Parent Platform of ICST LAB"
+          >
+            <img
+              src={ICST_CONNECT.LOGO_PATH}
+              alt="ICST Connect Logo"
+              className="icst-connect-pill-logo"
+              width={18}
+              height={18}
+            />
+            <span className="icst-connect-pill-text">icstconnect.in</span>
+            <ExternalLink size={11} className="icst-connect-pill-icon" />
           </a>
 
           {/* Student Identity Pill */}
@@ -722,8 +745,11 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           >
             <div className="drawer-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <img src="/logo.png" alt="Logo" style={{ width: '28px', height: '28px' }} />
-                <span style={{ fontWeight: 800, fontSize: '15px' }}>ICST Navigation Hub</span>
+                <img src="/logo.png" alt="ICST LAB Logo" width={28} height={28} style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '14px', lineHeight: 1.15 }}>ICST LAB</div>
+                  <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--icst-blue)' }}>Property of icstconnect.in</div>
+                </div>
               </div>
               <button
                 type="button"
@@ -734,6 +760,27 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                 <X size={18} />
               </button>
             </div>
+
+            {/* Direct ICST Connect Portal Card in Mobile Drawer */}
+            <a
+              href={ICST_CONNECT.URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="drawer-icst-connect-card"
+            >
+              <img
+                src={ICST_CONNECT.LOGO_PATH}
+                alt="ICST Connect Logo"
+                width={32}
+                height={32}
+                className="drawer-icst-connect-logo"
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 800, fontSize: '13px', color: '#ffffff' }}>ICST Connect Portal</div>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.82)' }}>Official parent site • icstconnect.in</div>
+              </div>
+              <ExternalLink size={15} color="#ffffff" />
+            </a>
 
             {/* Student Profile Overview Card in Drawer */}
             <div className="drawer-student-card">

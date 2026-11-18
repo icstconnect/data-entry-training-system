@@ -1,7 +1,7 @@
 {
-  "name": "ICST Data Entry Lab - Institute of Computer Science and Technology Chowberia",
-  "short_name": "ICST Data Lab",
-  "description": "Professional simulation training platform for high-speed single-form and Excel mass data entry with character-level audit verification.",
+  "name": "ICST LAB — Official Interactive Platform of ICST Connect (icstconnect.in)",
+  "short_name": "ICST LAB",
+  "description": "ICST LAB — Official interactive Data Entry, Touch Typing, Excel 365, Windows 11, Terminal Stream, and Word Express training suite by ICST Connect (icstconnect.in).",
   "start_url": "/",
   "scope": "/",
   "id": "/",
@@ -46,14 +46,14 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Desktop Wide View - ICST Data Entry Lab Simulation"
+      "label": "Desktop Wide View - ICST LAB Simulation"
     },
     {
       "src": "/screenshots/mobile-narrow.png",
       "sizes": "750x1334",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Mobile View - ICST Data Entry Lab"
+      "label": "Mobile View - ICST LAB"
     }
   ],
   "shortcuts": [
@@ -62,21 +62,39 @@
       "short_name": "Practice",
       "description": "Launch single-form data entry training",
       "url": "/#practice",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Excel Mass Entry Lab",
       "short_name": "Excel Lab",
       "description": "Launch authentic Excel spreadsheet batch simulation",
       "url": "/#excel",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     },
     {
       "name": "Trainee Dashboard",
       "short_name": "Dashboard",
       "description": "Inspect completed stages, accuracy statistics and awards",
       "url": "/#dashboard",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }

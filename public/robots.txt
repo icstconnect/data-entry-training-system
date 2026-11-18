@@ -1,0 +1,15 @@
+# robots.txt for ICST LAB (Official Property of https://icstconnect.in)
+User-agent: *
+Allow: /
+Disallow: /#teacher
+
+User-agent: Googlebot
+Allow: /
+Disallow: /#teacher
+
+User-agent: Bingbot
+Allow: /
+Disallow: /#teacher
+
+Sitemap: /sitemap.xml
+Sitemap: https://icstconnect.in/sitemap.xml

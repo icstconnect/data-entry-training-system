@@ -1,10 +1,10 @@
-// Core Types for ICST Data Entry Lab
+// Core Types for ICST LAB
 
 export type UserRole = 'student' | 'teacher';
 
 export type ValidationMode = 'STRICT' | 'NORMAL';
 
-export type FieldType = 
+export type FieldType =
   | 'text'
   | 'textarea'
   | 'number'

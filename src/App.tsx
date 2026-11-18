@@ -266,6 +266,8 @@ export function App() {
       } else if (hash === '#teacher') {
         setCurrentRole('teacher');
         setActiveView('teacher-dashboard');
+      } else if (hash === '#home' || hash === '') {
+        setActiveView('landing');
       }
     };
 

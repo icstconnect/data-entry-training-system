@@ -136,23 +136,23 @@ export const STAGES: StageConfig[] = [
     ],
     fields: [
       { id: 'studentName', label: 'Full Student Name', type: 'text', placeholder: 'e.g. Sourav Ghosh', required: true, weight: 1 },
-      { 
-        id: 'guardianPrefix', 
-        label: 'Prefix', 
-        type: 'select', 
-        required: true, 
+      {
+        id: 'guardianPrefix',
+        label: 'Prefix',
+        type: 'select',
+        required: true,
         weight: 0.5,
-        options: GUARDIAN_PREFIX_OPTIONS 
+        options: GUARDIAN_PREFIX_OPTIONS
       },
       { id: 'guardianName', label: 'Guardian / Father Name', type: 'text', placeholder: 'First & Last Name (e.g. Sayantan Biswas)', required: true, weight: 1 },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1 },
-      { 
-        id: 'gender', 
-        label: 'Gender', 
-        type: 'radio', 
-        required: true, 
+      {
+        id: 'gender',
+        label: 'Gender',
+        type: 'radio',
+        required: true,
         weight: 1,
-        options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }] 
+        options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
       },
       { id: 'phone', label: 'Mobile Number', type: 'tel', placeholder: '10 digit mobile number', required: true, weight: 1 },
       {
@@ -226,19 +226,19 @@ export const STAGES: StageConfig[] = [
     fields: [
       { id: 'studentName', label: 'Candidate Full Name', type: 'text', required: true, weight: 1 },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1 },
-      { 
-        id: 'gender', 
-        label: 'Gender', 
-        type: 'radio', 
-        required: true, 
+      {
+        id: 'gender',
+        label: 'Gender',
+        type: 'radio',
+        required: true,
         weight: 1,
-        options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }] 
+        options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
       },
-      { 
-        id: 'category', 
-        label: 'Social Category', 
-        type: 'select', 
-        required: true, 
+      {
+        id: 'category',
+        label: 'Social Category',
+        type: 'select',
+        required: true,
         weight: 1,
         options: [
           { label: 'Select Category', value: '' },
@@ -273,23 +273,24 @@ export const STAGES: StageConfig[] = [
     ],
     fields: [
       { id: 'studentName', label: 'Student Name', type: 'text', required: true, weight: 1 },
-      { id: 'schoolInfo.schoolName', label: 'School Name', type: 'searchable-select', required: true, weight: 1.5,
+      {
+        id: 'schoolInfo.schoolName', label: 'School Name', type: 'searchable-select', required: true, weight: 1.5,
         options: SCHOOL_OPTIONS
       },
       { id: 'schoolInfo.schoolCode', label: 'School Index / Center Code', type: 'text', required: true, weight: 1 },
-      { 
-        id: 'schoolInfo.board', 
-        label: 'Affiliation Board', 
-        type: 'select', 
-        required: true, 
+      {
+        id: 'schoolInfo.board',
+        label: 'Affiliation Board',
+        type: 'select',
+        required: true,
         weight: 1,
         options: BOARD_OPTIONS
       },
-      { 
-        id: 'schoolInfo.medium', 
-        label: 'Medium of Instruction', 
-        type: 'radio', 
-        required: true, 
+      {
+        id: 'schoolInfo.medium',
+        label: 'Medium of Instruction',
+        type: 'radio',
+        required: true,
         weight: 1,
         options: [{ label: 'Bengali', value: 'Bengali' }, { label: 'English', value: 'English' }]
       },
@@ -352,7 +353,8 @@ export const STAGES: StageConfig[] = [
     ],
     fields: [
       { id: 'studentName', label: 'Candidate Name', type: 'text', required: true, weight: 1 },
-      { id: 'schoolInfo.stream', label: 'Higher Secondary Stream', type: 'select', required: true, weight: 1,
+      {
+        id: 'schoolInfo.stream', label: 'Higher Secondary Stream', type: 'select', required: true, weight: 1,
         options: [
           { label: 'Select Stream', value: '' },
           { label: 'Science', value: 'Science' },
@@ -363,7 +365,8 @@ export const STAGES: StageConfig[] = [
       { id: 'academic.registrationNumber', label: 'Board Registration Number', type: 'text', placeholder: 'XXXXXX-WB/YYYY', required: true, weight: 2 },
       { id: 'academic.rollNumber', label: 'Roll Number', type: 'text', placeholder: 'XXX-XXXX', required: true, weight: 1.5 },
       { id: 'academic.previousPercentage', label: 'Qualifying Examination %', type: 'decimal', required: true, weight: 1 },
-      { id: 'academic.conduct', label: 'Conduct Assessment', type: 'select', required: true, weight: 1,
+      {
+        id: 'academic.conduct', label: 'Conduct Assessment', type: 'select', required: true, weight: 1,
         options: [
           { label: 'Select Conduct', value: '' },
           { label: 'Excellent', value: 'Excellent' },
@@ -392,21 +395,23 @@ export const STAGES: StageConfig[] = [
     fields: [
       // Section 1: Identity
       { id: 'studentName', label: 'Full Legal Name', type: 'text', required: true, weight: 1, section: 'Identity Details' },
-      { 
-        id: 'guardianPrefix', 
-        label: 'Prefix', 
-        type: 'select', 
-        required: true, 
+      {
+        id: 'guardianPrefix',
+        label: 'Prefix',
+        type: 'select',
+        required: true,
         weight: 0.5,
         options: GUARDIAN_PREFIX_OPTIONS,
         section: 'Identity Details'
       },
       { id: 'guardianName', label: 'Father / Guardian Name', type: 'text', placeholder: 'First & Last Name', required: true, weight: 1, section: 'Identity Details' },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1, section: 'Identity Details' },
-      { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1, section: 'Identity Details',
+      {
+        id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1, section: 'Identity Details',
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
       },
-      { id: 'category', label: 'Social Category', type: 'select', required: true, weight: 1, section: 'Identity Details',
+      {
+        id: 'category', label: 'Social Category', type: 'select', required: true, weight: 1, section: 'Identity Details',
         options: SOCIAL_CATEGORY_OPTIONS
       },
       // Section 2: Contact
@@ -415,7 +420,8 @@ export const STAGES: StageConfig[] = [
       { id: 'address.district', label: 'District', type: 'text', required: true, weight: 1, section: 'Contact & Domicile' },
       { id: 'address.pinCode', label: 'PIN Code', type: 'text', required: true, weight: 1, section: 'Contact & Domicile' },
       // Section 3: School
-      { id: 'schoolInfo.schoolName', label: 'Institution Name', type: 'searchable-select', required: true, weight: 1, section: 'Institution & Registration',
+      {
+        id: 'schoolInfo.schoolName', label: 'Institution Name', type: 'searchable-select', required: true, weight: 1, section: 'Institution & Registration',
         options: SCHOOL_OPTIONS
       },
       { id: 'academic.registrationNumber', label: 'Registration Number', type: 'text', required: true, weight: 1.5, section: 'Institution & Registration' },
@@ -479,23 +485,26 @@ export const STAGES: StageConfig[] = [
       { id: 'academic.rollNumber', label: 'Admit Card Roll Number', type: 'text', required: true, weight: 2 },
       { id: 'academic.examCenterCode', label: 'Allocated Examination Center Code', type: 'text', required: true, weight: 1.5 },
       { id: 'studentName', label: 'Student Legal Name', type: 'text', required: true, weight: 1 },
-      { 
-        id: 'guardianPrefix', 
-        label: 'Prefix', 
-        type: 'select', 
-        required: true, 
+      {
+        id: 'guardianPrefix',
+        label: 'Prefix',
+        type: 'select',
+        required: true,
         weight: 0.5,
-        options: GUARDIAN_PREFIX_OPTIONS 
+        options: GUARDIAN_PREFIX_OPTIONS
       },
       { id: 'guardianName', label: 'Father / Guardian Name', type: 'text', placeholder: 'First & Last Name', required: true, weight: 1 },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', required: true, weight: 1 },
-      { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1,
+      {
+        id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1,
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
       },
-      { id: 'category', label: 'Social Category', type: 'select', required: true, weight: 1,
+      {
+        id: 'category', label: 'Social Category', type: 'select', required: true, weight: 1,
         options: SOCIAL_CATEGORY_OPTIONS
       },
-      { id: 'schoolInfo.schoolName', label: 'Institution Name', type: 'searchable-select', required: true, weight: 1.5,
+      {
+        id: 'schoolInfo.schoolName', label: 'Institution Name', type: 'searchable-select', required: true, weight: 1.5,
         options: SCHOOL_OPTIONS
       }
     ]
@@ -519,11 +528,13 @@ export const STAGES: StageConfig[] = [
       { id: 'studentName', label: 'Candidate Name', type: 'text', required: true, weight: 1 },
       { id: 'schoolInfo.admissionNumber', label: 'Enrollment / Admission Serial', type: 'text', required: true, weight: 1.5 },
       { id: 'schoolInfo.admissionDate', label: 'Date of Admission (YYYY-MM-DD)', type: 'date', placeholder: 'YYYY-MM-DD', required: true, weight: 1 },
-      { id: 'schoolInfo.board', label: 'Examination Board', type: 'select', required: true, weight: 1,
+      {
+        id: 'schoolInfo.board', label: 'Examination Board', type: 'select', required: true, weight: 1,
         options: BOARD_OPTIONS
       },
       { id: 'academic.previousPercentage', label: 'Past Qualifying Percentage (%)', type: 'decimal', required: true, weight: 1.5 },
-      { id: 'academic.conduct', label: 'Conduct Assessment Record', type: 'select', required: true, weight: 1,
+      {
+        id: 'academic.conduct', label: 'Conduct Assessment Record', type: 'select', required: true, weight: 1,
         options: CONDUCT_OPTIONS
       },
       { id: 'phone', label: 'Emergency Contact Phone', type: 'tel', required: true, weight: 1 }
@@ -623,17 +634,18 @@ export const STAGES: StageConfig[] = [
     ],
     fields: [
       { id: 'studentName', label: 'Student Full Name', type: 'text', required: true, weight: 2 },
-      { 
-        id: 'guardianPrefix', 
-        label: 'Prefix', 
-        type: 'select', 
-        required: true, 
+      {
+        id: 'guardianPrefix',
+        label: 'Prefix',
+        type: 'select',
+        required: true,
         weight: 0.5,
-        options: GUARDIAN_PREFIX_OPTIONS 
+        options: GUARDIAN_PREFIX_OPTIONS
       },
       { id: 'guardianName', label: 'Guardian Full Name', type: 'text', placeholder: 'First & Last Name', required: true, weight: 2 },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', required: true, weight: 2 },
-      { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1,
+      {
+        id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1,
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
       },
       { id: 'phone', label: '10-Digit Mobile', type: 'tel', required: true, weight: 2 },
@@ -792,32 +804,35 @@ export const STAGES: StageConfig[] = [
     sampleUid: 'ICST-2026-001500',
     description: 'The ultimate ICST Chowberia Master Operator challenge. Full comprehensive student dossier + 7-subject marksheet. Zero tolerance for errors.',
     instructions: [
-      'This is the Master Capstone examination stage of ICST Chowberia Data Entry Lab.',
+      'This is the Master Capstone examination stage of ICST LAB.',
       'Enter all 20+ fields: Personal, Institutional, Identifiers, and 7-subject mark records.',
       '100% accuracy unlocks the coveted "Master Data Operator" title.'
     ],
     fields: [
       { id: 'studentName', label: 'Student Legal Name', type: 'text', required: true, weight: 2 },
-      { 
-        id: 'guardianPrefix', 
-        label: 'Prefix', 
-        type: 'select', 
-        required: true, 
+      {
+        id: 'guardianPrefix',
+        label: 'Prefix',
+        type: 'select',
+        required: true,
         weight: 0.5,
-        options: GUARDIAN_PREFIX_OPTIONS 
+        options: GUARDIAN_PREFIX_OPTIONS
       },
       { id: 'guardianName', label: 'Father / Guardian Name', type: 'text', placeholder: 'First & Last Name', required: true, weight: 2 },
       { id: 'dob', label: 'Date of Birth (YYYY-MM-DD)', type: 'date', required: true, weight: 2 },
-      { id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1,
+      {
+        id: 'gender', label: 'Gender', type: 'radio', required: true, weight: 1,
         options: [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }]
       },
       { id: 'phone', label: 'Mobile Number', type: 'tel', required: true, weight: 2 },
       { id: 'email', label: 'Official Email', type: 'email', required: true, weight: 2 },
       { id: 'aadhaarNumber', label: 'Aadhaar Identification', type: 'text', placeholder: '12-digit number (spaces optional)', required: true, weight: 3 },
-      { id: 'category', label: 'Social Category', type: 'select', required: true, weight: 1.5,
+      {
+        id: 'category', label: 'Social Category', type: 'select', required: true, weight: 1.5,
         options: SOCIAL_CATEGORY_OPTIONS
       },
-      { id: 'schoolInfo.schoolName', label: 'School Name', type: 'searchable-select', required: true, weight: 2,
+      {
+        id: 'schoolInfo.schoolName', label: 'School Name', type: 'searchable-select', required: true, weight: 2,
         options: SCHOOL_OPTIONS
       },
       { id: 'academic.registrationNumber', label: 'Board Registration No.', type: 'text', required: true, weight: 3 },

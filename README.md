@@ -1,25 +1,26 @@
-# ICST Data Entry Lab • Training & Certification Platform
+# ICST LAB • Official Interactive Training Platform (icstconnect.in)
 
 > **Institute of Computer Science and Technology Chowberia**  
-> *Chowberia, Nadia, West Bengal, India*  
-> *Official Institutional Data Entry & Computer Applications Simulation Lab*
+> *Official Interactive Property of [ICST Connect](https://icstconnect.in)*  
+> *Chowberia, Nadia, West Bengal, India*
 
 ---
 
 ## 🏛️ About The Institute & Project
 
-The **ICST Data Entry Lab** is a specialized, institutional-grade training simulation platform developed for the **Institute of Computer Science and Technology (ICST) - Chowberia**. 
+**ICST LAB** is a specialized, institutional-grade interactive training simulation platform developed for the **Institute of Computer Science and Technology (ICST) - Chowberia**, operating as an official property of **[ICST Connect](https://icstconnect.in)**.
 
-Designed to prepare vocational and computer science students for real-world administrative, government, banking, and commercial data operations, the platform simulates authentic physical paper dossiers, state board marksheets, voter/census registers, and multi-column Microsoft Excel mass ledgers.
+Designed to prepare vocational and computer science students for real-world administrative, government, banking, and commercial data operations, the platform simulates authentic physical paper dossiers, state board marksheets, voter/census registers, multi-column Microsoft Excel mass ledgers, Windows 11 organization, Terminal HDDE streams, Touch Typing, and Word Express.
 
-Unlike conventional typing tests that measure raw words-per-minute (WPM), the ICST Data Entry Lab evaluates **character-level precision**, **tabular field navigation**, **numerical keypad accuracy**, and **keystrokes per hour (KPH)** under strict regulatory benchmarks.
+Unlike conventional typing tests that measure raw words-per-minute (WPM), **ICST LAB** evaluates **character-level precision**, **tabular field navigation**, **numerical keypad accuracy**, and **keystrokes per hour (KPH)** under strict regulatory benchmarks.
 
 ---
 
 ## 🚀 Core Features & Architecture
 
 ```
-                          ICST DATA ENTRY LAB
+                                 ICST LAB
+                           (icstconnect.in)
                                    │
       ┌────────────────────────────┼────────────────────────────┐
       ▼                            ▼                            ▼
