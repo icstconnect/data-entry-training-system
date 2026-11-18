@@ -34,7 +34,8 @@ export const ClearDataConfirmModal: React.FC<ClearDataConfirmModalProps> = ({
             <li><strong>Practice Lab:</strong> all completed stages (1–18), high accuracy scores, and drafts</li>
             <li><strong>Excel Lab:</strong> all 5 scenario completions, benchmark times, and grid drafts</li>
             <li><strong>Windows Lab:</strong> File & Folder track unlocked levels (reset to Level 1) and tree states</li>
-            <li><strong>Total EXP:</strong> all accumulated experience points across Practice, Excel, and Windows labs</li>
+            <li><strong>Touch Typing & Word Express Labs:</strong> all 25-stage progress, streaks, peak delivery vehicles, and the saved toughness cookie</li>
+            <li><strong>Total EXP:</strong> all accumulated experience points across every training lab</li>
             <li>All unlocked operator badges, honors, and formal certificate statuses</li>
           </ul>
           <div style={{ background: '#fef2f2', border: '1px solid #fecaca', padding: '10px 12px', borderRadius: '6px', color: '#991b1b', fontSize: '12px' }}>

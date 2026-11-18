@@ -3,7 +3,7 @@ import {
   Target, CheckCircle2, XCircle, RotateCcw, Unlock, Lock, 
   Activity, Keyboard, Sparkles, AlertTriangle, Eye, EyeOff, 
   BarChart3, Layers, ChevronDown, ChevronUp, SlidersHorizontal,
-  Sun, Moon, Volume2, VolumeX, ArrowLeft, Zap, Award
+  Sun, Moon, Volume2, VolumeX, ArrowLeft, Hand, Maximize2, Minimize2
 } from 'lucide-react';
 
 import { TypingTheme, FingerId } from '../../types/typing';
@@ -37,6 +37,10 @@ import { IllustratedHandsSVG } from './IllustratedHandsSVG';
 import { SummaryBadgeSlot } from './SummaryBadgeSlot';
 import { TypingCurriculumModal } from './TypingCurriculumModal';
 import { TypingTrackBars } from './TypingTrackBars';
+import { HandSetupGuide } from './HandSetupGuide';
+import { FullscreenRequiredGate } from '../common/FullscreenRequiredGate';
+import { LabGuideAssistant } from '../common/LabGuideAssistant';
+import { useFullscreen } from '../../utils/useFullscreen';
 import './touchTyping.css';
 
 export interface TouchTypingWorkbenchProps {
@@ -58,6 +62,17 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
   theme: controlledTheme,
   onToggleTheme: controlledToggleTheme
 }) => {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const { isFullscreen, isPseudoFullscreen, enterFullscreen, exitFullscreen, toggleFullscreen } = useFullscreen(
+    rootRef,
+    { useDocumentRoot: true, mandatory: true }
+  );
+
+  const handleReturnToDashboard = useCallback(() => {
+    void exitFullscreen();
+    onBackToDashboard();
+  }, [exitFullscreen, onBackToDashboard]);
+
   // Theme state: dual light/dark mode support with localStorage persistence (default: light)
   const [localTheme, setLocalTheme] = useState<TypingTheme>(() => {
     try {
@@ -144,6 +159,7 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
   const [showLiveHud, setShowLiveHud] = useState<boolean>(false);
   const [showDetailedReport, setShowDetailedReport] = useState<boolean>(false);
   const [useContinuousStream, setUseContinuousStream] = useState<boolean>(false); // toggle between 3-track triplet and continuous stream
+  const [showHandGuide, setShowHandGuide] = useState<boolean>(true); // Pre-start visual finger-placement guide
 
   // Active Typing Session Telemetry
   const [cursor, setCursor] = useState<number>(0);
@@ -177,15 +193,16 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
   const activeChar = targetText[cursor] || '';
   const activeKeyMeta = CHAR_MAP[activeChar] || CHAR_MAP[' '];
 
-  // Reset Session
-  const resetLevelSession = useCallback(() => {
+  // Reset Session (preserves active streak when crossing to the next level)
+  const resetLevelSession = useCallback((preserveStreak: boolean = false, carryStreak?: number) => {
+    const nextStreak = preserveStreak ? (carryStreak ?? 0) : 0;
     setCursor(0);
     setStartTime(null);
     setElapsedSec(0);
     setErrorCount(0);
     setTotalKeystrokes(0);
-    setCurrentStreak(0);
-    setBestStreak(0);
+    setCurrentStreak(nextStreak);
+    setBestStreak(nextStreak);
     setLastTypedStatus(null);
     setErrorKeyId(null);
     setErrorFinger(null);
@@ -197,23 +214,47 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
     setShowDetailedReport(false);
   }, []);
 
+  // Deduplicated practiced keys for the persistent top key strip
+  const practicedKeys = useMemo(() => {
+    const seen = new Set<string>();
+    const list: Array<{ raw: string; display: string; finger: FingerId; color: string; fingerName: string }> = [];
+    for (const k of currentLevel.focusKeys) {
+      if (seen.has(k)) continue;
+      seen.add(k);
+      const meta = CHAR_MAP[k] || (k === ' ' ? CHAR_MAP[' '] : undefined);
+      const finger = (meta?.finger as FingerId) || 'THUMB';
+      const fingerMeta = FINGER_META[finger];
+      list.push({
+        raw: k,
+        display: k === ' ' ? 'Space' : k,
+        finger,
+        color: fingerMeta?.color || '#38bdf8',
+        fingerName: fingerMeta?.name || 'Finger'
+      });
+    }
+    return list;
+  }, [currentLevel.focusKeys]);
+
+  const levelFocusMode = currentLevel.focusMode || (currentLevel.id <= 12 ? 'learning' : 'challenge');
+
   // Switch level
-  const handleSelectLevel = useCallback((lvlId: number) => {
+  const handleSelectLevel = useCallback((lvlId: number, preserveStreak: boolean = false) => {
     const validId = Math.max(1, Math.min(TOTAL_TOUCH_TYPING_LEVELS, lvlId));
     setCurrentLevelId(validId);
     if (onSelectLevel) onSelectLevel(validId);
     setIsCurriculumOpen(false);
-    resetLevelSession();
-  }, [onSelectLevel, resetLevelSession]);
+    resetLevelSession(preserveStreak, currentStreak);
+    setShowHandGuide(true);
+  }, [onSelectLevel, resetLevelSession, currentStreak]);
 
-  // Live Timer for accurate speed calculations
+  // Live Timer for accurate speed calculations (pauses if Hand Guide or Mandatory Full Screen gate is open)
   useEffect(() => {
-    if (!startTime || viewMode !== 'typing') return;
+    if (!startTime || viewMode !== 'typing' || showHandGuide || !isFullscreen) return;
     const interval = setInterval(() => {
       setElapsedSec((performance.now() - startTime) / 1000);
     }, 100);
     return () => clearInterval(interval);
-  }, [startTime, viewMode]);
+  }, [startTime, viewMode, showHandGuide, isFullscreen]);
 
   // Live WPM & Accuracy
   const liveStats = useMemo(() => {
@@ -240,13 +281,13 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
 
     const passedAll = wpmPassed && accPassed && errPassed && streakPassed;
 
-    // 3 Golden Badges:
+    // 3 Golden Badges (balanced with 50% learning / 50% challenge pacing):
     // Badge 1: All criteria passed
     const badge1 = passedAll;
     // Badge 2: High accuracy benchmark
-    const badge2 = passedAll && liveStats.accuracy >= Math.min(98, minAcc + 4);
+    const badge2 = passedAll && liveStats.accuracy >= Math.min(96, minAcc + 3);
     // Badge 3: High speed velocity benchmark
-    const badge3 = passedAll && liveStats.wpm >= minWpm + 8;
+    const badge3 = passedAll && liveStats.wpm >= minWpm + 5;
     const starsCount = (badge1 ? 1 : 0) + (badge2 ? 1 : 0) + (badge3 ? 1 : 0);
 
     const validLatencies = keystrokeHistory.filter(k => k.latency > 0 && k.latency < 2500);
@@ -317,13 +358,13 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
     }
   }, [viewMode, evaluation, currentLevel, liveStats, elapsedSec, totalKeystrokes, errorCount, bestStreak, fingerStats, onExpAwarded]);
 
-  // Advance to next level or retry
+  // Advance to next level (continuing active streak!) or retry
   const handleNextOrRetry = useCallback(() => {
     if (!evaluation) return;
     if (evaluation.passedAll && currentLevelId < TOTAL_TOUCH_TYPING_LEVELS) {
-      handleSelectLevel(currentLevelId + 1);
+      handleSelectLevel(currentLevelId + 1, true);
     } else {
-      resetLevelSession();
+      resetLevelSession(false);
     }
   }, [evaluation, currentLevelId, handleSelectLevel, resetLevelSession]);
 
@@ -334,10 +375,32 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
         setCapsLockOn(e.getModifierState('CapsLock'));
       }
 
+      if (e.altKey && e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        toggleFullscreen();
+        return;
+      }
+
+      if (!isFullscreen) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          void enterFullscreen();
+        }
+        return;
+      }
+
       if (isCurriculumOpen || unlockPromptOpen) {
         if (e.key === 'Escape') {
           setIsCurriculumOpen(false);
           setUnlockPromptOpen(false);
+        }
+        return;
+      }
+
+      if (showHandGuide && viewMode === 'typing') {
+        if (e.key === ' ' || e.key === 'Enter' || e.key === 'Escape') {
+          e.preventDefault();
+          setShowHandGuide(false);
         }
         return;
       }
@@ -348,7 +411,7 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
           handleNextOrRetry();
         } else if (e.key === 'r' || e.key === 'R') {
           e.preventDefault();
-          resetLevelSession();
+          resetLevelSession(false);
         }
         return;
       }
@@ -476,8 +539,12 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
     viewMode,
     isCurriculumOpen,
     unlockPromptOpen,
+    isFullscreen,
+    showHandGuide,
     handleNextOrRetry,
-    resetLevelSession
+    resetLevelSession,
+    enterFullscreen,
+    toggleFullscreen
   ]);
 
   // Progress percentage
@@ -543,7 +610,11 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
   };
 
   return (
-    <div className={`typing-root theme-${activeTheme} min-h-screen w-full flex flex-col font-sans select-none overflow-x-hidden`}>
+    <div
+      ref={rootRef}
+      className={`typing-root theme-${activeTheme} ${isPseudoFullscreen ? 'is-pseudo-fullscreen' : ''} ${isFullscreen ? 'is-fullscreen' : ''} w-full flex flex-col font-sans select-none overflow-x-hidden`}
+      style={{ height: '100%', minHeight: 'calc(100vh - 60px)', overflowY: 'auto' }}
+    >
       {/* ==================================================================== */}
       {/* 1. TOP MINIMALIST HEADER BAR & BLUE PROGRESS LINE                    */}
       {/* ==================================================================== */}
@@ -562,8 +633,8 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button
             type="button"
-            onClick={onBackToDashboard}
-            title="Return to Touch Typing Dashboard"
+            onClick={handleReturnToDashboard}
+            title="Exit Full Screen & Return to Touch Typing Dashboard"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -697,6 +768,30 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
             <span>{masterActive ? 'ICST Unlocked' : 'Unlock All'}</span>
           </button>
 
+          {/* Full Screen Mode Toggle */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? 'Exit Full Screen (Alt+F)' : 'Enter Full Screen Mode (Alt+F)'}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+              padding: '6px 10px',
+              borderRadius: '8px',
+              border: `1px solid ${isFullscreen ? '#0284c7' : (isDark ? '#38bdf8' : '#0284c7')}`,
+              background: isFullscreen ? '#0284c7' : (isDark ? 'rgba(56,189,248,0.14)' : '#e0f2fe'),
+              color: isFullscreen ? '#ffffff' : (isDark ? '#7dd3fc' : '#0369a1'),
+              fontSize: '11px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+            <span>{isFullscreen ? 'Exit Full' : 'Full Screen'}</span>
+          </button>
+
           {/* Audio mute toggle */}
           <button
             type="button"
@@ -742,7 +837,7 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
       </header>
 
       {/* Razor-thin glowing progress bar */}
-      <div style={{ width: '100%', height: '2px', background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ width: '100%', height: '2px', background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
         <div
           style={{
             height: '100%',
@@ -755,6 +850,85 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
       </div>
 
       {/* ==================================================================== */}
+      {/* PERSISTENT PRACTICING KEYS TOP BAR (Visible Throughout Level)        */}
+      {/* ==================================================================== */}
+      {viewMode === 'typing' && (
+        <div
+          className={`practicing-keys-bar ${isDark ? 'is-dark' : 'is-light'}`}
+          role="region"
+          aria-label="Keys practiced in this level"
+        >
+          <div className="practicing-keys-inner">
+            {/* Left: Label + Focus Mode Pill */}
+            <div className="practicing-keys-meta">
+              <span className="practicing-keys-label">
+                <Keyboard size={13} />
+                <span>Practicing Keys</span>
+              </span>
+              <span className={`practicing-mode-tag ${levelFocusMode}`}>
+                {levelFocusMode === 'learning' ? 'Learning' : 'Challenge'}
+              </span>
+            </div>
+
+            {/* Center: Tactile Keycaps for All Practiced Keys in This Level */}
+            <div className="practicing-keys-list">
+              {practicedKeys.map(pk => {
+                const isCurrentKey = activeChar === pk.raw;
+                return (
+                  <span
+                    key={pk.raw}
+                    className={`practicing-keycap ${isCurrentKey ? 'is-active' : ''} ${pk.raw === ' ' ? 'is-space' : ''}`}
+                    title={`Key "${pk.display}" — ${pk.fingerName}`}
+                    style={{
+                      borderColor: isCurrentKey ? pk.color : undefined,
+                      boxShadow: isCurrentKey ? `0 0 0 2px ${pk.color}40, 0 2px 8px ${pk.color}30` : undefined
+                    }}
+                  >
+                    <span
+                      className="practicing-key-pip"
+                      style={{ background: pk.color }}
+                      aria-hidden="true"
+                    />
+                    <span className="practicing-key-char">{pk.display}</span>
+                  </span>
+                );
+              })}
+            </div>
+
+            {/* Right: Live Active Finger Cue + Hand Placement Guide Trigger */}
+            <div className="practicing-keys-actions">
+              {activeKeyMeta && (
+                <div
+                  className="active-finger-cue"
+                  title="Recommended finger for the current key"
+                >
+                  <span
+                    className="active-finger-dot"
+                    style={{ background: FINGER_META[activeKeyMeta.finger]?.color || '#38bdf8' }}
+                  />
+                  <span className="active-finger-name">
+                    {activeKeyMeta.shiftFinger
+                      ? `${FINGER_META[activeKeyMeta.shiftFinger]?.short} Shift + ${FINGER_META[activeKeyMeta.finger]?.short}`
+                      : FINGER_META[activeKeyMeta.finger]?.name}
+                  </span>
+                </div>
+              )}
+
+              <button
+                type="button"
+                className="hand-guide-reopen-btn"
+                onClick={() => setShowHandGuide(true)}
+                title="View visual hand & finger placement guide"
+              >
+                <Hand size={13} />
+                <span>Hand Guide</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==================================================================== */}
       {/* 2. MAIN CENTERED CANVAS                                              */}
       {/* ==================================================================== */}
       <main
@@ -764,7 +938,7 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '24px 16px',
+          padding: '16px 16px 24px 16px',
           maxWidth: '960px',
           margin: '0 auto',
           width: '100%',
@@ -1008,7 +1182,7 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
 
               <button
                 type="button"
-                onClick={resetLevelSession}
+                onClick={() => resetLevelSession(false)}
                 title="Restart Level (R)"
                 style={{
                   background: 'transparent',
@@ -1260,7 +1434,7 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: 'auto' }}>
                   <button
                     type="button"
-                    onClick={resetLevelSession}
+                    onClick={() => resetLevelSession(false)}
                     style={{
                       background: 'transparent',
                       border: 'none',
@@ -1474,8 +1648,29 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
       </main>
 
       {/* ==================================================================== */}
-      {/* 4. MODALS: CURRICULUM DRAWER & MASTER UNLOCK PROMPT                  */}
+      {/* 4. MODALS: FULL SCREEN GATE, HAND-SET GUIDE, CURRICULUM & UNLOCK     */}
       {/* ==================================================================== */}
+      {!isFullscreen && (
+        <FullscreenRequiredGate
+          labName="Touch Typing Lab"
+          theme={activeTheme}
+          onEnterFullscreen={() => {
+            void enterFullscreen();
+          }}
+          onBackToDashboard={handleReturnToDashboard}
+          isMidSession={cursor > 0 || viewMode === 'report'}
+        />
+      )}
+
+      {isFullscreen && showHandGuide && viewMode === 'typing' && (
+        <HandSetupGuide
+          level={currentLevel}
+          theme={activeTheme}
+          onStart={() => setShowHandGuide(false)}
+          isMidSession={cursor > 0}
+        />
+      )}
+
       <TypingCurriculumModal
         isOpen={isCurriculumOpen}
         onClose={() => setIsCurriculumOpen(false)}
@@ -1484,6 +1679,9 @@ export const TouchTypingWorkbench: React.FC<TouchTypingWorkbenchProps> = ({
         onSelectLevel={handleSelectLevel}
         theme={activeTheme}
       />
+
+      {/* Non-Blocking English / সহজ বাংলা Floating Lab Guide */}
+      <LabGuideAssistant context="touch-typing-workbench" theme={activeTheme} />
 
       {unlockPromptOpen && (
         <div

@@ -22,7 +22,8 @@ import {
   Check,
   ClipboardList,
   Monitor,
-  LayoutGrid
+  LayoutGrid,
+  Rocket
 } from 'lucide-react';
 import { UserRole, StudentIdentity } from '../../types';
 import { isMasterUnlocked, lockToStudentProgression } from '../../services/masterUnlockService';
@@ -36,7 +37,8 @@ export type ActiveViewId =
   | 'excel'
   | 'windows'
   | 'terminal'
-  | 'typing';
+  | 'typing'
+  | 'word-express';
 
 interface HeaderProps {
   currentRole: UserRole;
@@ -141,6 +143,18 @@ const OS_TYPING_LABS: LabNavItem[] = [
     badgeClass: 'badge-typing',
     badgeColor: '#0891b2',
     title: 'Touch Typing Lab (25 Levels with Light-Beam Guided Kinesthetic Training)'
+  },
+  {
+    id: 'word-express',
+    label: 'Word Express Lab',
+    shortLabel: 'Words',
+    description: 'Simple words • 16-vehicle streak courier',
+    icon: <Rocket size={16} color="#7c3aed" />,
+    iconBg: '#f5f3ff',
+    badge: 'NEW',
+    badgeClass: 'badge-word-express',
+    badgeColor: '#7c3aed',
+    title: 'Word Express Delivery Lab (25 Word Stages • Easy/Moderate/Hard • 16 Delivery Vehicles)'
   }
 ];
 

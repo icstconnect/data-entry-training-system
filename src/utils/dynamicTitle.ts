@@ -49,6 +49,12 @@ export function setAppTitle(view: string, detail?: string): void {
         : `Touch Typing Kinesthetic Lab | ${BASE_INSTITUTE}`;
       break;
 
+    case 'word-express':
+      document.title = detail
+        ? `${detail} | ICST Word Express Delivery Lab`
+        : `Word Express Delivery Lab | ${BASE_INSTITUTE}`;
+      break;
+
     case 'dashboard':
     case 'student-dashboard':
       document.title = `Student Profile & Honors | ${BASE_INSTITUTE}`;

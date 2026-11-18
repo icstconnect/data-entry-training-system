@@ -1,8 +1,8 @@
-import { 
-  TouchTypingProgress, 
-  LevelProgressRecord, 
-  TouchTypingDraft, 
-  EvaluationResult, 
+import {
+  TouchTypingProgress,
+  LevelProgressRecord,
+  TouchTypingDraft,
+  EvaluationResult,
   TouchTypingLevel,
   FingerCode,
   FingerStat
@@ -53,7 +53,7 @@ export function calculateMaxUnlockedLevel(
  * If Master Unlock (ICST) is active, all 25 levels are immediately accessible.
  */
 export function isTouchTypingLevelUnlocked(
-  levelId: number, 
+  levelId: number,
   progress?: TouchTypingProgress
 ): boolean {
   if (isMasterUnlocked()) return true;
@@ -246,7 +246,7 @@ export function saveTouchTypingRecord(result: EvaluationResult): TouchTypingProg
 
   // Update global metrics
   progress.bestWpm = Math.max(progress.bestWpm, result.wpm);
-  
+
   // Compute overall average accuracy across passed levels
   const passedRecords = Object.values(progress.completedLevels).filter(r => r.passed || r.completed);
   if (passedRecords.length > 0) {
@@ -317,7 +317,7 @@ export function loadTouchTypingDraft(levelId: number): TouchTypingDraft | null {
 export function clearTouchTypingDraft(levelId: number): void {
   try {
     localStorage.removeItem(`${DRAFT_PREFIX}${levelId}`);
-  } catch {}
+  } catch { }
 }
 
 /**

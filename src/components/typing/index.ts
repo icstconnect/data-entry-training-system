@@ -5,3 +5,4 @@ export * from './TypingTrackBars';
 export * from './TypingKeyboard';
 export * from './TypingDashboard';
 export * from './TypingCurriculumModal';
+export * from './HandSetupGuide';

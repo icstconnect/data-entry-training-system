@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Play, Lock, Unlock, Award, Zap, Target, Flame, 
-  BookOpen, ChevronRight, CheckCircle2, RotateCcw, 
-  Sun, Moon, ShieldAlert, Sparkles, Trophy
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Play, Lock, Unlock, Zap,
+  BookOpen,
+  Sun, Moon, Sparkles, Maximize2, Minimize2
 } from 'lucide-react';
 import { SummaryBadgeSlot } from './SummaryBadgeSlot';
 import { TypingCurriculumModal } from './TypingCurriculumModal';
+import { LabGuideAssistant } from '../common/LabGuideAssistant';
 import { STAGES_META, LEVELS } from './typingData';
 import { TypingTheme } from '../../types/typing';
 import { TouchTypingProgress } from '../../types/touchTyping';
-import { 
-  isMasterUnlocked, 
-  verifyAndApplyMasterPassword, 
-  lockToStudentProgression 
+import {
+  isMasterUnlocked,
+  verifyAndApplyMasterPassword,
+  lockToStudentProgression
 } from '../../services/masterUnlockService';
+import { useFullscreen, requestDocumentFullscreen } from '../../utils/useFullscreen';
 import './touchTyping.css';
 
 export interface TypingDashboardProps {
@@ -38,6 +40,8 @@ export const TypingDashboard: React.FC<TypingDashboardProps> = ({
   className = ''
 }) => {
   const isDark = theme === 'dark';
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const { isFullscreen, isPseudoFullscreen, toggleFullscreen } = useFullscreen(rootRef);
   const [unlockPasswordPrompt, setUnlockPasswordPrompt] = useState(false);
   const [curriculumDrawerOpen, setCurriculumDrawerOpen] = useState(false);
   const [enteredPasscode, setEnteredPasscode] = useState('');
@@ -56,7 +60,7 @@ export const TypingDashboard: React.FC<TypingDashboardProps> = ({
   const records = progress.completedLevels || {};
   const completedLevelsCount = Object.values(records).filter(r => r.passed).length;
   const totalStars = Object.values(records).reduce((sum, r) => sum + (r.stars || 0), 0);
-  
+
   let bestWpm = progress.bestWpm || 0;
   let totalAccSum = 0;
   let accCount = 0;
@@ -94,11 +98,20 @@ export const TypingDashboard: React.FC<TypingDashboardProps> = ({
     }
   };
 
+  const handleLaunchWithFullscreen = (levelId: number) => {
+    void requestDocumentFullscreen();
+    onLaunchLevel(levelId);
+  };
+
   const currentLevelId = progress.currentLevel || 1;
   const currentLevelData = LEVELS.find(l => l.id === currentLevelId) || LEVELS[0];
 
   return (
-    <div className={`typing-root theme-${theme} ${className}`}>
+    <div
+      ref={rootRef}
+      className={`typing-root theme-${theme} ${isPseudoFullscreen ? 'is-pseudo-fullscreen' : ''} ${isFullscreen ? 'is-fullscreen' : ''} ${className}`}
+      style={{ overflowY: isFullscreen ? 'auto' : undefined }}
+    >
       {/* ================================================================= */}
       {/* TOP HEADER CONTROLS BAR                                           */}
       {/* ================================================================= */}
@@ -174,6 +187,29 @@ export const TypingDashboard: React.FC<TypingDashboardProps> = ({
           >
             {masterActive ? <Unlock size={13} /> : <Lock size={13} />}
             <span>{masterActive ? 'Master Unlocked (ICST)' : 'Instructor Unlock'}</span>
+          </button>
+
+          {/* Full Screen Mode Toggle */}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? 'Exit Full Screen' : 'Enter Full Screen Mode'}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 12px',
+              borderRadius: '20px',
+              border: `1px solid ${isFullscreen ? '#0284c7' : (isDark ? '#38bdf8' : '#0284c7')}`,
+              background: isFullscreen ? '#0284c7' : (isDark ? 'rgba(56,189,248,0.14)' : '#e0f2fe'),
+              color: isFullscreen ? '#ffffff' : (isDark ? '#7dd3fc' : '#0369a1'),
+              fontSize: '11px',
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
+          >
+            {isFullscreen ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+            <span>{isFullscreen ? 'Exit Full' : 'Full Screen'}</span>
           </button>
 
           {/* Theme Toggle Button */}
@@ -348,8 +384,8 @@ export const TypingDashboard: React.FC<TypingDashboardProps> = ({
           style={{
             borderRadius: '16px',
             padding: '24px 28px',
-            background: isDark 
-              ? 'linear-gradient(135deg, #21252d 0%, #17191d 100%)' 
+            background: isDark
+              ? 'linear-gradient(135deg, #21252d 0%, #17191d 100%)'
               : 'linear-gradient(135deg, #ffffff 0%, #f6f1e9 100%)',
             border: `1.5px solid ${isDark ? '#363d4c' : '#dfd7c8'}`,
             boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
@@ -364,6 +400,13 @@ export const TypingDashboard: React.FC<TypingDashboardProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <span className="typing-stage-pill" style={{ borderColor: '#0284c7', color: isDark ? '#38bdf8' : '#0369a1', background: isDark ? '#1e293b' : '#e0f2fe' }}>
                 <Sparkles size={12} /> LEVEL {currentLevelId} IN PROGRESS
+              </span>
+              <span
+                className={`practicing-mode-tag ${(currentLevelData.focusMode || (currentLevelData.id <= 12 ? 'learning' : 'challenge'))}`}
+              >
+                {(currentLevelData.focusMode || (currentLevelData.id <= 12 ? 'learning' : 'challenge')) === 'learning'
+                  ? 'Learning Focus (L1–12)'
+                  : 'Challenge Focus (L13–25)'}
               </span>
               <span style={{ fontSize: '12px', fontWeight: 600, color: isDark ? '#94a3b8' : '#5e564b' }}>
                 Stage {currentLevelData.stage} of 5 • {currentLevelData.stageName}
@@ -388,7 +431,7 @@ export const TypingDashboard: React.FC<TypingDashboardProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <button
               type="button"
-              onClick={() => onLaunchLevel(currentLevelId)}
+              onClick={() => handleLaunchWithFullscreen(currentLevelId)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -582,28 +625,28 @@ export const TypingDashboard: React.FC<TypingDashboardProps> = ({
                           key={lvl.id}
                           type="button"
                           onClick={() => {
-                            if (isLvlUnlocked) onLaunchLevel(lvl.id);
+                            if (isLvlUnlocked) handleLaunchWithFullscreen(lvl.id);
                           }}
                           disabled={!isLvlUnlocked}
                           title={`Level ${lvl.id}: ${lvl.title} ${rec?.passed ? '★'.repeat(rec.stars || 1) : (isLvlUnlocked ? '(Ready)' : '(Locked)')}`}
                           style={{
                             padding: '8px 4px',
                             borderRadius: '8px',
-                            border: isCurrent 
-                              ? `2px solid ${stageMeta.color}` 
+                            border: isCurrent
+                              ? `2px solid ${stageMeta.color}`
                               : `1px solid ${isDark ? '#333842' : '#d2c8b7'}`,
-                            background: rec?.passed 
-                              ? (isDark ? '#14382c' : '#ecfdf5') 
-                              : isCurrent 
+                            background: rec?.passed
+                              ? (isDark ? '#14382c' : '#ecfdf5')
+                              : isCurrent
                                 ? (isDark ? '#1e293b' : '#e0f2fe')
-                                : isLvlUnlocked 
+                                : isLvlUnlocked
                                   ? (isDark ? '#272a32' : '#ffffff')
                                   : (isDark ? '#1a1c20' : '#f2ece0'),
-                            color: rec?.passed 
-                              ? (isDark ? '#34d399' : '#059669') 
-                              : isCurrent 
+                            color: rec?.passed
+                              ? (isDark ? '#34d399' : '#059669')
+                              : isCurrent
                                 ? stageMeta.color
-                                : isLvlUnlocked 
+                                : isLvlUnlocked
                                   ? (isDark ? '#f8fafc' : '#1c1915')
                                   : (isDark ? '#4b5563' : '#a89d8d'),
                             fontSize: '11px',
@@ -614,10 +657,10 @@ export const TypingDashboard: React.FC<TypingDashboardProps> = ({
                             alignItems: 'center',
                             justifyContent: 'center',
                             gap: '3px',
-                            boxShadow: isCurrent 
-                              ? `0 0 10px ${stageMeta.color}35` 
-                              : isLvlUnlocked 
-                                ? (isDark ? '0 2px 0 #15171b' : '0 2px 0 #cfc6b6') 
+                            boxShadow: isCurrent
+                              ? `0 0 10px ${stageMeta.color}35`
+                              : isLvlUnlocked
+                                ? (isDark ? '0 2px 0 #15171b' : '0 2px 0 #cfc6b6')
                                 : 'none',
                             transition: 'all 0.15s ease'
                           }}
@@ -637,21 +680,21 @@ export const TypingDashboard: React.FC<TypingDashboardProps> = ({
                     onClick={() => {
                       // Find first incomplete level in this stage, or first level
                       const targetLvl = stageLevels.find(l => !records[l.id]?.passed)?.id || startLevel;
-                      onLaunchLevel(targetLvl);
+                      handleLaunchWithFullscreen(targetLvl);
                     }}
                     disabled={isStageLocked}
                     style={{
                       marginTop: '10px',
                       padding: '11px 16px',
                       borderRadius: '10px',
-                      border: isStageLocked 
-                        ? `1px solid ${isDark ? '#333842' : '#d2c8b7'}` 
+                      border: isStageLocked
+                        ? `1px solid ${isDark ? '#333842' : '#d2c8b7'}`
                         : 'none',
-                      background: isStageLocked 
-                        ? (isDark ? '#1a1c20' : '#f2ece0') 
+                      background: isStageLocked
+                        ? (isDark ? '#1a1c20' : '#f2ece0')
                         : stageMeta.color,
-                      color: isStageLocked 
-                        ? (isDark ? '#64748b' : '#a89d8d') 
+                      color: isStageLocked
+                        ? (isDark ? '#64748b' : '#a89d8d')
                         : '#ffffff',
                       fontSize: '13px',
                       fontWeight: 800,
@@ -681,10 +724,13 @@ export const TypingDashboard: React.FC<TypingDashboardProps> = ({
         progress={progress}
         onSelectLevel={(lvlId) => {
           setCurriculumDrawerOpen(false);
-          onLaunchLevel(lvlId);
+          handleLaunchWithFullscreen(lvlId);
         }}
         theme={theme}
       />
+
+      {/* Non-Blocking English / সহজ বাংলা Floating Lab Guide */}
+      <LabGuideAssistant context="touch-typing-dashboard" theme={theme} />
     </div>
   );
 };

@@ -549,6 +549,11 @@ input, select, textarea {
   color: #ffffff !important;
 }
 
+.nav-lab-badge.badge-word-express {
+  background: #7c3aed !important;
+  color: #ffffff !important;
+}
+
 /* Clear Data Action */
 .clear-data-btn {
   border-color: #fecaca;

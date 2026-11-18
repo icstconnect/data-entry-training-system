@@ -23,6 +23,7 @@ interface LandingPageProps {
   onOpenWindows?: () => void;
   onOpenTerminal?: () => void;
   onOpenTyping?: () => void;
+  onOpenWordExpress?: () => void;
   onOpenAchievementShare?: () => void;
 }
 
@@ -44,6 +45,7 @@ export const LandingPage: React.FC<LandingPageProps> = React.memo(({
   onOpenWindows,
   onOpenTerminal,
   onOpenTyping,
+  onOpenWordExpress,
   onOpenAchievementShare
 }) => {
   return (
@@ -126,6 +128,17 @@ export const LandingPage: React.FC<LandingPageProps> = React.memo(({
                 style={{ background: '#0891b2', borderColor: '#0e7490' }}
               >
                 <span>TOUCH TYPING LAB</span>
+              </button>
+            )}
+
+            {onOpenWordExpress && (
+              <button
+                type="button"
+                className="btn btn-primary btn-lg"
+                onClick={onOpenWordExpress}
+                style={{ background: '#7c3aed', borderColor: '#6d28d9' }}
+              >
+                <span>WORD EXPRESS LAB</span>
               </button>
             )}
 
@@ -329,6 +342,40 @@ export const LandingPage: React.FC<LandingPageProps> = React.memo(({
                 style={{ width: '100%', borderColor: '#0891b2', color: '#0891b2', fontWeight: 700 }}
               >
                 Launch Typing Lab →
+              </button>
+            )}
+          </div>
+
+          {/* Card 6: Word Express Delivery Lab */}
+          <div style={{
+            background: 'var(--bg-card, #ffffff)',
+            border: '1.5px solid var(--border-light, #e2e8f0)',
+            borderRadius: '16px',
+            padding: '24px',
+            boxShadow: 'var(--shadow-sm)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: '#f5f3ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>
+                🚀
+              </div>
+              <div>
+                <h3 style={{ fontSize: '17px', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+                  Word Express Delivery Lab
+                </h3>
+                <span style={{ fontSize: '11px', color: '#7c3aed', fontWeight: 700 }}>25 Word Stages • 16-Vehicle Streak Fleet</span>
+              </div>
+            </div>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '16px' }}>
+              Practice simple words with live animated left-to-right courier delivery! Choose Easy, Moderate, or Hard toughness and climb streaks from Runner &amp; Bicycle up to F1 Car, Supersonic Fighter, Rocket, and UFO 3.
+            </p>
+            {onOpenWordExpress && (
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={onOpenWordExpress}
+                style={{ width: '100%', borderColor: '#7c3aed', color: '#7c3aed', fontWeight: 700 }}
+              >
+                Launch Word Express Lab →
               </button>
             )}
           </div>
