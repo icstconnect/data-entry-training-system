@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Sparkles, 
-  HelpCircle, 
-  GraduationCap, 
-  UserCheck, 
-  Share2, 
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Sparkles,
+  HelpCircle,
+  GraduationCap,
+  UserCheck,
+  Share2,
   LayoutDashboard,
-  Clock,
   Trash2,
   User,
   AlertTriangle,
@@ -18,15 +17,31 @@ import {
   Unlock,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  ChevronDown,
+  Check,
+  ClipboardList,
+  Monitor,
+  LayoutGrid
 } from 'lucide-react';
 import { UserRole, StudentIdentity } from '../../types';
 import { isMasterUnlocked, lockToStudentProgression } from '../../services/masterUnlockService';
 
+export type ActiveViewId =
+  | 'landing'
+  | 'practice'
+  | 'student-dashboard'
+  | 'teacher-dashboard'
+  | 'showcase'
+  | 'excel'
+  | 'windows'
+  | 'terminal'
+  | 'typing';
+
 interface HeaderProps {
   currentRole: UserRole;
-  activeView: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal' | 'typing';
-  setActiveView: (view: 'landing' | 'practice' | 'student-dashboard' | 'teacher-dashboard' | 'showcase' | 'excel' | 'windows' | 'terminal' | 'typing') => void;
+  activeView: ActiveViewId;
+  setActiveView: (view: ActiveViewId) => void;
   currentLevel: number;
   currentStage: number;
   totalExp: number;
@@ -44,10 +59,12 @@ interface HeaderProps {
 }
 
 interface LabNavItem {
-  id: HeaderProps['activeView'];
+  id: ActiveViewId;
   label: string;
   shortLabel: string;
+  description: string;
   icon: React.ReactNode;
+  iconBg: string;
   badge?: string;
   badgeClass?: string;
   badgeColor?: string;
@@ -55,80 +72,138 @@ interface LabNavItem {
   requiresTeacher?: boolean;
 }
 
-const LAB_NAV_ITEMS: LabNavItem[] = [
+interface NavDropdownGroup {
+  id: 'data-entry' | 'os-typing' | 'portal';
+  label: string;
+  sectionTitle: string;
+  icon: React.ReactNode;
+  align?: 'left' | 'right';
+  items: LabNavItem[];
+}
+
+const DATA_ENTRY_LABS: LabNavItem[] = [
   {
     id: 'practice',
-    label: 'Practice',
+    label: 'Practice Lab',
     shortLabel: 'Practice',
-    icon: <GraduationCap size={15} />,
-    title: 'Core Single-Form Data Entry Practice'
+    description: 'Forms & board marksheets • 5 Levels',
+    icon: <GraduationCap size={16} color="#1c6aa7" />,
+    iconBg: '#edf4fa',
+    title: 'Core Single-Form Data Entry & Marksheets Practice'
   },
   {
     id: 'excel',
     label: 'Excel Lab',
     shortLabel: 'Excel',
-    icon: <FileSpreadsheet size={15} color="#16a34a" />,
+    description: 'Excel 365 mass ledgers • 5 Scenarios',
+    icon: <FileSpreadsheet size={16} color="#16a34a" />,
+    iconBg: '#f0fdf4',
     badge: 'NEW',
     badgeClass: 'badge-excel',
     badgeColor: '#16a34a',
     title: 'Excel Mass Data Entry Simulation Lab (5 Scenarios)'
   },
   {
+    id: 'terminal',
+    label: 'Terminal Lab',
+    shortLabel: 'Terminal',
+    description: 'Heads-down voucher stream • 5 Domains',
+    icon: <Terminal size={16} color="#0284c7" />,
+    iconBg: '#f0f9ff',
+    badge: 'STREAM',
+    badgeClass: 'badge-terminal',
+    badgeColor: '#0284c7',
+    title: 'Terminal Stream: High-Speed Enterprise Data Dispatcher & Voucher Verification'
+  }
+];
+
+const OS_TYPING_LABS: LabNavItem[] = [
+  {
     id: 'windows',
     label: 'Windows Lab',
     shortLabel: 'Windows',
-    icon: <FolderTree size={15} color="#0284c7" />,
+    description: 'Windows 11 file & folder org • 10 Levels',
+    icon: <FolderTree size={16} color="#0284c7" />,
+    iconBg: '#eff6ff',
     badge: 'NEW',
     badgeClass: 'badge-windows',
     badgeColor: '#0284c7',
     title: 'Windows 11 Organization Simulation (File & Folder Tracks)'
   },
   {
-    id: 'terminal',
-    label: 'Terminal Lab',
-    shortLabel: 'Terminal',
-    icon: <Terminal size={15} color="#38bdf8" />,
-    badge: 'STREAM',
-    badgeClass: 'badge-terminal',
-    badgeColor: '#0284c7',
-    title: 'Terminal Stream: High-Speed Enterprise Data Dispatcher & Voucher Verification'
-  },
-  {
     id: 'typing',
     label: 'Typing Lab',
     shortLabel: 'Typing',
-    icon: <Keyboard size={15} color="#0891b2" />,
+    description: 'Light-beam guided typing • 25 Levels',
+    icon: <Keyboard size={16} color="#0891b2" />,
+    iconBg: '#ecfeff',
     badge: '25 LVL',
     badgeClass: 'badge-typing',
     badgeColor: '#0891b2',
     title: 'Touch Typing Lab (25 Levels with Light-Beam Guided Kinesthetic Training)'
-  },
-  {
-    id: 'student-dashboard',
-    label: 'Dashboard',
-    shortLabel: 'Dashboard',
-    icon: <LayoutDashboard size={15} />,
-    title: 'Trainee Analytics & Performance Dashboard'
-  },
+  }
+];
+
+const PORTAL_ITEMS: LabNavItem[] = [
   {
     id: 'teacher-dashboard',
-    label: 'Teacher',
+    label: 'Teacher Mode',
     shortLabel: 'Teacher',
-    icon: <UserCheck size={15} />,
+    description: 'Instructor analytics & controls (Passcode)',
+    icon: <UserCheck size={16} color="#7c3aed" />,
+    iconBg: '#f5f3ff',
     title: 'Administrative Teacher Mode (Password Required: ICST)',
     requiresTeacher: true
   },
   {
     id: 'showcase',
-    label: 'Showcase',
+    label: 'Live Showcase',
     shortLabel: 'Showcase',
-    icon: <Share2 size={15} />,
+    description: 'ICST achievements & promotional hub',
+    icon: <Share2 size={16} color="#d97706" />,
+    iconBg: '#fffbeb',
     title: 'ICST Social Media Promotional Showcase'
   }
 ];
 
+const DASHBOARD_ITEM: LabNavItem = {
+  id: 'student-dashboard',
+  label: 'Dashboard',
+  shortLabel: 'Dashboard',
+  description: 'Trainee analytics & progress tracking',
+  icon: <LayoutDashboard size={15} />,
+  iconBg: '#edf4fa',
+  title: 'Trainee Analytics & Performance Dashboard'
+};
+
+const NAV_DROPDOWN_GROUPS: NavDropdownGroup[] = [
+  {
+    id: 'data-entry',
+    label: 'Data Entry',
+    sectionTitle: 'Data Entry Labs',
+    icon: <ClipboardList size={15} />,
+    align: 'left',
+    items: DATA_ENTRY_LABS
+  },
+  {
+    id: 'os-typing',
+    label: 'OS & Typing',
+    sectionTitle: 'Computing & Keyboard Labs',
+    icon: <Monitor size={15} />,
+    align: 'left',
+    items: OS_TYPING_LABS
+  },
+  {
+    id: 'portal',
+    label: 'Portal',
+    sectionTitle: 'Institute Portal',
+    icon: <LayoutGrid size={15} />,
+    align: 'right',
+    items: PORTAL_ITEMS
+  }
+];
+
 export const Header: React.FC<HeaderProps> = React.memo(({
-  currentRole,
   activeView,
   setActiveView,
   currentLevel,
@@ -152,11 +227,44 @@ export const Header: React.FC<HeaderProps> = React.memo(({
 
   const [masterUnlocked, setMasterUnlockedState] = useState<boolean>(() => isMasterUnlocked());
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<NavDropdownGroup['id'] | null>(null);
+  const [openMobileDropdown, setOpenMobileDropdown] = useState<'data-entry' | 'os-typing' | null>(null);
+
+  const desktopNavRef = useRef<HTMLDivElement | null>(null);
+  const mobileBarRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleMasterChange = () => setMasterUnlockedState(isMasterUnlocked());
     window.addEventListener('icst_master_unlock_changed', handleMasterChange);
     return () => window.removeEventListener('icst_master_unlock_changed', handleMasterChange);
+  }, []);
+
+  // Close dropdowns on outside click or Escape
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const inDesktop = desktopNavRef.current?.contains(target) ?? false;
+      const inMobileBar = mobileBarRef.current?.contains(target) ?? false;
+      if (!inDesktop && !inMobileBar) {
+        setOpenDropdown(null);
+        setOpenMobileDropdown(null);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpenDropdown(null);
+        setOpenMobileDropdown(null);
+        setMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   const formatTime = (secs: number) => {
@@ -167,6 +275,8 @@ export const Header: React.FC<HeaderProps> = React.memo(({
 
   const handleSelectNav = (item: LabNavItem) => {
     setMobileMenuOpen(false);
+    setOpenDropdown(null);
+    setOpenMobileDropdown(null);
     if (item.requiresTeacher) {
       onOpenTeacherPassword();
     } else {
@@ -174,25 +284,44 @@ export const Header: React.FC<HeaderProps> = React.memo(({
     }
   };
 
+  const toggleDesktopDropdown = (groupId: NavDropdownGroup['id']) => {
+    setOpenDropdown(prev => (prev === groupId ? null : groupId));
+  };
+
+  const toggleMobileDropdown = (groupId: 'data-entry' | 'os-typing') => {
+    setOpenMobileDropdown(prev => (prev === groupId ? null : groupId));
+  };
+
+  const getActiveItemInGroup = (group: NavDropdownGroup) =>
+    group.items.find(item => item.id === activeView);
+
+  const labDropdownGroups = NAV_DROPDOWN_GROUPS.filter(
+    g => g.id === 'data-entry' || g.id === 'os-typing'
+  ) as Array<NavDropdownGroup & { id: 'data-entry' | 'os-typing' }>;
+
+  const portalGroup = NAV_DROPDOWN_GROUPS.find(g => g.id === 'portal')!;
+
   return (
     <header className="app-header">
       {/* Primary Global Navigation Header */}
       <div className="header-container">
         {/* Brand Section with ORIGINAL LOGO & Student Badge */}
         <div className="header-brand-cluster">
-          <a 
-            href="#home" 
+          <a
+            href="#home"
             className="brand-section"
             onClick={(e) => {
               e.preventDefault();
               setMobileMenuOpen(false);
+              setOpenDropdown(null);
+              setOpenMobileDropdown(null);
               setActiveView('landing');
             }}
           >
-            <img 
-              src="/logo.png" 
-              alt="ICST Chowberia Official Logo" 
-              className="brand-logo-img" 
+            <img
+              src="/logo.png"
+              alt="ICST Chowberia Official Logo"
+              className="brand-logo-img"
             />
             <div className="brand-meta">
               <span className="brand-title">ICST Data Entry Lab</span>
@@ -227,11 +356,176 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           )}
         </div>
 
-        {/* Desktop Navigation Links & Controls (Visible on screens >= 1100px) */}
-        <div className="header-nav header-nav-desktop">
+        {/* Desktop Navigation Links & Grouped Lab Dropdowns (Visible on screens > 1060px) */}
+        <nav
+          ref={desktopNavRef}
+          className="header-nav header-nav-desktop"
+          aria-label="Primary Navigation"
+        >
+          {/* Grouped Lab Dropdowns: Data Entry & OS/Typing */}
+          {labDropdownGroups.map(group => {
+            const activeChild = getActiveItemInGroup(group);
+            const isOpen = openDropdown === group.id;
+            return (
+              <div key={group.id} className="nav-dropdown">
+                <button
+                  type="button"
+                  className={`nav-btn nav-dropdown-trigger ${activeChild ? 'active' : ''} ${isOpen ? 'open' : ''}`}
+                  onClick={() => toggleDesktopDropdown(group.id)}
+                  aria-haspopup="menu"
+                  aria-expanded={isOpen}
+                  title={activeChild ? `${group.label}: ${activeChild.label}` : `Open ${group.sectionTitle}`}
+                >
+                  {group.icon}
+                  <span className="nav-btn-text">{group.label}</span>
+                  {activeChild && (
+                    <span className="nav-active-pill">{activeChild.shortLabel}</span>
+                  )}
+                  <ChevronDown size={13} className="nav-chevron" />
+                </button>
+
+                {isOpen && (
+                  <div
+                    className={`nav-dropdown-menu ${group.align === 'right' ? 'align-right' : ''}`}
+                    role="menu"
+                    aria-label={group.sectionTitle}
+                  >
+                    <div className="nav-dropdown-header">{group.sectionTitle}</div>
+                    <div className="nav-dropdown-items">
+                      {group.items.map(item => {
+                        const isItemActive = activeView === item.id;
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            role="menuitem"
+                            className={`nav-dropdown-item ${isItemActive ? 'active' : ''}`}
+                            onClick={() => handleSelectNav(item)}
+                            title={item.title}
+                          >
+                            <span
+                              className="nav-dropdown-item-icon"
+                              style={{ background: item.iconBg }}
+                            >
+                              {item.icon}
+                            </span>
+                            <span className="nav-dropdown-item-body">
+                              <span className="nav-dropdown-item-title-row">
+                                <span className="nav-dropdown-item-title">{item.label}</span>
+                                {item.badge && (
+                                  <span
+                                    className={`nav-lab-badge ${item.badgeClass || ''}`}
+                                    style={{ background: item.badgeColor, color: '#ffffff' }}
+                                  >
+                                    {item.badge}
+                                  </span>
+                                )}
+                              </span>
+                              <span className="nav-dropdown-item-desc">{item.description}</span>
+                            </span>
+                            <span className="nav-dropdown-item-trailing">
+                              {isItemActive ? (
+                                <Check size={15} className="nav-dropdown-check" />
+                              ) : (
+                                <ChevronRight size={14} className="nav-dropdown-arrow" />
+                              )}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Direct Dashboard Navigation */}
+          <button
+            type="button"
+            className={`nav-btn ${activeView === DASHBOARD_ITEM.id ? 'active' : ''}`}
+            onClick={() => handleSelectNav(DASHBOARD_ITEM)}
+            title={DASHBOARD_ITEM.title}
+          >
+            {DASHBOARD_ITEM.icon}
+            <span className="nav-btn-text">{DASHBOARD_ITEM.label}</span>
+          </button>
+
+          {/* Institute Portal Dropdown (Teacher Mode & Live Showcase) */}
+          {(() => {
+            const activeChild = getActiveItemInGroup(portalGroup);
+            const isOpen = openDropdown === portalGroup.id;
+            return (
+              <div className="nav-dropdown">
+                <button
+                  type="button"
+                  className={`nav-btn nav-dropdown-trigger ${activeChild ? 'active' : ''} ${isOpen ? 'open' : ''}`}
+                  onClick={() => toggleDesktopDropdown(portalGroup.id)}
+                  aria-haspopup="menu"
+                  aria-expanded={isOpen}
+                  title={activeChild ? `Portal: ${activeChild.label}` : 'Teacher Mode & Live Showcase'}
+                >
+                  {portalGroup.icon}
+                  <span className="nav-btn-text">{portalGroup.label}</span>
+                  {activeChild && (
+                    <span className="nav-active-pill">{activeChild.shortLabel}</span>
+                  )}
+                  <ChevronDown size={13} className="nav-chevron" />
+                </button>
+
+                {isOpen && (
+                  <div
+                    className="nav-dropdown-menu align-right"
+                    role="menu"
+                    aria-label={portalGroup.sectionTitle}
+                  >
+                    <div className="nav-dropdown-header">{portalGroup.sectionTitle}</div>
+                    <div className="nav-dropdown-items">
+                      {portalGroup.items.map(item => {
+                        const isItemActive = activeView === item.id;
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            role="menuitem"
+                            className={`nav-dropdown-item ${isItemActive ? 'active' : ''}`}
+                            onClick={() => handleSelectNav(item)}
+                            title={item.title}
+                          >
+                            <span
+                              className="nav-dropdown-item-icon"
+                              style={{ background: item.iconBg }}
+                            >
+                              {item.icon}
+                            </span>
+                            <span className="nav-dropdown-item-body">
+                              <span className="nav-dropdown-item-title-row">
+                                <span className="nav-dropdown-item-title">{item.label}</span>
+                              </span>
+                              <span className="nav-dropdown-item-desc">{item.description}</span>
+                            </span>
+                            <span className="nav-dropdown-item-trailing">
+                              {isItemActive ? (
+                                <Check size={15} className="nav-dropdown-check" />
+                              ) : (
+                                <ChevronRight size={14} className="nav-dropdown-arrow" />
+                              )}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
+          <span className="header-nav-divider" aria-hidden="true" />
+
           {/* Persistent EXP Display */}
-          <div 
-            className="exp-badge-container" 
+          <div
+            className="exp-badge-container"
             title="Total Practice EXP. Note: Guided Mode awards 0 EXP"
           >
             <Sparkles size={13} color="#d97706" />
@@ -243,53 +537,19 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             )}
           </div>
 
-          {/* Full Desktop Lab Navigation Buttons */}
-          {LAB_NAV_ITEMS.map(item => (
-            <button
-              key={item.id}
-              type="button"
-              className={`nav-btn ${activeView === item.id ? 'active' : ''}`}
-              onClick={() => handleSelectNav(item)}
-              title={item.title}
-            >
-              {item.icon}
-              <span className="nav-btn-text">{item.label}</span>
-              {item.badge && (
-                <span 
-                  className={`nav-lab-badge ${item.badgeClass || ''}`} 
-                  style={{ background: item.badgeColor, color: '#ffffff' }}
-                >
-                  {item.badge}
-                </span>
-              )}
-            </button>
-          ))}
-
           {/* Master Unlocked Status Pill */}
           {masterUnlocked && (
             <button
               type="button"
-              className="nav-btn"
+              className="nav-btn master-unlock-pill"
               onClick={() => {
                 lockToStudentProgression();
                 setMasterUnlockedState(false);
               }}
-              style={{
-                background: 'rgba(16, 185, 129, 0.12)',
-                border: '1px solid rgba(16, 185, 129, 0.4)',
-                color: '#059669',
-                padding: '4px 8px',
-                borderRadius: '6px',
-                fontSize: '11px',
-                fontWeight: 700,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px'
-              }}
               title="Master Unlocked! All levels accessible. Click to lock back to student progression."
             >
               <Unlock size={13} color="#059669" />
-              <span className="nav-btn-text">ICST (Lock 🔒)</span>
+              <span className="nav-btn-text">ICST 🔒</span>
             </button>
           )}
 
@@ -301,7 +561,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             title="Clear all stored local practice data, drafts, and identity"
           >
             <Trash2 size={13} color="var(--error-red)" />
-            <span className="clear-data-text">CLEAR DATA</span>
+            <span className="clear-data-text">Clear Data</span>
           </button>
 
           <button
@@ -309,16 +569,17 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             className="nav-btn keyboard-shortcuts-btn"
             onClick={onOpenShortcuts}
             title="Keyboard Shortcuts"
+            aria-label="Keyboard Shortcuts"
           >
             <HelpCircle size={16} />
           </button>
-        </div>
+        </nav>
 
-        {/* Mobile / Tablet Header Trigger (Visible on screens < 1100px) */}
+        {/* Mobile / Tablet Header Trigger (Visible on screens <= 1060px) */}
         <div className="header-nav-mobile-trigger">
           {/* Compact EXP Display */}
-          <div 
-            className="exp-badge-container compact" 
+          <div
+            className="exp-badge-container compact"
             title="Total Practice EXP"
           >
             <Sparkles size={12} color="#d97706" />
@@ -329,8 +590,12 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           <button
             type="button"
             className={`mobile-menu-toggle-btn ${mobileMenuOpen ? 'is-open' : ''}`}
-            onClick={() => setMobileMenuOpen(prev => !prev)}
+            onClick={() => {
+              setOpenMobileDropdown(null);
+              setMobileMenuOpen(prev => !prev);
+            }}
             aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
             title="Navigation Menu & Labs"
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -338,40 +603,107 @@ export const Header: React.FC<HeaderProps> = React.memo(({
         </div>
       </div>
 
-      {/* Horizontal Touch-Scrollable Labs Strip (Visible on screens < 1100px) */}
-      <div className="header-tabs-scroll" role="navigation" aria-label="Labs Navigation Bar">
-        <div className="header-tabs-scroll-inner">
-          {LAB_NAV_ITEMS.map(item => (
-            <button
-              key={item.id}
-              type="button"
-              className={`tab-scroll-btn ${activeView === item.id ? 'active' : ''}`}
-              onClick={() => handleSelectNav(item)}
-              title={item.title}
-            >
-              {item.icon}
-              <span className="tab-scroll-label">{item.shortLabel}</span>
-              {item.badge && (
-                <span 
-                  className={`nav-lab-badge ${item.badgeClass || ''}`} 
-                  style={{ background: item.badgeColor, color: '#ffffff' }}
+      {/* Tablet & Mobile Grouped Labs Dropdown Strip (Visible on screens <= 1060px) */}
+      <div
+        ref={mobileBarRef}
+        className="header-mobile-labs-bar"
+        role="navigation"
+        aria-label="Grouped Labs Navigation"
+      >
+        <div className="header-mobile-labs-inner">
+          {labDropdownGroups.map(group => {
+            const activeChild = getActiveItemInGroup(group);
+            const isOpen = openMobileDropdown === group.id;
+            return (
+              <div key={group.id} className="mobile-lab-dropdown">
+                <button
+                  type="button"
+                  className={`tab-scroll-btn ${activeChild ? 'active' : ''} ${isOpen ? 'open' : ''}`}
+                  onClick={() => toggleMobileDropdown(group.id)}
+                  aria-haspopup="menu"
+                  aria-expanded={isOpen}
                 >
-                  {item.badge}
-                </span>
-              )}
-            </button>
-          ))}
+                  {group.icon}
+                  <span className="tab-scroll-label">
+                    {activeChild ? activeChild.shortLabel : group.label}
+                  </span>
+                  <ChevronDown size={13} className="nav-chevron" />
+                </button>
+
+                {isOpen && (
+                  <div
+                    className={`nav-dropdown-menu mobile-dropdown-panel ${group.id === 'os-typing' ? 'align-right-sm' : ''}`}
+                    role="menu"
+                    aria-label={group.sectionTitle}
+                  >
+                    <div className="nav-dropdown-header">{group.sectionTitle}</div>
+                    <div className="nav-dropdown-items">
+                      {group.items.map(item => {
+                        const isItemActive = activeView === item.id;
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            role="menuitem"
+                            className={`nav-dropdown-item ${isItemActive ? 'active' : ''}`}
+                            onClick={() => handleSelectNav(item)}
+                          >
+                            <span
+                              className="nav-dropdown-item-icon"
+                              style={{ background: item.iconBg }}
+                            >
+                              {item.icon}
+                            </span>
+                            <span className="nav-dropdown-item-body">
+                              <span className="nav-dropdown-item-title-row">
+                                <span className="nav-dropdown-item-title">{item.label}</span>
+                                {item.badge && (
+                                  <span
+                                    className={`nav-lab-badge ${item.badgeClass || ''}`}
+                                    style={{ background: item.badgeColor, color: '#ffffff' }}
+                                  >
+                                    {item.badge}
+                                  </span>
+                                )}
+                              </span>
+                              <span className="nav-dropdown-item-desc">{item.description}</span>
+                            </span>
+                            <span className="nav-dropdown-item-trailing">
+                              {isItemActive ? (
+                                <Check size={15} className="nav-dropdown-check" />
+                              ) : (
+                                <ChevronRight size={14} className="nav-dropdown-arrow" />
+                              )}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          <button
+            type="button"
+            className={`tab-scroll-btn ${activeView === DASHBOARD_ITEM.id ? 'active' : ''}`}
+            onClick={() => handleSelectNav(DASHBOARD_ITEM)}
+          >
+            {DASHBOARD_ITEM.icon}
+            <span className="tab-scroll-label">{DASHBOARD_ITEM.shortLabel}</span>
+          </button>
         </div>
       </div>
 
-      {/* Mobile Slide-Down / Slide-Over Navigation Drawer */}
+      {/* Mobile Slide-Over Navigation Drawer */}
       {mobileMenuOpen && (
-        <div 
-          className="header-mobile-drawer-backdrop" 
+        <div
+          className="header-mobile-drawer-backdrop"
           onClick={() => setMobileMenuOpen(false)}
         >
-          <div 
-            className="header-mobile-drawer" 
+          <div
+            className="header-mobile-drawer"
             onClick={e => e.stopPropagation()}
           >
             <div className="drawer-header">
@@ -379,9 +711,9 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                 <img src="/logo.png" alt="Logo" style={{ width: '28px', height: '28px' }} />
                 <span style={{ fontWeight: 800, fontSize: '15px' }}>ICST Navigation Hub</span>
               </div>
-              <button 
-                type="button" 
-                className="drawer-close-btn" 
+              <button
+                type="button"
+                className="drawer-close-btn"
                 onClick={() => setMobileMenuOpen(false)}
                 aria-label="Close menu"
               >
@@ -444,36 +776,55 @@ export const Header: React.FC<HeaderProps> = React.memo(({
               </div>
             )}
 
-            {/* Labs Navigation List */}
-            <div className="drawer-nav-list">
-              <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--text-muted)', marginBottom: '4px' }}>
-                Training Laboratories
-              </span>
-
-              {LAB_NAV_ITEMS.map(item => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={`drawer-nav-item ${activeView === item.id ? 'active' : ''}`}
-                  onClick={() => handleSelectNav(item)}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span className="drawer-item-icon">{item.icon}</span>
-                    <span style={{ fontWeight: activeView === item.id ? 800 : 600 }}>{item.label}</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    {item.badge && (
-                      <span 
-                        className={`nav-lab-badge ${item.badgeClass || ''}`} 
-                        style={{ background: item.badgeColor, color: '#ffffff' }}
-                      >
-                        {item.badge}
-                      </span>
-                    )}
-                    <ChevronRight size={14} color="var(--text-muted)" />
-                  </div>
-                </button>
+            {/* Grouped Labs & Portal Navigation in Drawer */}
+            <div className="drawer-nav-groups">
+              {labDropdownGroups.map(group => (
+                <div key={group.id} className="drawer-nav-list">
+                  <span className="drawer-section-label">{group.sectionTitle}</span>
+                  {group.items.map(item => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`drawer-nav-item ${activeView === item.id ? 'active' : ''}`}
+                      onClick={() => handleSelectNav(item)}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span className="drawer-item-icon">{item.icon}</span>
+                        <span style={{ fontWeight: activeView === item.id ? 800 : 600 }}>{item.label}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        {item.badge && (
+                          <span
+                            className={`nav-lab-badge ${item.badgeClass || ''}`}
+                            style={{ background: item.badgeColor, color: '#ffffff' }}
+                          >
+                            {item.badge}
+                          </span>
+                        )}
+                        <ChevronRight size={14} color="var(--text-muted)" />
+                      </div>
+                    </button>
+                  ))}
+                </div>
               ))}
+
+              <div className="drawer-nav-list">
+                <span className="drawer-section-label">Student & Institute Portal</span>
+                {[DASHBOARD_ITEM, ...PORTAL_ITEMS].map(item => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={`drawer-nav-item ${activeView === item.id ? 'active' : ''}`}
+                    onClick={() => handleSelectNav(item)}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span className="drawer-item-icon">{item.icon}</span>
+                      <span style={{ fontWeight: activeView === item.id ? 800 : 600 }}>{item.label}</span>
+                    </div>
+                    <ChevronRight size={14} color="var(--text-muted)" />
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Utility Actions at Bottom of Drawer */}
@@ -561,8 +912,8 @@ export const Header: React.FC<HeaderProps> = React.memo(({
       {/* Progress Strip in Practice View */}
       {activeView === 'practice' && (
         <div className="header-progress-strip">
-          <div 
-            className="header-progress-fill" 
+          <div
+            className="header-progress-fill"
             style={{ width: `${Math.min(100, Math.max(0, stageProgressPercent))}%` }}
           />
         </div>

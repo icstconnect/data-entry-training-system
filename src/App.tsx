@@ -408,7 +408,7 @@ export function App() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '100vw', overflowX: 'clip' }}>
       {/* Government Website Accessibility & Screen Magnifier Bar (GIGW Compliant) */}
       <GovtAccessibilityBar
         fontSize={govtFontSize}

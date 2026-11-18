@@ -67,6 +67,7 @@ export interface TouchTypingLevel {
   id: number;
   stage: number;
   stageName: string;
+  focusMode?: 'learning' | 'challenge';
   title: string;
   subtitle: string;
   focusKeys: string[];

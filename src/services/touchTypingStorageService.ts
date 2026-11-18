@@ -166,12 +166,12 @@ export function evaluateTouchTypingRun(
 
   const passed = failureReasons.length === 0;
 
-  // Star calculation
+  // Star calculation (aligned with balanced 50% learning / 50% challenge pacing)
   let stars = 0;
   if (passed) {
-    if (accuracy >= 98 && wpm >= criteria.minWpm + 10) {
+    if (accuracy >= Math.min(96, criteria.minAcc + 4) && wpm >= criteria.minWpm + 6) {
       stars = 3;
-    } else if (accuracy >= 94 && wpm >= criteria.minWpm + 4) {
+    } else if (accuracy >= Math.min(92, criteria.minAcc + 2) && wpm >= criteria.minWpm + 3) {
       stars = 2;
     } else {
       stars = 1;
