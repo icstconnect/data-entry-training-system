@@ -521,6 +521,15 @@ export function App() {
               progress={studentProgress}
               onSelectStage={handleSelectStage}
               onOpenTyping={() => handleViewChange('typing')}
+              onOpenExcel={() => handleViewChange('excel')}
+              onOpenWindows={() => handleViewChange('windows')}
+              onOpenTerminal={() => handleViewChange('terminal')}
+              onOpenWordExpress={() => handleViewChange('word-express')}
+              onOpenStudentSetup={() => setIsStudentSetupOpen(true)}
+              onOpenAchievementShare={() => {
+                if (!requireStudentIdentity({ type: 'shareModal' })) return;
+                setIsUniversalShareOpen(true);
+              }}
             />
           )}
 

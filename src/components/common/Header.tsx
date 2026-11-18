@@ -26,6 +26,7 @@ import {
   Rocket,
   ExternalLink
 } from 'lucide-react';
+import { animate, createScope, stagger, spring } from 'animejs';
 import { UserRole, StudentIdentity } from '../../types';
 import { ICST_CONNECT } from '../../config/appConfig';
 import { isMasterUnlocked, lockToStudentProgression } from '../../services/masterUnlockService';
@@ -246,8 +247,153 @@ export const Header: React.FC<HeaderProps> = React.memo(({
   const [openDropdown, setOpenDropdown] = useState<NavDropdownGroup['id'] | null>(null);
   const [openMobileDropdown, setOpenMobileDropdown] = useState<'data-entry' | 'os-typing' | null>(null);
 
+  const headerRef = useRef<HTMLElement | null>(null);
   const desktopNavRef = useRef<HTMLDivElement | null>(null);
   const mobileBarRef = useRef<HTMLDivElement | null>(null);
+  const prevExpRef = useRef<number>(totalExp);
+
+  // 1. Initial mount entrance choreography (scoped & reduced-motion aware)
+  useEffect(() => {
+    if (!headerRef.current) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+    const scope = createScope({ root: headerRef.current }).add(() => {
+      animate('.header-brand-cluster > *, .header-nav-desktop > *', {
+        translateY: [-10, 0],
+        opacity: [0, 1],
+        duration: 460,
+        delay: stagger(32),
+        ease: 'outExpo'
+      });
+    });
+
+    return () => scope.revert();
+  }, []);
+
+  // 2. Smooth spring animation when desktop or mobile dropdown opens
+  useEffect(() => {
+    if (!openDropdown && !openMobileDropdown) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+    window.requestAnimationFrame(() => {
+      const menus = headerRef.current?.querySelectorAll('.nav-dropdown-menu');
+      if (menus && menus.length > 0) {
+        animate(menus, {
+          translateY: [-10, 0],
+          scale: [0.96, 1],
+          opacity: [0, 1],
+          duration: 340,
+          ease: spring({ stiffness: 360, damping: 22 })
+        });
+      }
+      const items = headerRef.current?.querySelectorAll('.nav-dropdown-menu .nav-dropdown-item');
+      if (items && items.length > 0) {
+        animate(items, {
+          translateX: [-8, 0],
+          opacity: [0, 1],
+          duration: 280,
+          delay: stagger(32),
+          ease: 'outExpo'
+        });
+      }
+    });
+  }, [openDropdown, openMobileDropdown]);
+
+  // 3. Smooth slide-over entrance for mobile drawer
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+    window.requestAnimationFrame(() => {
+      const backdrop = headerRef.current?.querySelector('.header-mobile-drawer-backdrop');
+      const drawer = headerRef.current?.querySelector('.header-mobile-drawer');
+      const drawerItems = headerRef.current?.querySelectorAll('.drawer-nav-item');
+
+      if (backdrop) {
+        animate(backdrop, { opacity: [0, 1], duration: 220, ease: 'outQuad' });
+      }
+      if (drawer) {
+        animate(drawer, {
+          translateX: ['100%', '0%'],
+          duration: 360,
+          ease: 'outExpo'
+        });
+      }
+      if (drawerItems && drawerItems.length > 0) {
+        animate(drawerItems, {
+          translateX: [16, 0],
+          opacity: [0, 1],
+          duration: 300,
+          delay: stagger(24, { start: 80 }),
+          ease: 'outExpo'
+        });
+      }
+    });
+  }, [mobileMenuOpen]);
+
+  // 4. Tactile spring pop on EXP badge when EXP increases or floatingExp fires
+  useEffect(() => {
+    const expIncreased = totalExp > prevExpRef.current;
+    prevExpRef.current = totalExp;
+    if (!expIncreased && floatingExp === null) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+    const badges = headerRef.current?.querySelectorAll('.exp-badge-container');
+    if (badges && badges.length > 0) {
+      animate(badges, {
+        scale: [1, 1.16, 1],
+        duration: 420,
+        ease: spring({ stiffness: 380, damping: 14 })
+      });
+    }
+  }, [totalExp, floatingExp]);
+
+  // 5. Crisp feedback pulse on active view switch & practice sub-toolbar reveal
+  useEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+    window.requestAnimationFrame(() => {
+      const activeBtns = headerRef.current?.querySelectorAll('.nav-btn.active, .tab-scroll-btn.active');
+      if (activeBtns && activeBtns.length > 0) {
+        animate(activeBtns, {
+          scale: [0.95, 1.04, 1],
+          duration: 320,
+          ease: spring({ stiffness: 360, damping: 18 })
+        });
+      }
+      if (activeView === 'practice') {
+        const subBar = headerRef.current?.querySelector('.practice-sub-toolbar');
+        if (subBar) {
+          animate(subBar, {
+            translateY: [-10, 0],
+            opacity: [0, 1],
+            duration: 340,
+            ease: 'outExpo'
+          });
+        }
+      }
+    });
+  }, [activeView]);
+
+  const handleBrandLogoHover = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const img = e.currentTarget.querySelector('.brand-logo-img');
+    if (img) {
+      animate(img, {
+        scale: [1, 1.14, 1.05],
+        rotate: [0, -8, 0],
+        duration: 380,
+        ease: spring({ stiffness: 340, damping: 14 })
+      });
+    }
+  };
+
+  const handleBrandLogoLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const img = e.currentTarget.querySelector('.brand-logo-img');
+    if (img) {
+      animate(img, { scale: 1, rotate: 0, duration: 220, ease: 'outQuad' });
+    }
+  };
 
   useEffect(() => {
     const handleMasterChange = () => setMasterUnlockedState(isMasterUnlocked());
@@ -318,7 +464,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
   const portalGroup = NAV_DROPDOWN_GROUPS.find(g => g.id === 'portal')!;
 
   return (
-    <header className="app-header">
+    <header ref={headerRef} className="app-header">
       {/* Primary Global Navigation Header */}
       <div className="header-container">
         {/* Brand Section with ORIGINAL LOGO & Student Badge */}
@@ -326,6 +472,8 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           <a
             href="#home"
             className="brand-section"
+            onMouseEnter={handleBrandLogoHover}
+            onMouseLeave={handleBrandLogoLeave}
             onClick={(e) => {
               e.preventDefault();
               setMobileMenuOpen(false);
