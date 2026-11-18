@@ -162,8 +162,8 @@ export const IcstAnimatedCursorOverlay: React.FC = () => {
           });
           scope.add(() => {
             animate(sparks, {
-              translateX: (_el, i = 0) => Math.cos((i * Math.PI * 2) / sparks.length) * 24,
-              translateY: (_el, i = 0) => Math.sin((i * Math.PI * 2) / sparks.length) * 24,
+              translateX: (_el: unknown, i = 0) => Math.cos((i * Math.PI * 2) / sparks.length) * 24,
+              translateY: (_el: unknown, i = 0) => Math.sin((i * Math.PI * 2) / sparks.length) * 24,
               scale: [1.1, 0],
               opacity: [1, 0],
               duration: 460,
